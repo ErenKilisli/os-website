@@ -17,26 +17,20 @@ export function SmoothScrollProvider({ children }: Props) {
       duration: 1.2,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       touchMultiplier: 2,
-      infinite: false,
     })
 
-    // Keep ScrollTrigger in sync with Lenis
-    lenis.on('scroll', () => ScrollTrigger.update())
+    // Sync ScrollTrigger with Lenis virtual scroll position
+    lenis.on('scroll', ScrollTrigger.update)
 
-    // Drive Lenis from requestAnimationFrame (not GSAP ticker)
-    // to avoid the seconds/milliseconds unit mismatch issue
-    let rafId: number
-
-    function raf(time: number) {
-      lenis.raf(time)
-      rafId = requestAnimationFrame(raf)
-    }
-    rafId = requestAnimationFrame(raf)
+    // Official Lenis + GSAP integration: drive Lenis via GSAP ticker
+    // GSAP ticker passes time in seconds; Lenis.raf expects milliseconds
+    const ticker = (time: number) => lenis.raf(time * 1000)
+    gsap.ticker.add(ticker)
+    gsap.ticker.lagSmoothing(0)
 
     return () => {
-      cancelAnimationFrame(rafId)
       lenis.destroy()
-      ScrollTrigger.killAll()
+      gsap.ticker.remove(ticker)
     }
   }, [])
 

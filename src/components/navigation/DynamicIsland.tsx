@@ -3,53 +3,52 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const SPRING = { type: 'spring', stiffness: 380, damping: 28, mass: 0.9 } as const
+/* ── Constants ────────────────────────────────────────── */
+const SPRING = { type: 'spring', stiffness: 420, damping: 32, mass: 0.75 } as const
+
+const PILL_H        = 44   // px — never changes
+const PILL_W_CLOSED = 164
+const PILL_W_OPEN   = 420  // stretches sideways, iOS Dynamic Island style
 
 const NAV_LINKS = [
-  { label: 'Work',    href: '#projects', index: '01' },
-  { label: 'About',   href: '#about',    index: '02' },
-  { label: 'Contact', href: '#contact',  index: '03' },
+  { label: 'Work',    href: '#projects' },
+  { label: 'About',   href: '#about'    },
+  { label: 'Contact', href: '#contact'  },
 ]
 
 const SOCIALS = [
-  { label: 'GH',  href: 'https://github.com/erenkilisli' },
-  { label: 'LI',  href: 'https://linkedin.com/in/erenkilisli' },
-  { label: 'BE',  href: 'https://behance.net/erenkilisli' },
+  { label: 'GH', href: 'https://github.com/erenkilisli'      },
+  { label: 'LI', href: 'https://linkedin.com/in/erenkilisli' },
+  { label: 'BE', href: 'https://behance.net/erenkilisli'      },
 ]
 
-/* ── Collapsed pill content ───────────────────────────── */
+/* ── Collapsed state ──────────────────────────────────── */
 function CollapsedContent() {
   return (
     <motion.div
-      key="collapsed"
+      key="closed"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.15 }}
-      className="flex items-center justify-between h-full px-5 gap-4 w-full"
+      transition={{ duration: 0.12 }}
+      /* absolute so it doesn't affect pill size */
+      className="absolute inset-0 flex items-center justify-between px-5 pointer-events-none"
     >
-      {/* Initials */}
       <span
-        className="text-[11px] tracking-[0.25em] uppercase"
+        className="text-[11px] tracking-[0.28em] uppercase"
         style={{ fontFamily: 'var(--font-mono)', color: '#f0f0f0' }}
       >
         EK
       </span>
 
-      {/* Three dot indicator */}
       <div className="flex items-center gap-[5px]">
         {[0, 1, 2].map((i) => (
           <motion.span
             key={i}
             className="block rounded-full"
             style={{ width: 5, height: 5, background: '#f0f0f0' }}
-            animate={{ opacity: [0.3, 1, 0.3] }}
-            transition={{
-              repeat: Infinity,
-              duration: 1.6,
-              delay: i * 0.2,
-              ease: 'easeInOut',
-            }}
+            animate={{ opacity: [0.25, 1, 0.25] }}
+            transition={{ repeat: Infinity, duration: 1.8, delay: i * 0.22, ease: 'easeInOut' }}
           />
         ))}
       </div>
@@ -57,87 +56,109 @@ function CollapsedContent() {
   )
 }
 
-/* ── Expanded menu content ────────────────────────────── */
+/* ── Expanded state (horizontal row) ─────────────────── */
 function ExpandedContent({ onClose }: { onClose: () => void }) {
   return (
     <motion.div
-      key="expanded"
+      key="open"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.2, delay: 0.08 }}
-      className="flex flex-col h-full px-7 pt-5 pb-5 gap-1 w-full"
+      transition={{ duration: 0.18, delay: 0.08 }}
+      className="absolute inset-0 flex items-center px-5 gap-0 whitespace-nowrap overflow-hidden"
     >
-      {/* Header row */}
-      <div className="flex items-center justify-between mb-3">
-        <span
-          className="text-[9px] tracking-[0.4em] uppercase"
-          style={{ fontFamily: 'var(--font-mono)', color: '#666' }}
-        >
-          navigation
-        </span>
-        <button
-          onClick={onClose}
-          className="text-[11px] text-[#666] hover:text-[#f0f0f0] transition-colors duration-150"
-          style={{ fontFamily: 'var(--font-mono)' }}
-          aria-label="Close navigation"
-        >
-          ✕
-        </button>
-      </div>
+      {/* Brand mark */}
+      <span
+        className="text-[11px] tracking-[0.28em] uppercase shrink-0"
+        style={{ fontFamily: 'var(--font-mono)', color: '#f0f0f0' }}
+      >
+        EK
+      </span>
+
+      {/* Separator */}
+      <div className="w-px h-[18px] mx-4 shrink-0" style={{ background: 'rgba(255,255,255,0.12)' }} />
 
       {/* Nav links */}
-      <div className="flex flex-col gap-0.5 flex-1">
+      <div className="flex items-center gap-0.5">
         {NAV_LINKS.map((link, i) => (
           <motion.a
             key={link.label}
             href={link.href}
-            onClick={onClose}
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.14 + i * 0.07, duration: 0.28 }}
-            className="group flex items-center gap-3 py-1.5 rounded-lg px-2 -mx-2
-                       hover:bg-white/5 transition-colors duration-150"
+            onClick={(e) => { e.stopPropagation(); onClose() }}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 + i * 0.06, duration: 0.24 }}
+            className="px-3 py-1 rounded-full transition-all duration-150"
+            style={{
+              fontFamily:    'var(--font-mono)',
+              fontSize:      '11px',
+              letterSpacing: '0.06em',
+              color:         'rgba(240,240,240,0.65)',
+            }}
+            onMouseEnter={(e) => {
+              const t = e.currentTarget as HTMLAnchorElement
+              t.style.color      = '#00ffaa'
+              t.style.background = 'rgba(0,255,170,0.06)'
+            }}
+            onMouseLeave={(e) => {
+              const t = e.currentTarget as HTMLAnchorElement
+              t.style.color      = 'rgba(240,240,240,0.65)'
+              t.style.background = 'transparent'
+            }}
           >
-            <span
-              className="text-[9px] w-5 shrink-0"
-              style={{ fontFamily: 'var(--font-mono)', color: '#00ffaa' }}
-            >
-              {link.index}
-            </span>
-            <span
-              className="text-[13px] tracking-wide group-hover:text-[#00ffaa] transition-colors duration-150"
-              style={{ fontFamily: 'var(--font-mono)', color: '#f0f0f0' }}
-            >
-              {link.label}
-            </span>
+            {link.label}
           </motion.a>
         ))}
       </div>
 
-      {/* Divider */}
-      <div className="w-full h-px bg-white/8 my-2" />
+      {/* Separator */}
+      <div className="w-px h-[18px] mx-4 shrink-0" style={{ background: 'rgba(255,255,255,0.12)' }} />
 
-      {/* Social quick-links */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.42 }}
-        className="flex gap-3"
-      >
-        {SOCIALS.map((s) => (
-          <a
+      {/* Social links */}
+      <div className="flex items-center gap-3">
+        {SOCIALS.map((s, i) => (
+          <motion.a
             key={s.label}
             href={s.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[10px] text-[#555] hover:text-[#00ffaa] transition-colors duration-150"
-            style={{ fontFamily: 'var(--font-mono)', letterSpacing: '0.15em' }}
+            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.26 + i * 0.055 }}
+            style={{
+              fontFamily:    'var(--font-mono)',
+              fontSize:      '10px',
+              letterSpacing: '0.18em',
+              color:         'rgba(240,240,240,0.35)',
+              transition:    'color 0.15s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#00ffaa' }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(240,240,240,0.35)' }}
           >
             {s.label}
-          </a>
+          </motion.a>
         ))}
-      </motion.div>
+      </div>
+
+      {/* Close */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.42 }}
+        onClick={(e) => { e.stopPropagation(); onClose() }}
+        className="ml-5 shrink-0 transition-colors duration-150"
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize:   '10px',
+          color:      'rgba(240,240,240,0.3)',
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#f0f0f0' }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(240,240,240,0.3)' }}
+        aria-label="Close navigation"
+      >
+        ✕
+      </motion.button>
     </motion.div>
   )
 }
@@ -147,7 +168,7 @@ export function DynamicIsland() {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Close on outside click
+  /* Close on outside click */
   useEffect(() => {
     if (!isOpen) return
     const handler = (e: MouseEvent) => {
@@ -159,11 +180,9 @@ export function DynamicIsland() {
     return () => document.removeEventListener('mousedown', handler)
   }, [isOpen])
 
-  // Close on Escape
+  /* Close on Escape */
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsOpen(false)
-    }
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false) }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
@@ -171,32 +190,26 @@ export function DynamicIsland() {
   return (
     <div
       ref={containerRef}
-      className="fixed top-5 left-1/2 z-50 -translate-x-1/2"
-      style={{ willChange: 'transform' }}
+      className="fixed top-5 left-1/2 z-50"
+      style={{ transform: 'translateX(-50%)', willChange: 'transform' }}
     >
       <motion.div
-        /* Animate width/height with spring */
-        animate={{
-          width:  isOpen ? 320 : 164,
-          height: isOpen ? 210 : 44,
-        }}
-        initial={{
-          width:  164,
-          height: 44,
-        }}
+        /* Only width animates — height stays fixed = pill stays a pill */
+        animate={{ width: isOpen ? PILL_W_OPEN : PILL_W_CLOSED }}
+        initial={{ width: PILL_W_CLOSED }}
         transition={SPRING}
         onClick={() => !isOpen && setIsOpen(true)}
-        className="glass-pill overflow-hidden relative"
+        className="glass-pill relative overflow-hidden"
         style={{
+          height: PILL_H,
           cursor: isOpen ? 'default' : 'pointer',
-          /* Subtle inner highlight at the top */
           boxShadow: isOpen
-            ? '0 0 0 1px rgba(0,255,170,0.15), inset 0 1px 0 rgba(255,255,255,0.1), 0 20px 60px rgba(0,0,0,0.5)'
-            : 'inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 20px rgba(0,0,0,0.4)',
+            ? '0 0 0 1px rgba(0,255,170,0.18), inset 0 1px 0 rgba(255,255,255,0.09), 0 16px 48px rgba(0,0,0,0.55)'
+            : 'inset 0 1px 0 rgba(255,255,255,0.09), 0 4px 24px rgba(0,0,0,0.45)',
         }}
         whileHover={!isOpen ? {
-          boxShadow: '0 0 0 1px rgba(0,255,170,0.2), inset 0 1px 0 rgba(255,255,255,0.15), 0 8px 30px rgba(0,0,0,0.5)',
-          scale: 1.02,
+          scale: 1.025,
+          boxShadow: '0 0 0 1px rgba(0,255,170,0.14), inset 0 1px 0 rgba(255,255,255,0.12), 0 8px 32px rgba(0,0,0,0.5)',
         } : {}}
       >
         <AnimatePresence mode="wait" initial={false}>

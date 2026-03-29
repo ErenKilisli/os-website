@@ -1,24 +1,34 @@
-import { DynamicIsland } from '@/components/navigation/DynamicIsland'
-import { Hero } from '@/components/hero/Hero'
+import { Navbar }              from '@/components/navigation/Navbar'
+import { Hero }                from '@/components/hero/Hero'
+import { AboutSection }        from '@/components/about/AboutSection'
+import { CodeProjectsSection } from '@/components/projects/CodeProjectsSection'
+import { FilmProjectsSection } from '@/components/projects/FilmProjectsSection'
+import { ContactSection }      from '@/components/contact/ContactSection'
+import { ContactFAB }          from '@/components/contact/ContactFAB'
 
-/**
- * Main page — assembles all sections.
- * Projects and Contact sections are wired in subsequent phases.
- */
 export default function Home() {
   return (
     <main>
-      {/* ── Navigation ── */}
-      <DynamicIsland />
+      {/* Always-visible full-width navbar with glass surface + active indicator */}
+      <Navbar />
 
-      {/* ── Hero ── */}
+      {/* Wodniack-style bottom-anchored hero */}
       <Hero />
 
-      {/* ── Projects (Phase 2) ── */}
-      {/* <ProjectsSection /> */}
+      {/* Code projects — dark #050505, green terminal aesthetic */}
+      <CodeProjectsSection />
 
-      {/* ── Contact FAB (Phase 2) ── */}
-      {/* <ContactFAB /> */}
+      {/* About — three GSAP parallax columns */}
+      <AboutSection />
+
+      {/* Film projects — warmer #080506, orange cinematic aesthetic */}
+      <FilmProjectsSection />
+
+      {/* Contact — character wave email + social links + signature */}
+      <ContactSection />
+
+      {/* Floating contact button */}
+      <ContactFAB />
     </main>
   )
 }
