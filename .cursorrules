@@ -1,0 +1,99 @@
+# Project Context — himerenkilisli.com
+# AI context file: read this before every session.
+
+## Owner
+- Name:    Ibrahim Erenkilisli
+- Domain:  himerenkilisli.com
+- Email:   ibr@himerenkilisli.com
+- Based:   Istanbul, Turkey
+- Identity: Software/Product Engineer AND Filmmaker/Creative — both, equally.
+
+## Social links
+- GitHub:   https://github.com/erenkilisli
+- LinkedIn: https://linkedin.com/in/erenkilisli
+- Behance:  https://behance.net/erenkilisli
+- Geeknasyon: https://geeknasyon.com   (tech media platform he runs)
+
+## Projects — System & Code
+- **Deux**       → deuxstud.io — creative studio platform (SaaS, full-stack)
+- **Rezinn**     → marketplace platform with real-time negotiation
+- **Streetshare** → geo-tagged urban photography social network
+- **Damned Ape** → Unreal Engine 5 psychological thriller game (Nanite, Lumen)
+
+## Projects — Lens & Motion
+- **Film Showreel** → 2023–2024 directorial/cinematographic reel (RED, Sony FX9)
+- **Geeknasyon**    → Turkey's leading tech media content (YouTube, 200k+ views)
+- **Photography**   → Street & portrait work (Istanbul, Luminar Neo, Darktable)
+
+---
+
+## Tech Stack
+- Framework:  Next.js 15, App Router, TypeScript
+- Styling:    Tailwind CSS v4 (CSS variable-based config in globals.css)
+- Animation:  Framer Motion (spring physics, layout, AnimatePresence, motion values)
+- Scroll:     Lenis (smooth scroll) + GSAP ScrollTrigger (parallax, reveals)
+- Fonts:      Geist Mono (engineer) + Playfair Display italic (filmmaker) + Geist Sans
+
+## Design System
+### Dual accent identity
+| Context     | Color   | Hex       | Used for                    |
+|-------------|---------|-----------|----------------------------|
+| Engineer    | Green   | #00ffaa   | Hover, glow, matrix rain    |
+| Filmmaker   | Orange  | #ff6b35   | Hover, gradients, film tone |
+
+### Palette
+- Background:  #050505 (near-black)
+- Foreground:  #f0f0f0 (off-white)
+- Muted text:  #666666
+- Glass bg:    rgba(255,255,255,0.04–0.08)
+- Glass border: rgba(255,255,255,0.08–0.18)
+
+### Typography rule
+- Mono font  → anything "code": UI chrome, labels, taglines, project tags
+- Serif font → anything "cinematic": hero main words, editorial headings
+- NEVER mix them in the same text block without a deliberate contrast reason
+
+### Motion principles
+- Spring physics everywhere: stiffness 300–400, damping 24–30
+- No linear or ease-in-out for primary interactions — always spring
+- Hardware-accelerated: `will-change: transform` on animated elements
+- Glassmorphism: backdrop-filter blur(20–24px) + saturate(180–200%)
+- Text effects: ENGINEER → matrix/scanline green; FILMMAKER → warm gradient + film grain
+
+---
+
+## Section map
+| ID          | Component                   | Status         |
+|-------------|----------------------------|----------------|
+| #home       | Hero                        | ✅ Done         |
+| nav         | DynamicIsland               | ✅ Done         |
+| #projects   | ProjectsSection             | 🔲 Phase 2      |
+| #about      | AboutSection                | 🔲 Phase 3      |
+| #contact    | ContactFAB                  | 🔲 Phase 2      |
+
+## Folder structure
+```
+src/
+  app/           # Next.js App Router (layout, page, globals.css)
+  components/
+    navigation/  # DynamicIsland
+    hero/        # Hero, FloatingIcons, MatrixCanvas
+    projects/    # ProjectsSection, ProjectCard, ProjectModal
+    contact/     # ContactFAB
+    ui/          # CustomCursor, shared primitives
+  providers/     # Providers.tsx, SmoothScrollProvider.tsx
+  hooks/         # useMousePosition, useMagneticEffect (future)
+  data/          # projects.ts
+  types/         # index.ts
+  lib/           # gsap setup (future)
+```
+
+## Constraints & preferences
+- Dark mode ONLY — no light mode toggle
+- Custom cursor always active — `cursor: none` on body
+- No third-party UI component libraries (MUI, shadcn, etc.)
+- Animations must be hardware-accelerated (transform/opacity only)
+- All glassmorphic elements use the `.glass`, `.glass-pill`, `.glass-card` CSS classes
+- Framer Motion `layout` / `layoutId` for shared element transitions (Project modal expand)
+- Don't add error handling or validation for internal/impossible cases
+- Keep components lean — no over-abstraction
