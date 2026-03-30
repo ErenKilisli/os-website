@@ -50,10 +50,10 @@ const WINDOW_CONFIGS: Record<WindowType, { title: string; icon: string; width: n
 
 const INITIAL_ICONS: IconState[] = [
   { id: 'ico-about', label: 'Profile\nuser.prf',  emoji: '👤', x: 20, y: 20,  windowType: 'about' },
-  { id: 'ico-mail',  label: 'Mail\ninbox.msg',    emoji: '📧', x: 20, y: 114, windowType: 'mail'  },
-  { id: 'ico-game',  label: 'Games\ngames.fld',   emoji: '🎮', x: 20, y: 208, windowType: 'game'  },
-  { id: 'ico-film',  label: 'Film\nfilm.fld',     emoji: '🎬', x: 20, y: 302, windowType: 'film'  },
-  { id: 'ico-swr',   label: 'Code\ncode.fld',     emoji: '💾', x: 20, y: 396, windowType: 'swr'   },
+  { id: 'ico-mail',  label: 'Mail\ninbox.msg',    emoji: '📧', x: 20, y: 124, windowType: 'mail'  },
+  { id: 'ico-game',  label: 'Games\ngames.fld',   emoji: '🎮', x: 20, y: 228, windowType: 'game'  },
+  { id: 'ico-film',  label: 'Film\nfilm.fld',     emoji: '🎬', x: 20, y: 332, windowType: 'film'  },
+  { id: 'ico-swr',   label: 'Code\ncode.fld',     emoji: '💾', x: 20, y: 436, windowType: 'swr'   },
 ]
 
 let zCounter = 100

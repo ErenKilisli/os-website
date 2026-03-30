@@ -2,18 +2,6 @@
 import { useWindowStore } from '@/store/windowStore'
 import { useEffect, useState } from 'react'
 
-/* Tiny Windows logo for Start button (4 colored squares) */
-function WinLogo() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" style={{ imageRendering: 'pixelated', flexShrink: 0 }}>
-      <rect x="0" y="0" width="7" height="7" fill="#ff0000"/>
-      <rect x="9" y="0" width="7" height="7" fill="#00cc00"/>
-      <rect x="0" y="9" width="7" height="7" fill="#0000ff"/>
-      <rect x="9" y="9" width="7" height="7" fill="#ffcc00"/>
-    </svg>
-  )
-}
-
 export function Taskbar() {
   const { windows, focusWindow, minimizeWindow, focusedId } = useWindowStore()
   const [time, setTime] = useState('')
@@ -33,8 +21,7 @@ export function Taskbar() {
   return (
     <div id="taskbar">
       <button id="start-btn">
-        <WinLogo />
-        <span>Start</span>
+        <span style={{ fontStyle: 'italic', fontWeight: 'bold' }}>Start</span>
       </button>
       <div className="tb-sep" />
       <div id="tb-wins">
@@ -54,7 +41,7 @@ export function Taskbar() {
         ))}
       </div>
       <div id="tb-right">
-        <div className="tb-dot" title="Online" />
+        <div className="tb-dot" />
         <div id="clock">{time}</div>
       </div>
     </div>

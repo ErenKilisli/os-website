@@ -10,7 +10,7 @@ const S = { imageRendering: 'pixelated' as const }
 // ── Classic Win95 Folder (cream/tan color) ───────────────
 function FolderBase({ badge }: { badge?: React.ReactNode }) {
   return (
-    <svg viewBox="0 0 40 34" width="64" height="54" style={S}>
+    <svg viewBox="0 0 40 34" width="80" height="68" style={S}>
       {/* Tab (top-left flap) */}
       <rect x="0" y="0" width="14" height="5" fill="#d4a843"/>
       <rect x="0" y="0" width="14" height="1" fill="#ffe07a"/>
@@ -106,7 +106,7 @@ const SWRBadge = () => (
 // ── Person/About EXE icon ────────────────────────────────
 function AboutIcon() {
   return (
-    <svg viewBox="0 0 40 40" width="64" height="64" style={S}>
+    <svg viewBox="0 0 40 40" width="68" height="68" style={S}>
       {/* Window frame */}
       <rect x="0"  y="0"  width="40" height="40" fill="#c0c0c0"/>
       {/* Border */}
@@ -142,7 +142,7 @@ function AboutIcon() {
 // ── Envelope (MAIL.EXE) icon ─────────────────────────────
 function MailIcon() {
   return (
-    <svg viewBox="0 0 40 34" width="64" height="54" style={S}>
+    <svg viewBox="0 0 40 34" width="80" height="68" style={S}>
       {/* Envelope body */}
       <rect x="0"  y="4"  width="40" height="30" fill="#f0f0f8"/>
       <rect x="0"  y="4"  width="40" height="1"  fill="#fff"/>

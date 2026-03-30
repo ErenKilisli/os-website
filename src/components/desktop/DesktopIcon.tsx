@@ -40,7 +40,11 @@ export function DesktopIcon({ icon }: { icon: IconState }) {
       <div className="dic-frame">
         <DesktopPixelIcon type={icon.windowType} />
       </div>
-      <div className="dic-lbl">{icon.label}</div>
+      <div className="dic-lbl">
+        {icon.label.split('\n').map((line, i) => (
+          <span key={i} style={{ display: 'block', opacity: i === 1 ? 0.75 : 1 }}>{line}</span>
+        ))}
+      </div>
     </motion.div>
   )
 }
