@@ -3,17 +3,17 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const LINES = [
-  { html: '<span class="hi">EREN.OS BIOS v2.4.1</span>' },
+  { html: '<span class="hi">EREN.OS version 1.0</span>' },
   { html: '<span class="dim">Copyright (C) 2026 Eren Kılışlı. All rights reserved.</span>' },
   { html: '' },
-  { html: 'Initializing hardware scan...' },
+  { html: 'Initializing hardware...' },
   { html: 'CPU: Creative Mind 3.6GHz &nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">[OK]</span>' },
   { html: 'RAM: 26 Years Experience &nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">[OK]</span>' },
   { html: 'GPU: Visual Cortex RX280 &nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">[OK]</span>' },
   { html: 'HDD: /projects/eren/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">[OK]</span>' },
-  { html: 'NET: Connection established &nbsp;&nbsp;<span class="ok">[OK]</span>' },
+  { html: 'NET: Connection established &nbsp;<span class="ok">[OK]</span>' },
   { html: '' },
-  { html: 'Starting EREN.OS kernel...' },
+  { html: 'Loading PORTFOLIO.EXE...' },
 ]
 
 export function BootScreen({ onComplete }: { onComplete: () => void }) {
@@ -28,7 +28,7 @@ export function BootScreen({ onComplete }: { onComplete: () => void }) {
         const idx = lineIdx
         lineIdx++
         setLines(prev => [...prev, LINES[idx].html])
-        setTimeout(addLine, lineIdx < 4 ? 120 : 110)
+        setTimeout(addLine, lineIdx < 4 ? 130 : 100)
       } else {
         let p = 0
         const fill = setInterval(() => {
@@ -39,12 +39,12 @@ export function BootScreen({ onComplete }: { onComplete: () => void }) {
             setTimeout(() => {
               setVisible(false)
               setTimeout(onComplete, 400)
-            }, 300)
+            }, 400)
           }
-        }, 14)
+        }, 16)
       }
     }
-    const t = setTimeout(addLine, 200)
+    const t = setTimeout(addLine, 300)
     return () => clearTimeout(t)
   }, [onComplete])
 
@@ -54,12 +54,12 @@ export function BootScreen({ onComplete }: { onComplete: () => void }) {
         <motion.div
           id="boot"
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.35 }}
+          transition={{ duration: 0.3 }}
           style={{
             position: 'fixed',
             inset: 0,
             background: '#000',
-            padding: '40px 48px',
+            padding: '48px 56px',
             zIndex: 99999,
             display: 'flex',
             flexDirection: 'column',
@@ -67,48 +67,58 @@ export function BootScreen({ onComplete }: { onComplete: () => void }) {
         >
           <div
             id="boot-out"
-            style={{ fontFamily: 'var(--font-vt)', fontSize: 18, lineHeight: 1.9, color: '#aaa' }}
+            style={{
+              fontFamily: 'var(--font-sys)',
+              fontSize: 18,
+              lineHeight: 2,
+              color: '#c0c0c0',
+            }}
           >
             {lines.map((line, i) => (
               <div key={i} dangerouslySetInnerHTML={{ __html: line || '&nbsp;' }} />
             ))}
           </div>
-          <div id="boot-progress" style={{ marginTop: 24 }}>
+          <div id="boot-progress" style={{ marginTop: 28 }}>
             <div
               id="boot-plbl"
               style={{
                 fontFamily: 'var(--font-pixel)',
                 fontSize: 8,
-                color: '#4466aa',
+                color: '#808080',
                 marginBottom: 8,
                 letterSpacing: 1,
               }}
             >
               LOADING PORTFOLIO.EXE... {progress}%
             </div>
+            {/* Win95-style progress bar */}
             <div
               id="boot-pbar"
               style={{
-                width: 380,
-                height: 18,
-                background: '#0a0d1a',
-                borderTop: '1px solid #000418',
-                borderLeft: '1px solid #000418',
-                borderBottom: '1px solid #2277ff',
-                borderRight: '1px solid #2277ff',
+                width: 360,
+                height: 22,
+                background: '#000',
+                border: '2px solid #808080',
+                borderTopColor: '#404040',
+                borderLeftColor: '#404040',
+                borderBottomColor: '#c0c0c0',
+                borderRightColor: '#c0c0c0',
                 padding: 2,
+                display: 'flex',
+                gap: 2,
               }}
             >
-              <div
-                id="boot-fill"
-                style={{
-                  height: '100%',
-                  width: `${progress}%`,
-                  background: 'repeating-linear-gradient(90deg, #000 0, #000 10px, #222 10px, #222 12px)',
-                  boxShadow: '0 0 10px #00ffff',
-                  transition: 'width 0.05s linear',
-                }}
-              />
+              {Array.from({ length: Math.floor(progress / 4) }).map((_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    width: 10,
+                    height: '100%',
+                    background: '#000080',
+                    flexShrink: 0,
+                  }}
+                />
+              ))}
             </div>
           </div>
         </motion.div>

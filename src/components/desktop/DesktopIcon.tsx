@@ -1,7 +1,8 @@
 'use client'
 import { motion, useMotionValue } from 'framer-motion'
 import { useWindowStore, IconState } from '@/store/windowStore'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
+import { DesktopPixelIcon } from './PixelIcons'
 
 export function DesktopIcon({ icon }: { icon: IconState }) {
   const { openWindow, updateIconPos } = useWindowStore()
@@ -9,8 +10,10 @@ export function DesktopIcon({ icon }: { icon: IconState }) {
   const y = useMotionValue(icon.y)
   const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const clickCount = useRef(0)
+  const [selected, setSelected] = useState(false)
 
   const handleClick = () => {
+    setSelected(true)
     clickCount.current += 1
     if (clickCount.current === 2) {
       if (clickTimer.current) clearTimeout(clickTimer.current)
@@ -20,7 +23,7 @@ export function DesktopIcon({ icon }: { icon: IconState }) {
     }
     clickTimer.current = setTimeout(() => {
       clickCount.current = 0
-    }, 300)
+    }, 400)
   }
 
   return (
@@ -30,10 +33,13 @@ export function DesktopIcon({ icon }: { icon: IconState }) {
       style={{ x, y, position: 'absolute', zIndex: 10, touchAction: 'none' }}
       onDragEnd={() => updateIconPos(icon.id, x.get(), y.get())}
       onClick={handleClick}
-      className="dic"
+      onBlur={() => setSelected(false)}
+      className={`dic${selected ? ' selected' : ''}`}
       whileDrag={{ zIndex: 9990, scale: 1.05 }}
     >
-      <div className="dic-frame">{icon.emoji}</div>
+      <div className="dic-frame">
+        <DesktopPixelIcon type={icon.windowType} />
+      </div>
       <div className="dic-lbl">{icon.label}</div>
     </motion.div>
   )

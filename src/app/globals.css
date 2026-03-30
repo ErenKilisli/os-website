@@ -1,28 +1,38 @@
 /* ═══════════════════════════════════════════════════════════
-   EREN.OS — CYBERCORE WIN95 DESKTOP
-   globals.css — complete design system
+   EREN.OS — WINDOWS 95 RETRO DESKTOP
+   globals.css — Win95 classic design system
    ═══════════════════════════════════════════════════════════ */
 
 /* ── CSS Custom Properties ───────────────────────────────── */
 :root {
-  --bg-desk:   #020812;
-  --bg-win:    #0a0d1a;
-  --bg-panel:  #050810;
-  --bg-dark:   #010409;
-  --bv-hi:     #2277ff;
-  --bv-lo:     #000418;
-  --b-out:     #0033ff;
-  --cyan:      #00ffff;
-  --blue:      #0055ff;
-  --green:     #39ff14;
-  --magenta:   #ff00cc;
-  --red:       #ff1122;
-  --yellow:    #ffdd00;
-  --txt:       #d8f0ff;
-  --txt-dim:   #4466aa;
+  /* Win95 Desktop Blue */
+  --desk-blue:    #0b2e6e;
+  --desk-blue-2:  #1a5ccc;
+  --desk-blue-3:  #0044aa;
 
-  --font-pixel: var(--font-press-start), monospace;
-  --font-vt:    var(--font-vt323), monospace;
+  /* Win95 Gray UI */
+  --win-gray:     #c0c0c0;
+  --win-gray-dk:  #808080;
+  --win-gray-lt:  #dfdfdf;
+  --win-white:    #ffffff;
+  --win-black:    #000000;
+
+  /* Title bar gradient (active) */
+  --tb-active-l:  #000080;
+  --tb-active-r:  #1084d0;
+
+  /* Text */
+  --txt-white:    #ffffff;
+  --txt-black:    #000000;
+  --txt-gray:     #808080;
+
+  /* Accent */
+  --accent-blue:  #000080;
+  --accent-sel:   #000080;
+
+  --font-pixel: var(--font-press-start), 'Courier New', monospace;
+  --font-sys:   var(--font-vt323), 'Arial', sans-serif;
+  --font-ui:    'Arial', 'Helvetica', sans-serif;
 }
 
 /* ── Reset ───────────────────────────────────────────────── */
@@ -39,68 +49,59 @@ html, body {
 }
 
 body {
-  background: var(--bg-desk);
+  background: var(--desk-blue);
   font-family: var(--font-pixel);
   overflow: hidden;
   -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: unset;
-}
-
-/* ── CRT Scanlines overlay ───────────────────────────────── */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9998;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0, 0, 0, 0.15) 2px,
-    rgba(0, 0, 0, 0.15) 4px
-  );
-}
-
-/* ── Vignette overlay ────────────────────────────────────── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9997;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 60%,
-    rgba(0, 0, 0, 0.55) 100%
-  );
-}
-
-/* ── Body flicker ────────────────────────────────────────── */
-@keyframes flicker {
-  0%   { opacity: 1; }
-  91%  { opacity: 1; }
-  92%  { opacity: 0.93; }
-  93%  { opacity: 1; }
-  96%  { opacity: 0.96; }
-  97%  { opacity: 1; }
-  100% { opacity: 1; }
-}
-
-body {
-  animation: flicker 9s ease-in-out infinite;
+  image-rendering: pixelated;
 }
 
 /* ── Desktop ─────────────────────────────────────────────── */
 #desktop {
   position: fixed;
-  inset: 0 0 44px 0;
-  background-color: var(--bg-desk);
-  background-image: radial-gradient(circle, #0d2040 1px, transparent 1px);
-  background-size: 24px 24px;
+  inset: 0 0 40px 0;
+  background: linear-gradient(160deg, #0b2e6e 0%, #1050bb 40%, #0a38a0 70%, #072a7a 100%);
   overflow: hidden;
 }
 
+/* ── Desktop background text ─────────────────────────────── */
+#desktop-bg-text {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+#desktop-bg-text .bg-line1 {
+  font-family: var(--font-pixel);
+  font-size: clamp(14px, 2.5vw, 28px);
+  color: #fff;
+  letter-spacing: 4px;
+  text-shadow:
+    3px 3px 0 #000066,
+    -1px -1px 0 rgba(255,255,255,0.3);
+  display: block;
+  margin-bottom: 6px;
+}
+
+#desktop-bg-text .bg-line2 {
+  font-family: var(--font-pixel);
+  font-size: clamp(20px, 4.5vw, 56px);
+  color: #fff;
+  font-weight: bold;
+  letter-spacing: 4px;
+  text-shadow:
+    4px 4px 0 #000066,
+    -1px -1px 0 rgba(255,255,255,0.4);
+  display: block;
+}
+
+/* Win95 watermark */
 #desktop::after {
   content: 'EREN.OS v1.0';
   position: absolute;
@@ -108,9 +109,19 @@ body {
   right: 14px;
   font-family: var(--font-pixel);
   font-size: 7px;
-  color: rgba(0, 68, 255, 0.15);
+  color: rgba(255, 255, 255, 0.12);
   pointer-events: none;
   letter-spacing: 1px;
+}
+
+/* ── Scattered Cursor Arrows ─────────────────────────────── */
+.cursor-scatter {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.75;
+  font-size: 20px;
+  filter: drop-shadow(1px 1px 0 #000);
 }
 
 /* ── Desktop Icon ────────────────────────────────────────── */
@@ -119,81 +130,65 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  width: 82px;
-  padding: 7px 5px;
+  gap: 4px;
+  width: 80px;
+  padding: 6px 4px;
   cursor: pointer;
   border: 1px solid transparent;
   user-select: none;
 }
 
 .dic:hover {
-  background: rgba(0, 68, 255, 0.14);
-  border-color: rgba(0, 255, 255, 0.35);
+  background: rgba(0, 0, 128, 0.4);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.dic.selected {
+  background: rgba(0, 0, 128, 0.6);
+  border-color: rgba(255, 255, 255, 0.7);
 }
 
 .dic-frame {
-  width: 72px;
-  height: 72px;
-  background: var(--bg-win);
-  border-top: 2px solid var(--bv-hi);
-  border-left: 2px solid var(--bv-hi);
-  border-bottom: 2px solid var(--bv-lo);
-  border-right: 2px solid var(--bv-lo);
+  width: 64px;
+  height: 54px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 38px;
-  box-shadow: 0 0 10px rgba(0, 68, 255, 0.3);
-}
-
-.dic:hover .dic-frame {
-  box-shadow: 0 0 22px rgba(0, 255, 255, 0.55);
-  border-top-color: var(--cyan);
-  border-left-color: var(--cyan);
+  image-rendering: pixelated;
 }
 
 .dic-lbl {
-  font-size: 7px;
   font-family: var(--font-pixel);
-  color: var(--txt);
+  font-size: 7px;
+  color: #fff;
   text-align: center;
-  background: rgba(0, 16, 72, 0.7);
-  padding: 2px 4px;
+  background: transparent;
+  padding: 2px 3px;
   max-width: 78px;
   word-break: break-all;
-  text-shadow: 1px 1px 0 #000418, 0 0 10px var(--blue);
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000066;
+  line-height: 1.6;
 }
 
-.dic:hover .dic-lbl {
-  background: var(--blue);
+.dic:hover .dic-lbl,
+.dic.selected .dic-lbl {
+  background: var(--accent-sel);
+  color: #fff;
 }
 
 /* ── Window ──────────────────────────────────────────────── */
 .window {
   position: absolute;
-  border-top: 2px solid var(--bv-hi);
-  border-left: 2px solid var(--bv-hi);
-  border-bottom: 2px solid var(--bv-lo);
-  border-right: 2px solid var(--bv-lo);
-  outline: 1px solid var(--b-out);
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 85, 255, 0.12),
-    0 8px 40px rgba(0, 0, 20, 0.9),
-    0 0 20px rgba(0, 51, 255, 0.2);
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #404040;
+  border-right: 2px solid #404040;
+  outline: 1px solid #808080;
+  box-shadow: 2px 2px 0 #808080;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--bg-win);
-}
-
-.window.is-active {
-  outline-color: var(--cyan);
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 255, 255, 0.12),
-    0 8px 40px rgba(0, 0, 20, 0.9),
-    0 0 28px rgba(0, 255, 255, 0.3),
-    0 0 0 1px var(--cyan);
+  background: var(--win-gray);
 }
 
 .window.is-hidden {
@@ -202,42 +197,43 @@ body {
 
 /* ── Title Bar ───────────────────────────────────────────── */
 .tb {
-  height: 26px;
-  background: linear-gradient(90deg, #000a1f 0%, #002266 50%, #0055cc 100%);
+  height: 22px;
+  background: linear-gradient(90deg, var(--tb-active-l) 0%, var(--tb-active-r) 100%);
   cursor: move;
   display: flex;
   align-items: center;
-  padding: 0 4px 0 6px;
-  border-bottom: 1px solid #001aff;
+  padding: 0 2px 0 4px;
   flex-shrink: 0;
   user-select: none;
+  gap: 2px;
 }
 
 .window:not(.is-active) .tb {
-  background: #0c0c1e;
-  border-bottom-color: #111;
+  background: #808080;
 }
 
 .tb-ico {
-  font-size: 12px;
-  margin-right: 6px;
+  font-size: 14px;
+  margin-right: 4px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 .tb-lbl {
-  font-size: 8px;
   font-family: var(--font-pixel);
+  font-size: 8px;
   color: #fff;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-shadow: 0 0 10px var(--cyan);
+  font-weight: bold;
+  letter-spacing: 0.5px;
 }
 
 .window:not(.is-active) .tb-lbl {
-  color: var(--txt-dim);
-  text-shadow: none;
+  color: #c0c0c0;
 }
 
 .tb-btns {
@@ -246,61 +242,56 @@ body {
   flex-shrink: 0;
 }
 
+/* Win95 window control buttons */
 .wbtn {
-  width: 18px;
-  height: 16px;
-  border-top: 1px solid var(--bv-hi);
-  border-left: 1px solid var(--bv-hi);
-  border-bottom: 1px solid var(--bv-lo);
-  border-right: 1px solid var(--bv-lo);
-  background: var(--bg-win);
-  font-size: 8px;
+  width: 16px;
+  height: 14px;
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #404040;
+  border-right: 1px solid #404040;
+  font-size: 9px;
   font-family: var(--font-pixel);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--txt);
+  color: var(--txt-black);
   padding: 0;
   line-height: 1;
+  outline: 1px solid #808080;
 }
 
-.wbtn-min:hover {
-  background: #221100;
-  color: var(--yellow);
-  box-shadow: 0 0 8px var(--yellow);
+.wbtn:active {
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-bottom: 1px solid #fff;
+  border-right: 1px solid #fff;
 }
 
-.wbtn-max:hover {
-  background: #001133;
-  color: var(--cyan);
-  box-shadow: 0 0 8px var(--cyan);
-}
-
-.wbtn-cls:hover {
-  background: #220000;
-  color: var(--red);
-  box-shadow: 0 0 8px var(--red);
+.wbtn:hover {
+  background: #dfdfdf;
 }
 
 /* ── Window Menu Bar ─────────────────────────────────────── */
 .win-menu {
   display: flex;
-  background: var(--bg-dark);
-  border-bottom: 1px solid #0d1a2a;
+  background: var(--win-gray);
+  border-bottom: 1px solid #808080;
   flex-shrink: 0;
 }
 
 .wmenu-item {
-  font-size: 8px;
   font-family: var(--font-pixel);
-  color: var(--txt-dim);
-  padding: 5px 10px;
+  font-size: 7px;
+  color: var(--txt-black);
+  padding: 4px 8px;
   cursor: pointer;
 }
 
 .wmenu-item:hover {
-  background: var(--blue);
+  background: var(--accent-sel);
   color: #fff;
 }
 
@@ -308,12 +299,17 @@ body {
 .wbody {
   flex: 1;
   overflow: auto;
-  font-family: var(--font-vt);
+  font-family: var(--font-sys);
   font-size: 16px;
-  color: var(--txt);
-  background: var(--bg-win);
+  color: var(--txt-black);
+  background: #fff;
   display: flex;
   flex-direction: column;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-bottom: 1px solid #fff;
+  border-right: 1px solid #fff;
+  margin: 2px;
 }
 
 /* ── Window Status Bar ───────────────────────────────────── */
@@ -322,35 +318,39 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 8px;
   font-family: var(--font-pixel);
-  color: var(--txt-dim);
-  background: #07090f;
-  border-top: 1px solid #0d1a2a;
-  padding: 0 8px;
+  font-size: 7px;
+  color: var(--txt-black);
+  background: var(--win-gray);
+  border-top: 1px solid #808080;
+  padding: 0 6px;
   flex-shrink: 0;
 }
 
 /* ── File Browser ────────────────────────────────────────── */
 .fb-path {
-  font-size: 8px;
   font-family: var(--font-pixel);
-  color: var(--txt-dim);
-  background: var(--bg-dark);
-  border-bottom: 1px solid #0d1a2a;
-  padding: 4px 8px;
+  font-size: 7px;
+  color: var(--txt-black);
+  background: var(--win-gray);
+  border-bottom: 1px solid #808080;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #fff;
+  padding: 3px 6px;
   flex-shrink: 0;
+  margin: 2px 2px 0 2px;
 }
 
 .fb-cols {
   display: grid;
   grid-template-columns: 1fr 56px 110px;
-  font-size: 7px;
   font-family: var(--font-pixel);
-  color: var(--blue);
-  background: #050810;
+  font-size: 7px;
+  color: var(--txt-black);
+  background: var(--win-gray);
   padding: 3px 8px;
-  border-bottom: 1px solid #0d1a2a;
+  border-bottom: 2px solid #808080;
   flex-shrink: 0;
 }
 
@@ -358,72 +358,111 @@ body {
   list-style: none;
   overflow-y: auto;
   flex: 1;
+  background: #fff;
 }
 
 .fb-row {
   display: grid;
   grid-template-columns: 1fr 56px 110px;
-  padding: 5px 8px;
-  border-bottom: 1px solid #090d18;
+  padding: 3px 8px;
+  border-bottom: 1px solid #e0e0e0;
   cursor: pointer;
   align-items: center;
 }
 
 .fb-row:hover {
-  background: rgba(0, 68, 255, 0.18);
+  background: var(--accent-sel);
 }
 
-.fb-row:hover .fb-name {
-  color: var(--cyan);
-  text-shadow: 0 0 6px var(--cyan);
+.fb-row:hover .fb-name,
+.fb-row:hover .fb-yr,
+.fb-row:hover .fb-type {
+  color: #fff;
 }
 
 .fb-name {
-  font-family: var(--font-vt);
-  font-size: 18px;
-  color: var(--txt);
+  font-family: var(--font-sys);
+  font-size: 17px;
+  color: var(--txt-black);
 }
 
 .fb-yr {
-  font-family: var(--font-vt);
-  font-size: 16px;
-  color: var(--txt-dim);
+  font-family: var(--font-sys);
+  font-size: 15px;
+  color: #404040;
 }
 
 .fb-type {
-  font-family: var(--font-vt);
+  font-family: var(--font-sys);
   font-size: 15px;
-  color: var(--txt-dim);
+  color: #404040;
+}
+
+/* ── File icons grid (Win95 Explorer style) ────────────────── */
+.fb-icons-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px;
+  background: #fff;
+  overflow-y: auto;
+  flex: 1;
+  align-content: flex-start;
+}
+
+.fb-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 72px;
+  padding: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.fb-icon-item:hover {
+  background: rgba(0, 0, 128, 0.1);
+  border-color: rgba(0, 0, 128, 0.4);
+}
+
+.fb-icon-item span {
+  font-family: var(--font-pixel);
+  font-size: 6px;
+  color: #000;
+  text-align: center;
+  word-break: break-all;
 }
 
 /* ── About Window ────────────────────────────────────────── */
 .about-wrap {
-  padding: 14px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   overflow-y: auto;
+  background: #fff;
 }
 
 .about-top {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: flex-start;
 }
 
 .about-av {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
-  background: var(--bg-dark);
-  border-top: 2px solid var(--bv-hi);
-  border-left: 2px solid var(--bv-hi);
-  border-bottom: 2px solid var(--bv-lo);
-  border-right: 2px solid var(--bv-lo);
+  font-size: 36px;
+  background: var(--win-gray);
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-bottom: 1px solid #fff;
+  border-right: 1px solid #fff;
 }
 
 .about-meta {
@@ -431,121 +470,136 @@ body {
 }
 
 .about-meta h1 {
-  font-size: 10px;
   font-family: var(--font-pixel);
-  color: var(--cyan);
-  text-shadow: 0 0 12px var(--cyan);
-  line-height: 1.7;
+  font-size: 10px;
+  color: var(--txt-black);
+  line-height: 1.8;
   margin-bottom: 6px;
 }
 
 .about-meta .sub {
-  font-family: var(--font-vt);
+  font-family: var(--font-sys);
   font-size: 16px;
-  color: var(--txt-dim);
-  margin-bottom: 8px;
+  color: #404040;
+  margin-bottom: 6px;
 }
 
 .about-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 3px;
 }
 
 .atag {
-  font-size: 7px;
   font-family: var(--font-pixel);
-  color: var(--cyan);
-  background: var(--bg-dark);
-  border-top: 1px solid var(--bv-hi);
-  border-left: 1px solid var(--bv-hi);
-  border-bottom: 1px solid var(--bv-lo);
-  border-right: 1px solid var(--bv-lo);
-  padding: 3px 6px;
+  font-size: 6px;
+  color: #000;
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #404040;
+  border-right: 1px solid #404040;
+  padding: 3px 5px;
 }
 
-.atag.m { color: var(--magenta); }
-.atag.g { color: var(--green); }
+.atag.m {
+  background: #c0c0ff;
+}
+
+.atag.g {
+  background: #c0ffc0;
+}
 
 .about-divider {
   border: none;
-  border-top: 1px solid #0d1a2a;
+  border-top: 1px solid #c0c0c0;
 }
 
 .about-bio {
-  font-family: var(--font-vt);
-  font-size: 17px;
-  color: var(--txt);
-  line-height: 2;
+  font-family: var(--font-sys);
+  font-size: 16px;
+  color: var(--txt-black);
+  line-height: 1.8;
 }
 
 .about-bio span {
-  color: #4466aa;
+  color: #000080;
+  font-weight: bold;
 }
 
 .about-bio em {
-  color: var(--cyan);
+  color: #000080;
   font-style: normal;
 }
 
 .about-skills {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 3px;
 }
 
 .sk {
-  font-size: 7px;
   font-family: var(--font-pixel);
-  color: var(--txt-dim);
-  background: var(--bg-dark);
-  border-top: 1px solid var(--bv-hi);
-  border-left: 1px solid var(--bv-hi);
-  border-bottom: 1px solid var(--bv-lo);
-  border-right: 1px solid var(--bv-lo);
-  padding: 3px 6px;
+  font-size: 6px;
+  color: #000;
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #404040;
+  border-right: 1px solid #404040;
+  padding: 3px 5px;
 }
 
 .sk.on {
-  color: var(--cyan);
-  text-shadow: 0 0 8px var(--cyan);
+  background: #c0c0ff;
+  color: #000080;
 }
 
 .sk.m {
-  color: var(--magenta);
+  background: #ffc0ff;
+  color: #800080;
 }
 
 /* ── Mail Window ─────────────────────────────────────────── */
 .mail-toolbar {
   display: flex;
   gap: 2px;
-  padding: 4px 6px;
-  background: var(--bg-dark);
-  border-bottom: 1px solid #0d1a2a;
+  padding: 3px 4px;
+  background: var(--win-gray);
+  border-bottom: 1px solid #808080;
   flex-shrink: 0;
 }
 
 .mail-tbtn {
-  font-size: 7px;
   font-family: var(--font-pixel);
-  color: var(--txt-dim);
-  background: var(--bg-win);
-  border-top: 1px solid var(--bv-hi);
-  border-left: 1px solid var(--bv-hi);
-  border-bottom: 1px solid var(--bv-lo);
-  border-right: 1px solid var(--bv-lo);
+  font-size: 7px;
+  color: var(--txt-black);
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #404040;
+  border-right: 1px solid #404040;
   padding: 4px 8px;
   cursor: pointer;
 }
 
-.mail-tbtn.active {
-  color: var(--cyan);
-  background: var(--bg-dark);
-  text-shadow: 0 0 6px var(--cyan);
+.mail-tbtn:hover {
+  background: #dfdfdf;
 }
 
-.mail-tbtn:hover {
-  color: var(--cyan);
+.mail-tbtn:active {
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-bottom: 1px solid #fff;
+  border-right: 1px solid #fff;
+}
+
+.mail-tbtn.active {
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-bottom: 1px solid #fff;
+  border-right: 1px solid #fff;
+  background: #dfdfdf;
 }
 
 .mail-split {
@@ -556,47 +610,54 @@ body {
 }
 
 .mail-sb {
-  width: 188px;
+  width: 160px;
   flex-shrink: 0;
-  background: var(--bg-dark);
-  border-right: 1px solid #0d1a2a;
+  background: #fff;
+  border-right: 1px solid #808080;
   overflow-y: auto;
 }
 
 .mail-sb-hdr {
-  font-size: 7px;
   font-family: var(--font-pixel);
-  color: var(--blue);
-  padding: 6px 8px;
-  border-bottom: 1px solid #0d1a2a;
+  font-size: 7px;
+  color: var(--txt-black);
+  padding: 5px 6px;
+  border-bottom: 1px solid #808080;
+  background: var(--win-gray);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .contact-row {
   display: block;
-  padding: 7px 8px;
-  border-bottom: 1px solid #090d18;
+  padding: 6px;
+  border-bottom: 1px solid #e0e0e0;
   cursor: pointer;
   text-decoration: none;
   color: inherit;
 }
 
 .contact-row:hover {
-  background: rgba(0, 68, 255, 0.2);
+  background: var(--accent-sel);
+  color: #fff;
+}
+
+.contact-row:hover .c-svc,
+.contact-row:hover .c-name {
+  color: #fff;
 }
 
 .c-svc {
-  font-size: 7px;
   font-family: var(--font-pixel);
-  color: var(--cyan);
-  margin-bottom: 3px;
+  font-size: 6px;
+  color: #000080;
+  margin-bottom: 2px;
 }
 
 .c-name {
-  font-family: var(--font-vt);
+  font-family: var(--font-sys);
   font-size: 14px;
-  color: var(--txt-dim);
+  color: #404040;
   word-break: break-all;
 }
 
@@ -605,13 +666,14 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: #fff;
 }
 
 .mail-form {
-  padding: 12px 14px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   overflow-y: auto;
   flex: 1;
 }
@@ -619,174 +681,194 @@ body {
 .mail-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .mail-lbl {
-  font-size: 7px;
   font-family: var(--font-pixel);
-  color: var(--txt-dim);
+  font-size: 7px;
+  color: var(--txt-black);
 }
 
 .mail-in {
-  background: var(--bg-dark);
-  border: none;
-  border-bottom: 1px solid var(--bv-hi);
-  color: var(--txt);
-  font-family: var(--font-vt);
+  background: #fff;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-bottom: 1px solid #fff;
+  border-right: 1px solid #fff;
+  color: var(--txt-black);
+  font-family: var(--font-sys);
   font-size: 16px;
-  padding: 5px 6px;
+  padding: 4px 5px;
   outline: none;
   width: 100%;
 }
 
 .mail-in:focus {
-  border-bottom-color: var(--cyan);
+  outline: 1px dotted #000080;
 }
 
 .mail-in::placeholder {
-  color: var(--txt-dim);
+  color: #808080;
 }
 
 .mail-ta {
   flex: 1;
-  min-height: 90px;
-  background: var(--bg-dark);
-  border-top: 1px solid var(--bv-lo);
-  border-left: 1px solid var(--bv-lo);
-  border-bottom: 1px solid var(--bv-hi);
-  border-right: 1px solid var(--bv-hi);
-  color: var(--txt);
-  font-family: var(--font-vt);
+  min-height: 80px;
+  background: #fff;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-bottom: 1px solid #fff;
+  border-right: 1px solid #fff;
+  color: var(--txt-black);
+  font-family: var(--font-sys);
   font-size: 16px;
-  padding: 8px;
+  padding: 6px;
   outline: none;
   resize: vertical;
   width: 100%;
 }
 
 .mail-ta:focus {
-  border-color: var(--cyan);
+  outline: 1px dotted #000080;
 }
 
 .mail-ta::placeholder {
-  color: var(--txt-dim);
+  color: #808080;
 }
 
 .mail-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .mail-send {
-  font-size: 7px;
   font-family: var(--font-pixel);
-  color: var(--cyan);
-  background: var(--bg-dark);
-  border-top: 2px solid var(--bv-hi);
-  border-left: 2px solid var(--bv-hi);
-  border-bottom: 2px solid var(--bv-lo);
-  border-right: 2px solid var(--bv-lo);
-  padding: 6px 12px;
+  font-size: 7px;
+  color: var(--txt-black);
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #404040;
+  border-right: 1px solid #404040;
+  padding: 5px 10px;
   cursor: pointer;
-  text-shadow: 0 0 8px var(--cyan);
   letter-spacing: 1px;
 }
 
 .mail-send:hover {
-  background: rgba(0, 255, 255, 0.08);
-  box-shadow: 0 0 12px rgba(0, 255, 255, 0.4);
+  background: #dfdfdf;
+}
+
+.mail-send:active {
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-bottom: 1px solid #fff;
+  border-right: 1px solid #fff;
 }
 
 .mail-ok {
-  font-size: 7px;
   font-family: var(--font-pixel);
-  color: var(--green);
-  text-shadow: 0 0 8px var(--green);
-  animation: flicker 0.5s ease-in-out;
+  font-size: 7px;
+  color: #008000;
 }
 
-/* ── Scrollbar ───────────────────────────────────────────── */
+/* ── Scrollbar (Win95 style) ─────────────────────────────── */
 ::-webkit-scrollbar {
   width: 16px;
   height: 16px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-dark);
+  background: var(--win-gray);
   background-image: repeating-linear-gradient(
     45deg,
     transparent,
     transparent 4px,
-    rgba(0, 34, 102, 0.4) 4px,
-    rgba(0, 34, 102, 0.4) 5px
+    rgba(0, 0, 0, 0.05) 4px,
+    rgba(0, 0, 0, 0.05) 5px
   );
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--bg-win);
-  border-top: 2px solid var(--bv-hi);
-  border-left: 2px solid var(--bv-hi);
-  border-bottom: 2px solid var(--bv-lo);
-  border-right: 2px solid var(--bv-lo);
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #404040;
+  border-right: 1px solid #404040;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #0a1030;
+::-webkit-scrollbar-button {
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #404040;
+  border-right: 1px solid #404040;
+  display: block;
+  height: 16px;
+  width: 16px;
 }
 
-/* ── Taskbar ─────────────────────────────────────────────── */
+/* ── Taskbar (Win95) ─────────────────────────────────────── */
 #taskbar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 44px;
-  background: var(--bg-panel);
-  border-top: 2px solid var(--blue);
-  box-shadow: 0 -2px 28px rgba(0, 68, 255, 0.3);
+  height: 40px;
+  background: var(--win-gray);
+  border-top: 2px solid #fff;
+  box-shadow: none;
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 0 6px;
+  padding: 2px 4px;
   z-index: 9000;
 }
 
+/* Win95 Start Button */
 #start-btn {
-  font-size: 8px;
   font-family: var(--font-pixel);
-  color: var(--cyan);
-  background: var(--bg-win);
-  border-top: 2px solid var(--bv-hi);
-  border-left: 2px solid var(--bv-hi);
-  border-bottom: 2px solid var(--bv-lo);
-  border-right: 2px solid var(--bv-lo);
+  font-size: 8px;
+  color: var(--txt-black);
+  background: var(--win-gray);
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #404040;
+  border-right: 2px solid #404040;
   height: 32px;
-  padding: 0 12px;
+  padding: 0 10px 0 8px;
   cursor: pointer;
-  letter-spacing: 2px;
-  text-shadow: 0 0 8px var(--cyan);
+  letter-spacing: 0.5px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: bold;
 }
 
 #start-btn:hover {
-  background: rgba(0, 255, 255, 0.08);
-  box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
+  background: #d0d0d0;
 }
 
 #start-btn:active {
-  border-top-color: var(--bv-lo);
-  border-left-color: var(--bv-lo);
-  border-bottom-color: var(--bv-hi);
-  border-right-color: var(--bv-hi);
+  border-top: 2px solid #404040;
+  border-left: 2px solid #404040;
+  border-bottom: 2px solid #fff;
+  border-right: 2px solid #fff;
+}
+
+.start-logo {
+  font-size: 16px;
+  line-height: 1;
 }
 
 .tb-sep {
   width: 2px;
   height: 28px;
-  background: var(--bv-lo);
-  border-right: 1px solid var(--bv-hi);
+  border-left: 1px solid #808080;
+  border-right: 1px solid #fff;
   flex-shrink: 0;
 }
 
@@ -797,76 +879,76 @@ body {
   overflow: hidden;
 }
 
+/* Taskbar window buttons */
 .tbw {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 7px;
+  gap: 4px;
   font-family: var(--font-pixel);
-  color: var(--txt-dim);
-  background: var(--bg-win);
-  border-top: 2px solid var(--bv-hi);
-  border-left: 2px solid var(--bv-hi);
-  border-bottom: 2px solid var(--bv-lo);
-  border-right: 2px solid var(--bv-lo);
-  height: 32px;
+  font-size: 7px;
+  color: var(--txt-black);
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #404040;
+  border-right: 1px solid #404040;
+  height: 28px;
   padding: 0 8px;
   cursor: pointer;
   min-width: 80px;
-  max-width: 140px;
+  max-width: 150px;
   overflow: hidden;
 }
 
 .tbw:hover {
-  color: var(--txt);
+  background: #d0d0d0;
 }
 
 .tbw.on {
-  border-top-color: var(--bv-lo);
-  border-left-color: var(--bv-lo);
-  border-bottom-color: var(--bv-hi);
-  border-right-color: var(--bv-hi);
-  color: var(--cyan);
-  text-shadow: 0 0 6px var(--cyan);
-  background: var(--bg-dark);
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-bottom: 1px solid #fff;
+  border-right: 1px solid #fff;
+  background: #d0d0d0;
 }
 
 #tb-right {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex-shrink: 0;
+  background: var(--win-gray);
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-bottom: 1px solid #fff;
+  border-right: 1px solid #fff;
+  padding: 3px 6px;
+  height: 28px;
 }
 
 .tb-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--green);
-  box-shadow: 0 0 6px var(--green);
+  width: 8px;
+  height: 8px;
+  background: #008000;
+  border: 1px solid #004000;
 }
 
 #clock {
-  font-size: 8px;
   font-family: var(--font-pixel);
-  color: var(--cyan);
-  background: var(--bg-dark);
-  border-top: 1px solid var(--bv-lo);
-  border-left: 1px solid var(--bv-lo);
-  border-bottom: 1px solid var(--bv-hi);
-  border-right: 1px solid var(--bv-hi);
-  padding: 5px 8px;
-  text-shadow: 0 0 6px var(--cyan);
-  min-width: 60px;
+  font-size: 7px;
+  color: var(--txt-black);
+  min-width: 50px;
   text-align: center;
 }
 
 /* ── Boot Screen Text Colors ─────────────────────────────── */
-.ok  { color: #39ff14; }
-.hi  { color: #00ffff; }
-.dim { color: #334466; }
+.ok  { color: #00aa00; }
+.hi  { color: #00aaaa; }
+.dim { color: #666666; }
+.err { color: #aa0000; }
 
 /* ── Selection ───────────────────────────────────────────── */
 ::selection {
-  background: var(--blue);
-  color: var(--cyan);
+  background: var(--accent-sel);
+  color: #fff;
 }

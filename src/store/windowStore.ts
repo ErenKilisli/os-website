@@ -41,19 +41,19 @@ interface Store {
 }
 
 const WINDOW_CONFIGS: Record<WindowType, { title: string; icon: string; width: number; height: number }> = {
-  game:  { title: 'GAME.PRJ',  icon: '🎮', width: 500, height: 340 },
-  film:  { title: 'FILM.PRJ',  icon: '🎬', width: 500, height: 320 },
-  swr:   { title: 'SWR.PRJ',   icon: '💾', width: 520, height: 360 },
-  about: { title: 'ABOUT.EXE', icon: '👤', width: 460, height: 400 },
-  mail:  { title: 'MAIL.EXE',  icon: '📧', width: 640, height: 460 },
+  game:  { title: 'Games',     icon: '🎮', width: 500, height: 340 },
+  film:  { title: 'Film',      icon: '🎬', width: 500, height: 320 },
+  swr:   { title: 'Code',      icon: '💾', width: 520, height: 360 },
+  about: { title: 'Profile',   icon: '👤', width: 460, height: 400 },
+  mail:  { title: 'Mail',      icon: '📧', width: 640, height: 460 },
 }
 
 const INITIAL_ICONS: IconState[] = [
-  { id: 'ico-game',  label: 'GAME.PRJ',  emoji: '🎮', x: 18, y: 20,  windowType: 'game'  },
-  { id: 'ico-film',  label: 'FILM.PRJ',  emoji: '🎬', x: 18, y: 116, windowType: 'film'  },
-  { id: 'ico-swr',   label: 'SWR.PRJ',   emoji: '💾', x: 18, y: 212, windowType: 'swr'   },
-  { id: 'ico-about', label: 'ABOUT.EXE', emoji: '👤', x: 18, y: 308, windowType: 'about' },
-  { id: 'ico-mail',  label: 'MAIL.EXE',  emoji: '📧', x: 18, y: 404, windowType: 'mail'  },
+  { id: 'ico-about', label: 'Profile\nuser.prf',  emoji: '👤', x: 20, y: 20,  windowType: 'about' },
+  { id: 'ico-mail',  label: 'Mail\ninbox.msg',    emoji: '📧', x: 20, y: 114, windowType: 'mail'  },
+  { id: 'ico-game',  label: 'Games\ngames.fld',   emoji: '🎮', x: 20, y: 208, windowType: 'game'  },
+  { id: 'ico-film',  label: 'Film\nfilm.fld',     emoji: '🎬', x: 20, y: 302, windowType: 'film'  },
+  { id: 'ico-swr',   label: 'Code\ncode.fld',     emoji: '💾', x: 20, y: 396, windowType: 'swr'   },
 ]
 
 let zCounter = 100
