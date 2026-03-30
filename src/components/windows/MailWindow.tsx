@@ -1,0 +1,74 @@
+'use client'
+import { useState } from 'react'
+import { Window } from './Window'
+import { WindowState } from '@/store/windowStore'
+
+const CONTACTS = [
+  { service: 'LINKEDIN', emoji: '💼', name: 'linkedin.com/in/erenkilisli', href: 'https://linkedin.com/in/erenkilisli' },
+  { service: 'GITHUB',   emoji: '💻', name: 'github.com/erenkilisli',     href: 'https://github.com/erenkilisli' },
+  { service: 'TWITTER',  emoji: '🐦', name: '@erenkilisli',               href: 'https://twitter.com/erenkilisli' },
+  { service: 'EMAIL',    emoji: '✉',  name: 'eren@kilisli.com',           href: null },
+  { service: 'RESUME',   emoji: '📄', name: 'Download CV.pdf',            href: '#' },
+]
+
+export function MailWindow({ win }: { win: WindowState }) {
+  const [subject, setSubject] = useState('')
+  const [body, setBody] = useState('')
+  const [sent, setSent] = useState(false)
+
+  const handleSend = () => {
+    if (!subject.trim() && !body.trim()) return
+    setSubject('')
+    setBody('')
+    setSent(true)
+    setTimeout(() => setSent(false), 3000)
+  }
+
+  return (
+    <Window win={win} menu={['File', 'Edit', 'Message', 'Help']} status="MAIL.EXE | Ready">
+      <div className="mail-toolbar">
+        <button className="mail-tbtn active">COMPOSE</button>
+        <button className="mail-tbtn">INBOX</button>
+        <button className="mail-tbtn">DRAFTS</button>
+      </div>
+      <div className="mail-split">
+        {/* Sidebar */}
+        <div className="mail-sb">
+          <div className="mail-sb-hdr">CONTACTS</div>
+          {CONTACTS.map(c => (
+            c.href
+              ? <a key={c.service} className="contact-row" href={c.href} target="_blank" rel="noopener">
+                  <div className="c-svc">{c.emoji} {c.service}</div>
+                  <div className="c-name">{c.name}</div>
+                </a>
+              : <div key={c.service} className="contact-row" style={{ cursor: 'pointer' }} onClick={() => navigator.clipboard?.writeText(c.name)}>
+                  <div className="c-svc">{c.emoji} {c.service}</div>
+                  <div className="c-name">{c.name}</div>
+                </div>
+          ))}
+        </div>
+        {/* Compose */}
+        <div className="mail-compose">
+          <div className="mail-form">
+            <div className="mail-field">
+              <div className="mail-lbl">TO:</div>
+              <input className="mail-in" type="text" defaultValue="eren@kilisli.com" readOnly />
+            </div>
+            <div className="mail-field">
+              <div className="mail-lbl">SUBJECT:</div>
+              <input className="mail-in" type="text" value={subject} onChange={e => setSubject(e.target.value)} placeholder="Enter subject..." />
+            </div>
+            <div className="mail-field">
+              <div className="mail-lbl">MESSAGE:</div>
+              <textarea className="mail-ta" value={body} onChange={e => setBody(e.target.value)} placeholder="Write your message here..." rows={6} />
+            </div>
+            <div className="mail-actions">
+              <button className="mail-send" onClick={handleSend}>▶ SEND MESSAGE</button>
+              {sent && <span className="mail-ok">✓ MESSAGE SENT!</span>}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Window>
+  )
+}

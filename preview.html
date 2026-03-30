@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EREN.OS v1.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   EREN.OS — CYBERCORE WIN95 PIXEL ART
+   ═══════════════════════════════════════════ */
+:root {
+  --bg-desk:  #030810;
+  --bg-win:   #0a0e1a;
+  --bg-panel: #06080f;
+  --bg-dark:  #020510;
+  --tb-from:  #000d3a;
+  --tb-to:    #0055ff;
+  --bv-hi:    #2266ff;
+  --bv-lo:    #000520;
+  --b-out:    #001aff;
+  --cyan:     #00f5ff;
+  --blue:     #0044ff;
+  --green:    #39ff14;
+  --magenta:  #ff00c8;
+  --red:      #ff1a1a;
+  --yellow:   #ffcc00;
+  --txt:      #e8f4ff;
+  --txt-dim:  #5577aa;
+  --px: 'Press Start 2P', monospace;
+  --vt: 'VT323', monospace;
+}
+
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; border-radius:0!important; }
+
+body {
+  width:100vw; height:100vh; overflow:hidden;
+  background:var(--bg-desk);
+  font-family:var(--px);
+  color:var(--txt);
+  user-select:none;
+  cursor:default;
+  animation:flicker 9s infinite;
+}
+@keyframes flicker { 0%,91%,94%,97%,100%{opacity:1} 92%{opacity:.93} 95%{opacity:.96} 98.5%{opacity:.97} }
+
+/* Scanlines */
+body::after {
+  content:''; position:fixed; inset:0;
+  background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.32) 2px,rgba(0,0,0,.32) 4px);
+  pointer-events:none; z-index:9998;
+}
+/* Vignette */
+body::before {
+  content:''; position:fixed; inset:0;
+  background:radial-gradient(ellipse at center,transparent 52%,rgba(0,0,20,.85) 100%);
+  pointer-events:none; z-index:9997;
+}
+
+/* ─── DESKTOP ─────────────────────────────── */
+#desktop {
+  position:fixed; top:0; left:0; right:0; bottom:44px;
+  background-color:var(--bg-desk);
+  background-image:radial-gradient(circle,#0d2040 1px,transparent 1px);
+  background-size:24px 24px;
+  overflow:hidden;
+}
+#desktop::after {
+  content:'EREN.OS v1.0';
+  position:absolute; bottom:10px; right:14px;
+  font-size:7px; color:rgba(0,68,255,.18); letter-spacing:3px; pointer-events:none;
+}
+
+/* ─── DESKTOP ICONS ───────────────────────── */
+#icons {
+  position:absolute; top:20px; left:18px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.dic {
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  width:76px; padding:6px 4px; cursor:pointer;
+  border:1px solid transparent;
+}
+.dic:hover { background:rgba(0,68,255,.14); border-color:rgba(0,245,255,.35); }
+.dic:active { background:rgba(0,68,255,.28); }
+
+.dic-frame {
+  width:58px; height:58px;
+  background:var(--bg-win);
+  border-top:2px solid var(--bv-hi); border-left:2px solid var(--bv-hi);
+  border-bottom:2px solid var(--bv-lo); border-right:2px solid var(--bv-lo);
+  display:flex; align-items:center; justify-content:center;
+  font-size:32px;
+  box-shadow:0 0 8px rgba(0,68,255,.3);
+  transition:box-shadow .1s, border-color .1s;
+}
+.dic:hover .dic-frame {
+  box-shadow:0 0 18px rgba(0,245,255,.5),inset 0 0 10px rgba(0,68,255,.1);
+  border-top-color:var(--cyan); border-left-color:var(--cyan);
+}
+.dic-lbl {
+  font-size:7px; color:var(--txt); text-align:center;
+  text-shadow:1px 1px 0 #000520,0 0 8px var(--blue);
+  background:rgba(0,16,72,.65); padding:2px 4px; line-height:1.5;
+  word-break:break-all; max-width:72px;
+}
+.dic:hover .dic-lbl { background:var(--blue); }
+
+/* ─── WINDOW CHROME ──────────────────────── */
+.window {
+  position:absolute; min-width:300px;
+  background:var(--bg-win);
+  border-top:2px solid var(--bv-hi); border-left:2px solid var(--bv-hi);
+  border-bottom:2px solid var(--bv-lo); border-right:2px solid var(--bv-lo);
+  outline:1px solid var(--b-out);
+  box-shadow:inset 1px 1px 0 rgba(34,102,255,.2),2px 2px 0 #000520,0 0 20px rgba(0,68,255,.12);
+  display:flex; flex-direction:column; overflow:hidden;
+  animation:win-open .18s steps(6) forwards;
+}
+.window.is-active {
+  outline-color:var(--cyan);
+  box-shadow:inset 1px 1px 0 rgba(34,102,255,.2),2px 2px 0 #000520,0 0 32px rgba(0,245,255,.22);
+}
+.window.is-hidden { display:none!important; }
+
+@keyframes win-open {
+  0%  { transform:scale(.08); opacity:0; filter:brightness(4); }
+  60% { transform:scale(1.04); opacity:1; }
+  100%{ transform:scale(1); filter:brightness(1); }
+}
+
+/* Titlebar */
+.tb {
+  display:flex; align-items:center; height:26px; padding:0 4px 0 6px;
+  background:linear-gradient(90deg,var(--tb-from) 0%,#0033ff 55%,var(--tb-to) 100%);
+  border-bottom:1px solid #001aff;
+  cursor:move; flex-shrink:0;
+}
+.window:not(.is-active) .tb { background:#0c0c1e; border-bottom-color:#111; }
+
+.tb-ico { font-size:12px; margin-right:6px; flex-shrink:0; }
+.tb-lbl {
+  font-size:8px; color:#fff; flex:1;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  text-shadow:0 0 8px var(--cyan);
+}
+.window:not(.is-active) .tb-lbl { color:var(--txt-dim); text-shadow:none; }
+
+.tb-btns { display:flex; gap:2px; flex-shrink:0; }
+.wbtn {
+  width:18px; height:16px; font-size:8px; cursor:pointer;
+  background:var(--bg-win);
+  border-top:1px solid var(--bv-hi); border-left:1px solid var(--bv-hi);
+  border-bottom:1px solid var(--bv-lo); border-right:1px solid var(--bv-lo);
+  color:var(--txt); display:flex; align-items:center; justify-content:center;
+  font-family:var(--px); line-height:1;
+}
+.wbtn:active { border-top-color:var(--bv-lo); border-left-color:var(--bv-lo); border-bottom-color:var(--bv-hi); border-right-color:var(--bv-hi); }
+.wbtn-min:hover { background:#221100; color:var(--yellow); box-shadow:0 0 6px var(--yellow); }
+.wbtn-max:hover { background:#001133; color:var(--cyan); box-shadow:0 0 6px var(--cyan); }
+.wbtn-cls:hover { background:#220000; color:var(--red); box-shadow:0 0 6px var(--red); }
+
+/* Window menu bar */
+.win-menu {
+  display:flex; align-items:center;
+  background:#07090f; border-bottom:1px solid #0d1a2a; flex-shrink:0;
+}
+.wmenu-item {
+  padding:3px 10px; font-size:8px; color:var(--txt-dim); cursor:pointer;
+}
+.wmenu-item:hover { background:var(--blue); color:#fff; }
+
+/* Window body */
+.wbody {
+  flex:1; overflow:auto;
+  font-family:var(--vt); font-size:16px; color:var(--txt);
+  background:var(--bg-win);
+}
+.wbody::-webkit-scrollbar { width:16px; background:var(--bg-win); }
+.wbody::-webkit-scrollbar-track {
+  background:repeating-linear-gradient(45deg,#0a0e1a 0,#0a0e1a 2px,#06080f 2px,#06080f 4px);
+}
+.wbody::-webkit-scrollbar-thumb {
+  background:var(--bg-win);
+  border-top:1px solid var(--bv-hi); border-left:1px solid var(--bv-hi);
+  border-bottom:1px solid var(--bv-lo); border-right:1px solid var(--bv-lo);
+}
+
+/* Status bar */
+.wstatus {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:0 8px; height:20px; font-size:8px; color:var(--txt-dim);
+  background:#07090f; border-top:1px solid #0d1a2a; flex-shrink:0;
+}
+
+/* ─── FILE BROWSER ────────────────────────── */
+.fb-path {
+  padding:4px 8px; font-size:8px; color:var(--txt-dim);
+  background:var(--bg-dark); border-bottom:1px solid #0d1a2a; letter-spacing:1px;
+}
+.fb-cols {
+  display:grid; grid-template-columns:1fr 56px 110px;
+  padding:3px 8px; font-size:7px; color:var(--blue);
+  border-bottom:1px solid #0d1a2a; background:#050810;
+  letter-spacing:1px;
+}
+.fb-list { list-style:none; }
+.fb-row {
+  display:grid; grid-template-columns:1fr 56px 110px;
+  align-items:center; padding:5px 8px;
+  border-bottom:1px solid #090d18; cursor:pointer;
+}
+.fb-row:hover { background:rgba(0,68,255,.18); }
+.fb-row:hover .fb-name { color:var(--cyan); text-shadow:0 0 6px var(--cyan); }
+.fb-name { font-family:var(--vt); font-size:16px; color:var(--txt); display:flex; align-items:center; gap:6px; }
+.fb-yr   { font-family:var(--vt); font-size:15px; color:var(--txt-dim); }
+.fb-type { font-family:var(--vt); font-size:14px; color:var(--txt-dim); }
+
+/* ─── ABOUT.EXE ───────────────────────────── */
+.about-wrap { padding:14px; }
+.about-top { display:flex; gap:14px; margin-bottom:14px; }
+.about-av {
+  width:72px; height:72px; font-size:38px; flex-shrink:0;
+  background:var(--bg-dark);
+  border-top:2px solid var(--bv-hi); border-left:2px solid var(--bv-hi);
+  border-bottom:2px solid var(--bv-lo); border-right:2px solid var(--bv-lo);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:inset 0 0 20px rgba(0,68,255,.1);
+}
+.about-meta h1 {
+  font-size:10px; color:var(--cyan);
+  text-shadow:0 0 10px var(--cyan);
+  margin-bottom:6px; line-height:1.7;
+}
+.about-meta .sub { font-family:var(--vt); font-size:17px; color:var(--txt-dim); margin-bottom:8px; }
+.about-tags { display:flex; flex-wrap:wrap; gap:4px; }
+.atag {
+  padding:3px 8px; font-size:7px;
+  border-top:1px solid var(--bv-hi); border-left:1px solid var(--bv-hi);
+  border-bottom:1px solid var(--bv-lo); border-right:1px solid var(--bv-lo);
+  background:var(--bg-dark); color:var(--cyan); letter-spacing:1px;
+}
+.atag.g { color:var(--green); }
+.atag.m { color:var(--magenta); }
+.about-divider { border-top:1px solid #0d1a2a; margin:12px 0; }
+.about-bio { font-family:var(--vt); font-size:17px; color:var(--txt-dim); line-height:1.8; }
+.about-bio span { color:var(--cyan); }
+.about-skills { margin-top:12px; display:flex; flex-wrap:wrap; gap:4px; }
+.sk {
+  padding:4px 10px; font-size:7px;
+  border-top:1px solid var(--bv-hi); border-left:1px solid var(--bv-hi);
+  border-bottom:1px solid var(--bv-lo); border-right:1px solid var(--bv-lo);
+  background:var(--bg-dark); color:var(--txt-dim);
+}
+.sk.on { color:var(--cyan); background:rgba(0,68,255,.18); }
+.sk.m  { color:var(--magenta); }
+
+/* ─── MAIL.EXE ────────────────────────────── */
+.mail-toolbar {
+  display:flex; align-items:center; padding:4px 6px; gap:3px;
+  background:#07090f; border-bottom:1px solid #0d1a2a; flex-shrink:0;
+}
+.mail-tbtn {
+  padding:4px 12px; font-size:8px; cursor:pointer;
+  background:var(--bg-win); color:var(--txt-dim);
+  border-top:1px solid var(--bv-hi); border-left:1px solid var(--bv-hi);
+  border-bottom:1px solid var(--bv-lo); border-right:1px solid var(--bv-lo);
+}
+.mail-tbtn:hover { background:rgba(0,68,255,.2); color:var(--txt); }
+.mail-tbtn.active {
+  background:rgba(0,68,255,.28); color:var(--cyan);
+  border-top-color:var(--bv-lo); border-left-color:var(--bv-lo);
+  border-bottom-color:var(--bv-hi); border-right-color:var(--bv-hi);
+}
+.mail-split { display:flex; flex:1; overflow:hidden; }
+
+.mail-sb {
+  width:184px; flex-shrink:0; background:var(--bg-dark);
+  border-right:1px solid #0d1a2a; overflow-y:auto; display:flex; flex-direction:column;
+}
+.mail-sb-hdr {
+  padding:6px 8px; font-size:7px; color:var(--blue);
+  border-bottom:1px solid #0d1a2a; background:#050810;
+  letter-spacing:2px; flex-shrink:0;
+}
+.contact-row {
+  display:flex; flex-direction:column; padding:8px 10px; gap:2px;
+  border-bottom:1px solid #0d1a2a; cursor:pointer; text-decoration:none;
+}
+.contact-row:hover { background:rgba(0,68,255,.16); }
+.contact-row:hover .c-name { color:var(--cyan); }
+.c-svc { font-size:7px; color:var(--blue); letter-spacing:1px; margin-bottom:2px; display:flex; align-items:center; gap:5px; }
+.c-name { font-family:var(--vt); font-size:16px; color:var(--txt-dim); }
+
+.mail-compose { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.mail-form { padding:12px 14px; display:flex; flex-direction:column; gap:10px; overflow-y:auto; flex:1; }
+.mail-field { display:flex; flex-direction:column; gap:3px; }
+.mail-lbl { font-size:7px; color:var(--txt-dim); letter-spacing:1px; }
+.mail-in {
+  background:var(--bg-dark); color:var(--txt);
+  border:none; border-bottom:1px solid var(--bv-hi);
+  font-family:var(--vt); font-size:17px;
+  padding:4px 8px; outline:none; width:100%;
+}
+.mail-in:focus { border-bottom-color:var(--cyan); box-shadow:0 1px 0 var(--cyan); color:#fff; }
+.mail-ta {
+  background:var(--bg-dark); color:var(--txt);
+  border-top:1px solid var(--bv-hi); border-left:1px solid var(--bv-hi);
+  border-bottom:1px solid var(--bv-lo); border-right:1px solid var(--bv-lo);
+  font-family:var(--vt); font-size:17px;
+  padding:8px; outline:none; width:100%; resize:none; min-height:90px;
+}
+.mail-ta:focus { border-color:var(--cyan); box-shadow:0 0 8px rgba(0,245,255,.18); }
+.mail-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; padding:4px 0 2px; }
+.mail-send {
+  padding:8px 20px; font-size:8px; cursor:pointer;
+  background:#001530; color:var(--cyan);
+  border-top:2px solid var(--bv-hi); border-left:2px solid var(--bv-hi);
+  border-bottom:2px solid var(--bv-lo); border-right:2px solid var(--bv-lo);
+  font-family:var(--px); letter-spacing:1px;
+  text-shadow:0 0 8px var(--cyan);
+}
+.mail-send:hover { background:#003366; box-shadow:0 0 16px rgba(0,245,255,.4); }
+.mail-send:active { border-top-color:var(--bv-lo); border-left-color:var(--bv-lo); border-bottom-color:var(--bv-hi); border-right-color:var(--bv-hi); }
+.mail-ok { font-family:var(--vt); font-size:18px; color:var(--green); display:none; text-shadow:0 0 8px var(--green); }
+
+/* ─── TASKBAR ──────────────────────────────── */
+#taskbar {
+  position:fixed; bottom:0; left:0; right:0; height:44px;
+  background:var(--bg-panel);
+  border-top:2px solid var(--blue);
+  box-shadow:0 -2px 24px rgba(0,68,255,.28);
+  display:flex; align-items:center; padding:0 6px; gap:4px; z-index:9000;
+}
+#start-btn {
+  display:flex; align-items:center; gap:6px;
+  padding:0 14px; height:32px; cursor:pointer; flex-shrink:0;
+  background:var(--bg-dark); color:var(--cyan);
+  border-top:2px solid var(--bv-hi); border-left:2px solid var(--bv-hi);
+  border-bottom:2px solid var(--bv-lo); border-right:2px solid var(--bv-lo);
+  font-family:var(--px); font-size:8px; letter-spacing:2px;
+  text-shadow:0 0 8px var(--cyan);
+}
+#start-btn:hover { background:#001530; box-shadow:0 0 18px rgba(0,245,255,.35); }
+#start-btn:active { border-top-color:var(--bv-lo); border-left-color:var(--bv-lo); border-bottom-color:var(--bv-hi); border-right-color:var(--bv-hi); }
+
+.tb-sep { width:1px; height:28px; background:#0d1a2a; margin:0 3px; flex-shrink:0; }
+#tb-wins { display:flex; gap:3px; flex:1; overflow:hidden; }
+.tbw {
+  display:flex; align-items:center; gap:5px;
+  height:30px; padding:0 10px; cursor:pointer;
+  font-family:var(--px); font-size:7px; color:var(--txt-dim);
+  background:var(--bg-dark);
+  border-top:1px solid var(--bv-hi); border-left:1px solid var(--bv-hi);
+  border-bottom:1px solid var(--bv-lo); border-right:1px solid var(--bv-lo);
+  max-width:130px; overflow:hidden; white-space:nowrap; flex-shrink:0;
+}
+.tbw:hover { background:rgba(0,68,255,.18); color:var(--txt); }
+.tbw.on {
+  color:var(--cyan); background:rgba(0,68,255,.2);
+  border-top-color:var(--bv-lo); border-left-color:var(--bv-lo);
+  border-bottom-color:var(--bv-hi); border-right-color:var(--bv-hi);
+  text-shadow:0 0 6px var(--cyan);
+}
+#tb-right { display:flex; align-items:center; gap:8px; margin-left:auto; flex-shrink:0; }
+.tb-dot { width:6px; height:6px; background:var(--green); box-shadow:0 0 6px var(--green); animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 6px var(--green)} 50%{opacity:.3;box-shadow:none} }
+#clock {
+  font-size:8px; color:var(--cyan); letter-spacing:1px;
+  padding:0 10px; height:30px; display:flex; align-items:center;
+  background:var(--bg-dark);
+  border-top:1px solid var(--bv-hi); border-left:1px solid var(--bv-hi);
+  border-bottom:1px solid var(--bv-lo); border-right:1px solid var(--bv-lo);
+  text-shadow:0 0 6px var(--cyan); flex-shrink:0;
+}
+
+/* ─── BOOT SCREEN ─────────────────────────── */
+#boot {
+  position:fixed; inset:0; background:#000;
+  padding:40px 48px; z-index:99999;
+  display:flex; flex-direction:column; justify-content:flex-start;
+}
+#boot-out { font-family:var(--vt); font-size:18px; line-height:1.9; color:#aaa; }
+#boot-out .ok  { color:var(--green); }
+#boot-out .hi  { color:var(--cyan); }
+#boot-out .dim { color:#334466; }
+#boot-progress { margin-top:24px; }
+#boot-plbl { font-size:8px; color:var(--txt-dim); margin-bottom:8px; letter-spacing:1px; }
+#boot-pbar {
+  width:380px; height:18px; background:var(--bg-win);
+  border-top:1px solid var(--bv-lo); border-left:1px solid var(--bv-lo);
+  border-bottom:1px solid var(--bv-hi); border-right:1px solid var(--bv-hi);
+  padding:2px;
+}
+#boot-fill {
+  height:100%; width:0%;
+  background:repeating-linear-gradient(90deg,#00cfff 0,#00cfff 10px,#0088cc 10px,#0088cc 12px);
+  box-shadow:0 0 10px var(--cyan);
+  transition:width .05s linear;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ BOOT SCREEN ═══ -->
+<div id="boot">
+  <div id="boot-out"></div>
+  <div id="boot-progress">
+    <div id="boot-plbl">LOADING PORTFOLIO.EXE...</div>
+    <div id="boot-pbar"><div id="boot-fill"></div></div>
+  </div>
+</div>
+
+<!-- ═══ DESKTOP ═══ -->
+<div id="desktop">
+  <div id="icons">
+    <div class="dic" ondblclick="openWin('game')">
+      <div class="dic-frame">🎮</div>
+      <div class="dic-lbl">GAME.PRJ</div>
+    </div>
+    <div class="dic" ondblclick="openWin('film')">
+      <div class="dic-frame">🎬</div>
+      <div class="dic-lbl">FILM.PRJ</div>
+    </div>
+    <div class="dic" ondblclick="openWin('swr')">
+      <div class="dic-frame">💾</div>
+      <div class="dic-lbl">SWR.PRJ</div>
+    </div>
+    <div class="dic" ondblclick="openWin('about')">
+      <div class="dic-frame">👤</div>
+      <div class="dic-lbl">ABOUT.EXE</div>
+    </div>
+    <div class="dic" ondblclick="openWin('mail')">
+      <div class="dic-frame">📧</div>
+      <div class="dic-lbl">MAIL.EXE</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TASKBAR ═══ -->
+<div id="taskbar">
+  <button id="start-btn">▶ BOOT</button>
+  <div class="tb-sep"></div>
+  <div id="tb-wins"></div>
+  <div id="tb-right">
+    <div class="tb-dot"></div>
+    <div id="clock">00:00</div>
+  </div>
+</div>
+
+<script>
+// ─── PROJECT DATA ──────────────────────────────────────────
+const PROJECTS = {
+  game:[
+    {n:'VOID.RUNNER',   y:'2025', t:'Unity · PC/Mac',  i:'📁'},
+    {n:'GLITCH.WORLD',  y:'2024', t:'Unity · Mobile',  i:'📁'},
+    {n:'8BIT.CHRON',    y:'2023', t:'Unity · WebGL',   i:'📁'},
+    {n:'NEON.DRIFT',    y:'2023', t:'Godot · PC',      i:'📁'},
+  ],
+  film:[
+    {n:'ECHOES.AVI',    y:'2024', t:'Short Film',      i:'📁'},
+    {n:'STATIC.DRM',    y:'2024', t:'Short Film',      i:'📁'},
+    {n:'LAST.TX',       y:'2023', t:'Short Film',      i:'📁'},
+    {n:'ARCHIVE/',      y:'2022', t:'Collection',      i:'📂'},
+  ],
+  swr:[
+    {n:'NEURAL.SYS',    y:'2025', t:'React · Web',     i:'📁'},
+    {n:'RT.RENDER',     y:'2024', t:'Rust · Native',   i:'📁'},
+    {n:'TERM.GAME',     y:'2024', t:'Go · CLI',        i:'📁'},
+    {n:'DEV.TOOLS',     y:'2024', t:'TypeScript',      i:'📁'},
+    {n:'RESUME.PDF',    y:'2025', t:'Document',        i:'📄'},
+  ],
+};
+
+// ─── WINDOW CONTENT BUILDERS ───────────────────────────────
+function fbHTML(label, items) {
+  const rows = items.map(p =>`
+    <li class="fb-row">
+      <span class="fb-name">${p.i} ${p.n}</span>
+      <span class="fb-yr">${p.y}</span>
+      <span class="fb-type">${p.t}</span>
+    </li>`).join('');
+  return `
+    <div class="fb-path">C:\\EREN\\${label.toUpperCase()}\\ &nbsp; ${items.length} object(s)</div>
+    <div class="fb-cols"><span>NAME</span><span>YEAR</span><span>TYPE</span></div>
+    <ul class="fb-list">${rows}</ul>`;
+}
+
+const WCFG = {
+  game:{
+    title:'GAME.PRJ', icon:'🎮', w:500, h:340,
+    menu:['File','Edit','View','Help'],
+    html:()=> fbHTML('games', PROJECTS.game),
+    status:`${PROJECTS.game.length} object(s) &nbsp;|&nbsp; C:\\EREN\\GAMES\\`
+  },
+  film:{
+    title:'FILM.PRJ', icon:'🎬', w:500, h:320,
+    menu:['File','Edit','View','Help'],
+    html:()=> fbHTML('films', PROJECTS.film),
+    status:`${PROJECTS.film.length} object(s) &nbsp;|&nbsp; C:\\EREN\\FILMS\\`
+  },
+  swr:{
+    title:'SWR.PRJ', icon:'💾', w:520, h:360,
+    menu:['File','Edit','View','Help'],
+    html:()=> fbHTML('software', PROJECTS.swr),
+    status:`${PROJECTS.swr.length} object(s) &nbsp;|&nbsp; C:\\EREN\\SOFTWARE\\`
+  },
+  about:{
+    title:'ABOUT.EXE', icon:'👤', w:460, h:400,
+    menu:['File','Edit','Help'],
+    html:()=>`
+      <div class="about-wrap">
+        <div class="about-top">
+          <div class="about-av">👤</div>
+          <div class="about-meta">
+            <h1>EREN<br>KILISLI</h1>
+            <div class="sub">Software Eng · Filmmaker · Game Dev</div>
+            <div class="about-tags">
+              <span class="atag">SOFTWARE ENG</span>
+              <span class="atag m">FILMMAKER</span>
+              <span class="atag g">GAME DEV</span>
+              <span class="atag">ISTANBUL, TR</span>
+            </div>
+          </div>
+        </div>
+        <div class="about-divider"></div>
+        <div class="about-bio">
+          &gt; Building at the intersection of <span>code</span>, film &amp; play.<br>
+          &gt; Based in Istanbul — open to remote collab.<br>
+          &gt; Available for freelance &amp; full-time roles.
+        </div>
+        <div class="about-skills">
+          <span class="sk on">NEXT.JS</span>
+          <span class="sk on">TYPESCRIPT</span>
+          <span class="sk on">RUST</span>
+          <span class="sk">REACT</span>
+          <span class="sk">THREE.JS</span>
+          <span class="sk on">UNITY</span>
+          <span class="sk">GO</span>
+          <span class="sk m">FILM</span>
+          <span class="sk">NODE.JS</span>
+          <span class="sk">GSAP</span>
+        </div>
+      </div>`,
+    status:'ABOUT.EXE &nbsp;|&nbsp; Read-only'
+  },
+  mail:{
+    title:'MAIL.EXE', icon:'📧', w:624, h:460,
+    menu:['File','Edit','Message','Help'],
+    html:()=>`
+      <div class="mail-toolbar">
+        <button class="mail-tbtn active">COMPOSE</button>
+        <button class="mail-tbtn">INBOX</button>
+        <button class="mail-tbtn">DRAFTS</button>
+      </div>
+      <div class="mail-split">
+        <div class="mail-sb">
+          <div class="mail-sb-hdr">CONTACTS</div>
+          <a class="contact-row" href="https://linkedin.com/in/erenkilisli" target="_blank">
+            <div class="c-svc">💼 LINKEDIN</div>
+            <div class="c-name">linkedin.com/in/erenkilisli</div>
+          </a>
+          <a class="contact-row" href="https://github.com/erenkilisli" target="_blank">
+            <div class="c-svc">💻 GITHUB</div>
+            <div class="c-name">github.com/erenkilisli</div>
+          </a>
+          <a class="contact-row" href="https://twitter.com/erenkilisli" target="_blank">
+            <div class="c-svc">🐦 TWITTER/X</div>
+            <div class="c-name">@erenkilisli</div>
+          </a>
+          <div class="contact-row" style="cursor:pointer" onclick="navigator.clipboard&&navigator.clipboard.writeText('eren@kilisli.com')">
+            <div class="c-svc">✉ EMAIL</div>
+            <div class="c-name">eren@kilisli.com</div>
+          </div>
+          <a class="contact-row" href="#" target="_blank">
+            <div class="c-svc">📄 RESUME</div>
+            <div class="c-name">Download CV.pdf</div>
+          </a>
+        </div>
+        <div class="mail-compose">
+          <div class="mail-form">
+            <div class="mail-field">
+              <div class="mail-lbl">TO:</div>
+              <input class="mail-in" type="text" value="eren@kilisli.com" readonly>
+            </div>
+            <div class="mail-field">
+              <div class="mail-lbl">SUBJECT:</div>
+              <input class="mail-in" id="mail-subj" type="text" placeholder="Enter subject...">
+            </div>
+            <div class="mail-field">
+              <div class="mail-lbl">MESSAGE:</div>
+              <textarea class="mail-ta" id="mail-body" placeholder="Write your message here..." rows="6"></textarea>
+            </div>
+            <div class="mail-actions">
+              <button class="mail-send" onclick="sendMail()">▶ SEND MESSAGE</button>
+              <span class="mail-ok" id="mail-ok">✓ MESSAGE SENT!</span>
+            </div>
+          </div>
+        </div>
+      </div>`,
+    status:'MAIL.EXE &nbsp;|&nbsp; Ready'
+  }
+};
+
+// ─── SEND MAIL ─────────────────────────────────────────────
+function sendMail() {
+  const subj = document.getElementById('mail-subj');
+  const body = document.getElementById('mail-body');
+  const ok   = document.getElementById('mail-ok');
+  if (!subj || !body) return;
+  if (!subj.value.trim() && !body.value.trim()) return;
+  subj.value = ''; body.value = '';
+  ok.style.display = 'block';
+  setTimeout(() => ok.style.display = 'none', 3000);
+}
+
+// ─── WINDOW STATE ──────────────────────────────────────────
+const wins = {};
+let Z = 100, focused = null;
+
+function openWin(id) {
+  if (wins[id]) { focusWin(id); return; }
+  const cfg = WCFG[id];
+  const offset = Object.keys(wins).length;
+
+  const el = document.createElement('div');
+  el.className = 'window is-active';
+  el.id = 'w-' + id;
+  el.style.cssText = `width:${cfg.w}px; left:${130 + offset * 28}px; top:${55 + offset * 28}px; z-index:${++Z};`;
+
+  const menuHTML = cfg.menu.map(m => `<div class="wmenu-item">${m}</div>`).join('');
+  // Body height = total - titlebar(26) - menubar(28) - statusbar(20)
+  const bh = cfg.h - 74;
+
+  el.innerHTML = `
+    <div class="tb">
+      <span class="tb-ico">${cfg.icon}</span>
+      <span class="tb-lbl">${cfg.title}</span>
+      <div class="tb-btns">
+        <button class="wbtn wbtn-min" onclick="se(event);minWin('${id}')">_</button>
+        <button class="wbtn wbtn-max" onclick="se(event);maxWin('${id}')">□</button>
+        <button class="wbtn wbtn-cls" onclick="se(event);closeWin('${id}')">✕</button>
+      </div>
+    </div>
+    <div class="win-menu">${menuHTML}</div>
+    <div class="wbody" style="height:${bh}px">${cfg.html()}</div>
+    <div class="wstatus"><span>${cfg.status}</span><span>EREN.OS</span></div>`;
+
+  // Mail window: body is flex, needs different height handling
+  if (id === 'mail') {
+    const wb = el.querySelector('.wbody');
+    wb.style.height = bh + 'px';
+    wb.style.display = 'flex';
+    wb.style.flexDirection = 'column';
+    wb.style.overflow = 'hidden';
+    const split = wb.querySelector('.mail-split');
+    if (split) { split.style.flex = '1'; split.style.overflow = 'hidden'; }
+  }
+
+  document.getElementById('desktop').appendChild(el);
+  wins[id] = { el, min: false, max: false, prev: null };
+  makeDraggable(el, el.querySelector('.tb'));
+  addTbItem(id, cfg);
+  focusWin(id);
+}
+
+function focusWin(id) {
+  Object.values(wins).forEach(w => w.el.classList.remove('is-active'));
+  document.querySelectorAll('.tbw').forEach(t => t.classList.remove('on'));
+  if (!wins[id]) return;
+  const w = wins[id];
+  if (w.min) { w.el.classList.remove('is-hidden'); w.min = false; }
+  w.el.classList.add('is-active');
+  w.el.style.zIndex = ++Z;
+  document.querySelector(`.tbw[data-id="${id}"]`)?.classList.add('on');
+  focused = id;
+}
+
+function minWin(id) {
+  wins[id].el.classList.add('is-hidden');
+  wins[id].el.classList.remove('is-active');
+  wins[id].min = true;
+  document.querySelector(`.tbw[data-id="${id}"]`)?.classList.remove('on');
+  focused = null;
+}
+
+function maxWin(id) {
+  const w = wins[id];
+  if (w.max) { w.el.style.cssText = w.prev; w.max = false; }
+  else {
+    w.prev = w.el.style.cssText;
+    w.el.style.cssText = `left:0;top:0;width:100%;z-index:${++Z};`;
+    w.max = true;
+  }
+  focusWin(id);
+}
+
+function closeWin(id) {
+  wins[id].el.remove(); delete wins[id];
+  document.querySelector(`.tbw[data-id="${id}"]`)?.remove();
+  if (focused === id) focused = null;
+}
+
+function addTbItem(id, cfg) {
+  const el = document.createElement('div');
+  el.className = 'tbw on'; el.dataset.id = id;
+  el.innerHTML = `<span>${cfg.icon}</span><span>${cfg.title}</span>`;
+  el.onclick = () => {
+    if (!wins[id]) return;
+    if (wins[id].min) focusWin(id);
+    else if (focused === id) minWin(id);
+    else focusWin(id);
+  };
+  document.getElementById('tb-wins').appendChild(el);
+}
+
+function se(e) { e.stopPropagation(); }
+
+document.getElementById('desktop').addEventListener('mousedown', e => {
+  const w = e.target.closest('.window');
+  if (w) { focusWin(w.id.replace('w-', '')); return; }
+  if (!e.target.closest('#icons') && !e.target.closest('.tbw')) {
+    Object.values(wins).forEach(w => w.el.classList.remove('is-active'));
+    document.querySelectorAll('.tbw').forEach(t => t.classList.remove('on'));
+    focused = null;
+  }
+});
+
+// ─── DRAG ──────────────────────────────────────────────────
+function makeDraggable(win, handle) {
+  let on = false, ox, oy, sx, sy;
+  handle.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('wbtn') || e.target.classList.contains('wmenu-item')) return;
+    on = true; sx = e.clientX; sy = e.clientY;
+    ox = parseInt(win.style.left) || 0;
+    oy = parseInt(win.style.top)  || 0;
+    focusWin(win.id.replace('w-', ''));
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!on) return;
+    win.style.left = (ox + e.clientX - sx) + 'px';
+    win.style.top  = Math.max(0, oy + e.clientY - sy) + 'px';
+  });
+  document.addEventListener('mouseup', () => on = false);
+}
+
+// ─── CLOCK ─────────────────────────────────────────────────
+function tick() {
+  const n = new Date();
+  document.getElementById('clock').textContent =
+    String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+}
+tick(); setInterval(tick, 10000);
+
+// ─── BOOT SEQUENCE ─────────────────────────────────────────
+const BOOT_LINES = [
+  {html:'<span style="color:#00f5ff;font-weight:bold">EREN.OS BIOS v2.4.1</span>'},
+  {html:'<span style="color:#334466">Copyright (C) 2026 Eren Kılışlı. All rights reserved.</span>'},
+  {html:''},
+  {html:'Initializing hardware scan...'},
+  {html:'CPU: Creative Mind 3.6GHz &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#39ff14">[OK]</span>'},
+  {html:'RAM: 26 Years Experience &nbsp;&nbsp;&nbsp;<span style="color:#39ff14">[OK]</span>'},
+  {html:'GPU: Visual Cortex RX280 &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#39ff14">[OK]</span>'},
+  {html:'HDD: /projects/eren/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#39ff14">[OK]</span>'},
+  {html:'NET: Connection established &nbsp;<span style="color:#39ff14">[OK]</span>'},
+  {html:''},
+  {html:'Starting EREN.OS kernel...'},
+];
+
+async function boot() {
+  const out  = document.getElementById('boot-out');
+  const fill = document.getElementById('boot-fill');
+  const lbl  = document.getElementById('boot-plbl');
+
+  for (const line of BOOT_LINES) {
+    await sleep(line.html === '' ? 80 : 120);
+    const div = document.createElement('div');
+    div.innerHTML = line.html;
+    out.appendChild(div);
+  }
+
+  await sleep(200);
+
+  for (let i = 0; i <= 100; i++) {
+    fill.style.width = i + '%';
+    if (i % 10 === 0) lbl.textContent = `LOADING PORTFOLIO.EXE... ${i}%`;
+    await sleep(16);
+  }
+
+  lbl.textContent = 'PRESS ANY KEY TO CONTINUE';
+
+  await sleep(400);
+
+  const bootEl = document.getElementById('boot');
+  bootEl.style.transition = 'opacity .35s';
+  bootEl.style.opacity = '0';
+  await sleep(380);
+  bootEl.remove();
+
+  await sleep(120);
+  openWin('about');
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+boot();
+</script>
+</body>
+</html>

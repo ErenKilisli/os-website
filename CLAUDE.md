@@ -1,37 +1,45 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Commands
-
 ```bash
-npm run dev      # Start dev server at localhost:3000
-npm run build    # Production build
-npm run lint     # ESLint
+npm run dev    # localhost:3000
+npm run build  # Production build
+npm run lint   # ESLint
 ```
 
 ## Architecture
+Next.js 15 App Router + TypeScript + Tailwind CSS v4 + Framer Motion + Zustand
 
-Next.js 15 App Router + TypeScript + Tailwind CSS v4 + Framer Motion + Lenis + GSAP.
+**UI Concept:** CYBERCORE WIN95 PIXEL ART DESKTOP OS
+A personal portfolio presented as a fictional operating system (EREN.OS) with draggable windows, desktop icons, and a taskbar.
 
-**Entry point:** `src/app/page.tsx` (server component) assembles section components.
+**Entry point:** `src/app/page.tsx` → renders `<Desktop />`
 
-**Client boundary:** `src/providers/Providers.tsx` is the client root — it wraps `SmoothScrollProvider` (Lenis + GSAP ScrollTrigger) and renders `CustomCursor`. All other components can be server or client as needed.
+**Client boundary:** Everything under `src/components/desktop/` and `src/components/windows/` is `'use client'`
 
-**Design system:** Entirely in `src/app/globals.css`. No `tailwind.config.ts` — Tailwind v4 reads configuration from the `@theme` block in CSS. Custom utility classes (`.glass`, `.glass-pill`, `.glass-card`, `.text-matrix`, `.text-cinematic`, `.film-grain`) are also defined there.
+**State:** `src/store/windowStore.ts` (Zustand) — manages all window positions, z-index, open/close/minimize/maximize state, and desktop icon positions
 
-**Animation stack:**
-- Framer Motion → all UI spring animations (DynamicIsland, hero text scale, modal expand)
-- RAF loops → `FloatingIcons.tsx` (per-icon sine-wave float + mouse repel)
-- Canvas API → `MatrixCanvas.tsx` (matrix rain; intensity prop drives Framer Motion opacity)
-- Lenis + GSAP ScrollTrigger → scroll-driven animations (wired in Phase 2)
+**Drag:** Framer Motion `drag` prop
+- Desktop icons: freely draggable anywhere on desktop
+- Windows: draggable by titlebar using `useDragControls`
 
-**Font variables** (set by `next/font/google` in `layout.tsx`):
-- `--font-geist-mono` → `font-family: var(--font-mono)` (engineer identity)
-- `--font-playfair` → `font-family: var(--font-serif)` (filmmaker identity)
+**Animation:** Framer Motion
+- Window open/close: scale 0.05 → 1 with brightness flash
+- AnimatePresence for unmount animations
 
-**Colour system** (Tailwind v4 `--color-*` → utility classes):
-- `#00ffaa` accent-green (engineer hover, matrix, glow)
-- `#ff6b35` accent-orange (filmmaker hover, film grain, warm gradients)
+**Design system:** `src/app/globals.css`
+- CYBERCORE palette: near-black desktop (#020812), vivid cyan (#00ffff), cobalt blue (#0055ff)
+- Win95 dark beveled borders
+- Press Start 2P (8px pixel font) + VT323 (terminal body text)
+- CRT scanlines + vignette overlays
 
-See `.cursorrules` for the full project context, personal details, and all project names.
+**Font variables** (next/font/google):
+- `--font-press-start` → Press Start 2P (UI chrome, 8px)
+- `--font-vt323` → VT323 (window content, 16-18px)
+
+**Windows:**
+- GAME.PRJ / FILM.PRJ / SWR.PRJ → FileBrowserWindow (project lists)
+- ABOUT.EXE → AboutWindow (bio, skills, tags)
+- MAIL.EXE → MailWindow (contacts sidebar + compose form)
+
+**Desktop Icons (draggable):** 🎮 GAME.PRJ | 🎬 FILM.PRJ | 💾 SWR.PRJ | 👤 ABOUT.EXE | 📧 MAIL.EXE
