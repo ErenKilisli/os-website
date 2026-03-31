@@ -1,28 +1,209 @@
+export interface ProjectLink {
+  label: string
+  url: string
+}
+
 export interface Project {
+  id: string
   name: string
   year: string
   type: string
   icon: string
+  description: string
+  tags: string[]
+  links: ProjectLink[]
 }
 
 export const GAME_PROJECTS: Project[] = [
-  { name: 'VOID.RUNNER',  year: '2025', type: 'Unity · PC/Mac',  icon: '📁' },
-  { name: 'GLITCH.WORLD', year: '2024', type: 'Unity · Mobile',  icon: '📁' },
-  { name: '8BIT.CHRON',   year: '2023', type: 'Unity · WebGL',   icon: '📁' },
-  { name: 'NEON.DRIFT',   year: '2023', type: 'Godot · PC',      icon: '📁' },
+  {
+    id: 'damned-ape',
+    name: 'DAMNED APE',
+    year: '2024',
+    type: 'Unreal Engine · AI · Cinematics',
+    icon: '📁',
+    description: 'Developed advanced player movement (wall-running, curved surfaces) for fluid traversal. Implemented AI-driven enemies with stamina/mana systems and telemetry for tunable difficulty. Designed levels and cinematic sequences to deliver a cohesive, narrative-driven demo.',
+    tags: ['Unreal Engine', 'AI', 'Cinematics', 'C++'],
+    links: [
+      { label: 'Watch Video', url: 'https://www.youtube.com/watch?v=jXx2chViNVM&list=PL8pigdE7Oeb3couSwPXJSrcNjad9NlDSR&index=7' },
+    ],
+  },
+  {
+    id: 'chronobreak',
+    name: 'CHRONOBREAK',
+    year: '2023',
+    type: 'Unreal Engine · C++ · Game Dev',
+    icon: '📁',
+    description: 'Prototyped and iterated on core combat mechanics during the early incubation phase. Produced high-quality real-time cinematics and trailers to strengthen storytelling and player engagement.',
+    tags: ['Unreal Engine', 'C++', 'Cinematics', 'Game Development'],
+    links: [
+      { label: 'Steam Page', url: 'https://store.steampowered.com/app/2408740/dgd_Chronobreak/' },
+      { label: 'Watch Cinematic', url: 'https://drive.google.com/file/d/1xL5qI-jqCTmLKcYju3eunqMI3opknEpB/view' },
+    ],
+  },
+  {
+    id: 'daa-retro-fps',
+    name: 'DAA — RETRO FPS',
+    year: '2023',
+    type: 'Unreal Engine · C++ · Game Design',
+    icon: '📁',
+    description: 'Built a retro FPS tech demo with 2D enemies in 3D levels. Implemented enemy AI, eight weapon and eleven enemy flipbook animations, and a three-level demo map. Produced an intro cinematic and storyline beats to deliver a complete vertical slice.',
+    tags: ['Unreal Engine', 'C++', 'Game Design', 'AI'],
+    links: [
+      { label: 'Watch Video', url: 'https://www.youtube.com/watch?v=5CH33vElWk0&list=PL8pigdE7Oeb3couSwPXJSrcNjad9NlDSR&index=2' },
+    ],
+  },
 ]
 
 export const FILM_PROJECTS: Project[] = [
-  { name: 'ECHOES.AVI',   year: '2024', type: 'Short Film',     icon: '📁' },
-  { name: 'STATIC.DRM',   year: '2024', type: 'Short Film',     icon: '📁' },
-  { name: 'LAST.TX',      year: '2023', type: 'Short Film',     icon: '📁' },
-  { name: 'ARCHIVE/',     year: '2022', type: 'Collection',     icon: '📂' },
+  {
+    id: 'chronobreak-cinematic',
+    name: 'CHRONOBREAK — CINEMATIC',
+    year: '2024',
+    type: 'Cinematics · Unreal Engine',
+    icon: '📁',
+    description: 'Cinematics Artist on Unreal Engine. Created game cinematics with focus on camera work, lighting, and storytelling.',
+    tags: ['Cinematics', 'Unreal Engine', 'Lighting', 'Camera'],
+    links: [
+      { label: 'Watch Cinematic', url: 'https://drive.google.com/file/d/1xL5qI-jqCTmLKcYju3eunqMI3opknEpB/view' },
+    ],
+  },
+  {
+    id: 'cember',
+    name: 'ÇEMBER — SHORT FILM',
+    year: '2023',
+    type: "Short Film · Director's Assistant",
+    icon: '📁',
+    description: "Assisted the director during shooting and production preparation.",
+    tags: ['Short Film', "Director's Assistant", 'Production'],
+    links: [
+      { label: 'IMDB', url: 'https://www.imdb.com/title/tt31691075/' },
+    ],
+  },
+  {
+    id: 'mcdonalds',
+    name: "McDONALD'S COMMERCIAL",
+    year: '2020',
+    type: 'Commercial · Production Assistant',
+    icon: '📁',
+    description: 'National McDonald\'s Commercial. Production Assistant at LAB34 Production, Director: Caner Çetiner. Provided on-set production support and assisted with shooting-day coordination.',
+    tags: ['Commercial', 'Production Assistant', 'LAB34'],
+    links: [
+      { label: 'Watch', url: 'https://youtu.be/1l2pwD7vRu4' },
+    ],
+  },
+  {
+    id: 'kaya-giray',
+    name: 'KAYA GIRAY — YARININ YOK',
+    year: '2020',
+    type: 'Music Video · Assistant Director',
+    icon: '📁',
+    description: 'Assistant Director Support / Cast at Milk Jack. Supported assistant director and on-set coordination during shooting.',
+    tags: ['Music Video', 'Assistant Director', 'Milk Jack'],
+    links: [
+      { label: 'Watch', url: 'https://youtu.be/2uTurap3YU' },
+    ],
+  },
+  {
+    id: 'light',
+    name: 'LIGHT — SHORT FILM',
+    year: '2023',
+    type: 'Short Film · Director / Writer',
+    icon: '📁',
+    description: 'Director and Writer. European Union–supported project addressing the Hatay earthquake.',
+    tags: ['Short Film', 'Director', 'Writer', 'EU Project'],
+    links: [],
+  },
+  {
+    id: 'blood',
+    name: 'BLOOD — SHORT FILM',
+    year: '2021',
+    type: 'Short Film · Director / Writer',
+    icon: '📁',
+    description: 'Director and Writer. Selected by multiple international festivals. Semi-Finalist & Honorable Mention.',
+    tags: ['Short Film', 'Director', 'Writer', 'Festival Selection'],
+    links: [],
+  },
+  {
+    id: 'kronos',
+    name: 'KRONOS — SHORT FILM',
+    year: '2020',
+    type: 'Short Film · Director / Writer',
+    icon: '📁',
+    description: 'Director and Writer. Official selection at international film festivals.',
+    tags: ['Short Film', 'Director', 'Writer', 'Festival'],
+    links: [],
+  },
 ]
 
 export const SOFTWARE_PROJECTS: Project[] = [
-  { name: 'NEURAL.SYS',  year: '2025', type: 'React · Web',    icon: '📁' },
-  { name: 'RT.RENDER',   year: '2024', type: 'Rust · Native',  icon: '📁' },
-  { name: 'TERM.GAME',   year: '2024', type: 'Go · CLI',       icon: '📁' },
-  { name: 'DEV.TOOLS',   year: '2024', type: 'TypeScript',     icon: '📁' },
-  { name: 'RESUME.PDF',  year: '2025', type: 'Document',       icon: '📄' },
+  {
+    id: 'neural-sys',
+    name: 'NEURAL.SYS',
+    year: '2025',
+    type: 'React · Web',
+    icon: '📁',
+    description: 'AI-powered web application built with React and modern tooling.',
+    tags: ['React', 'TypeScript', 'AI', 'Web'],
+    links: [],
+  },
+  {
+    id: 'rt-render',
+    name: 'RT.RENDER',
+    year: '2024',
+    type: 'Rust · Native',
+    icon: '📁',
+    description: 'Real-time renderer built in Rust for high-performance native applications.',
+    tags: ['Rust', 'Rendering', 'Native'],
+    links: [],
+  },
+  {
+    id: 'term-game',
+    name: 'TERM.GAME',
+    year: '2024',
+    type: 'Go · CLI',
+    icon: '📁',
+    description: 'Terminal-based game written in Go.',
+    tags: ['Go', 'CLI', 'Game'],
+    links: [],
+  },
+  {
+    id: 'dev-tools',
+    name: 'DEV.TOOLS',
+    year: '2024',
+    type: 'TypeScript',
+    icon: '📁',
+    description: 'Developer tooling utilities built with TypeScript.',
+    tags: ['TypeScript', 'Tooling'],
+    links: [],
+  },
 ]
+
+export const DEVFILES_PROJECTS: Project[] = [
+  {
+    id: 'deux',
+    name: 'DEUX',
+    year: '2024',
+    type: 'Platform · Web',
+    icon: '📁',
+    description: 'deux platform — deuxstud.io',
+    tags: ['Platform', 'Web'],
+    links: [
+      { label: 'Visit', url: 'https://deuxstud.io' },
+    ],
+  },
+  {
+    id: 'rezinn',
+    name: 'REZINN',
+    year: '2024',
+    type: 'Platform · Web',
+    icon: '📁',
+    description: 'rezinn — rezinn.com',
+    tags: ['Platform', 'Web'],
+    links: [
+      { label: 'Visit', url: 'https://rezinn.com' },
+    ],
+  },
+]
+
+export const CINEMA_PROJECTS: Project[] = [...FILM_PROJECTS]
+export const ARCADE_PROJECTS: Project[] = [...GAME_PROJECTS]

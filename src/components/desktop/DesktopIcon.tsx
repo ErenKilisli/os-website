@@ -2,7 +2,27 @@
 import { motion, useMotionValue } from 'framer-motion'
 import { useWindowStore, IconState } from '@/store/windowStore'
 import { useRef, useState } from 'react'
-import { DesktopPixelIcon } from './PixelIcons'
+import { FolderFilmIcon, FolderGameIcon, FolderEmptyIcon } from './FolderIcons'
+
+function IconGraphic({ icon }: { icon: IconState }) {
+  if (icon.windowType === 'cinema') {
+    return <FolderFilmIcon color={icon.iconColor} size={48} />
+  }
+  if (icon.windowType === 'arcade') {
+    return <FolderGameIcon color={icon.iconColor} size={48} />
+  }
+  if (icon.id === 'ico-devfiles2' || icon.id === 'ico-devfiles3') {
+    return <FolderEmptyIcon color={icon.iconColor} size={48} />
+  }
+  return (
+    <span
+      className="material-symbols-filled"
+      style={{ color: icon.iconColor, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48" }}
+    >
+      {icon.iconName}
+    </span>
+  )
+}
 
 export function DesktopIcon({ icon }: { icon: IconState }) {
   const { openWindow, updateIconPos } = useWindowStore()
@@ -38,7 +58,7 @@ export function DesktopIcon({ icon }: { icon: IconState }) {
       whileDrag={{ zIndex: 9990, scale: 1.05 }}
     >
       <div className="dic-frame">
-        <DesktopPixelIcon type={icon.windowType} />
+        <IconGraphic icon={icon} />
       </div>
       <div className="dic-lbl">
         {icon.label.split('\n').map((line, i) => (

@@ -1,23 +1,23 @@
 import type { Metadata } from 'next'
-import { Press_Start_2P, VT323 } from 'next/font/google'
+import { Space_Grotesk, Public_Sans } from 'next/font/google'
 import './globals.css'
 
-const pressStart2P = Press_Start_2P({
-  variable: '--font-press-start',
+const spaceGrotesk = Space_Grotesk({
+  variable: '--font-headline',
   subsets: ['latin'],
-  weight: '400',
+  weight: ['300', '400', '700'],
   display: 'swap',
 })
 
-const vt323 = VT323({
-  variable: '--font-vt323',
+const publicSans = Public_Sans({
+  variable: '--font-body',
   subsets: ['latin'],
-  weight: '400',
+  weight: ['300', '400', '700'],
   display: 'swap',
 })
 
 export const metadata: Metadata = {
-  title: 'EREN.OS v1.0',
+  title: 'SYSTEM_V01 | ENGINEER + FILMMAKER',
   description: 'Eren Kılışlı — Portfolio',
 }
 
@@ -25,7 +25,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${pressStart2P.variable} ${vt323.variable}`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${publicSans.variable}`}>
+      <head>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+      </head>
       <body>{children}</body>
     </html>
   )

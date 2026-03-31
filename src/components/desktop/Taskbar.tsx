@@ -3,15 +3,17 @@ import { useWindowStore } from '@/store/windowStore'
 import { useEffect, useState } from 'react'
 
 export function Taskbar() {
-  const { windows, focusWindow, minimizeWindow, focusedId } = useWindowStore()
+  const { windows, focusWindow, minimizeWindow, focusedId, openWindow } = useWindowStore()
   const [time, setTime] = useState('')
 
   useEffect(() => {
     const tick = () => {
       const n = new Date()
-      const h = String(n.getHours()).padStart(2, '0')
+      const h = n.getHours()
       const m = String(n.getMinutes()).padStart(2, '0')
-      setTime(`${h}:${m}`)
+      const ampm = h >= 12 ? 'PM' : 'AM'
+      const h12 = h % 12 || 12
+      setTime(`${String(h12).padStart(2, '0')}:${m} ${ampm}`)
     }
     tick()
     const id = setInterval(tick, 10000)
@@ -20,8 +22,9 @@ export function Taskbar() {
 
   return (
     <div id="taskbar">
-      <button id="start-btn">
-        <span style={{ fontStyle: 'italic', fontWeight: 'bold' }}>Start</span>
+      <button id="start-btn" onClick={() => openWindow('swr')}>
+        <span className="material-symbols-filled" style={{ fontVariationSettings: "'FILL' 1" }}>grid_view</span>
+        START
       </button>
       <div className="tb-sep" />
       <div id="tb-wins">
@@ -35,13 +38,13 @@ export function Taskbar() {
               else focusWindow(win.id)
             }}
           >
-            <span>{win.icon}</span>
+            <span className="material-symbols-outlined">{win.icon}</span>
             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{win.title}</span>
           </div>
         ))}
       </div>
       <div id="tb-right">
-        <div className="tb-dot" />
+        <span className="material-symbols-outlined">schedule</span>
         <div id="clock">{time}</div>
       </div>
     </div>

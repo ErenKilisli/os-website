@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 80" style="image-rendering:pixelated">
+  <!-- ═══ PIXEL ART BUST PORTRAIT — transparent bg ═══ -->
+
+  <!-- HAIR top dome -->
+  <rect x="22" y="0"  width="20" height="2"  fill="#1a0e38"/>
+  <rect x="18" y="2"  width="28" height="2"  fill="#1a0e38"/>
+  <rect x="14" y="4"  width="36" height="4"  fill="#1a0e38"/>
+  <rect x="12" y="8"  width="40" height="4"  fill="#1a0e38"/>
+  <!-- hair sides (down past ears) -->
+  <rect x="12" y="12" width="6"  height="24" fill="#1a0e38"/>
+  <rect x="46" y="12" width="6"  height="24" fill="#1a0e38"/>
+  <!-- inner hair (top of skull) -->
+  <rect x="18" y="4"  width="28" height="8"  fill="#261644"/>
+  <!-- hair highlight streak -->
+  <rect x="26" y="5"  width="4"  height="6"  fill="#3a2260"/>
+
+  <!-- FACE — warm skin -->
+  <rect x="18" y="8"  width="28" height="4"  fill="#f2c07a"/>
+  <rect x="16" y="12" width="32" height="24" fill="#f2c07a"/>
+
+  <!-- EARS -->
+  <rect x="12" y="18" width="4"  height="8"  fill="#dfa060"/>
+  <rect x="48" y="18" width="4"  height="8"  fill="#dfa060"/>
+  <rect x="12" y="20" width="2"  height="4"  fill="#c88850"/>
+  <rect x="50" y="20" width="2"  height="4"  fill="#c88850"/>
+
+  <!-- EYEBROWS (slightly arched) -->
+  <rect x="20" y="14" width="8"  height="2"  fill="#1a0e38"/>
+  <rect x="36" y="14" width="8"  height="2"  fill="#1a0e38"/>
+  <rect x="22" y="13" width="4"  height="1"  fill="#1a0e38"/>
+  <rect x="36" y="13" width="4"  height="1"  fill="#1a0e38"/>
+
+  <!-- LEFT EYE -->
+  <rect x="20" y="18" width="10" height="6"  fill="#f8f8f8"/>
+  <!-- pupil + iris -->
+  <rect x="22" y="18" width="6"  height="6"  fill="#1a0e38"/>
+  <rect x="23" y="19" width="4"  height="4"  fill="#3344aa"/>
+  <rect x="24" y="20" width="2"  height="2"  fill="#5577dd"/>
+  <!-- catch light -->
+  <rect x="25" y="19" width="1"  height="1"  fill="#aaccff"/>
+  <!-- eyelid shadow -->
+  <rect x="20" y="18" width="10" height="1"  fill="#c89a58"/>
+  <!-- lower lash -->
+  <rect x="20" y="23" width="10" height="1"  fill="#c89a58"/>
+
+  <!-- RIGHT EYE -->
+  <rect x="34" y="18" width="10" height="6"  fill="#f8f8f8"/>
+  <rect x="36" y="18" width="6"  height="6"  fill="#1a0e38"/>
+  <rect x="37" y="19" width="4"  height="4"  fill="#3344aa"/>
+  <rect x="38" y="20" width="2"  height="2"  fill="#5577dd"/>
+  <rect x="38" y="19" width="1"  height="1"  fill="#aaccff"/>
+  <rect x="34" y="18" width="10" height="1"  fill="#c89a58"/>
+  <rect x="34" y="23" width="10" height="1"  fill="#c89a58"/>
+
+  <!-- NOSE -->
+  <rect x="29" y="26" width="6"  height="4"  fill="#e6a860"/>
+  <rect x="27" y="29" width="10" height="2"  fill="#c88840"/>
+  <rect x="27" y="29" width="4"  height="2"  fill="#daa060"/>
+  <rect x="33" y="29" width="4"  height="2"  fill="#daa060"/>
+
+  <!-- CHEEK blush -->
+  <rect x="18" y="26" width="4"  height="4"  fill="#f0b090" opacity="0.5"/>
+  <rect x="42" y="26" width="4"  height="4"  fill="#f0b090" opacity="0.5"/>
+
+  <!-- MOUTH -->
+  <rect x="24" y="32" width="16" height="2"  fill="#b85858"/>
+  <!-- smile curve pixels -->
+  <rect x="22" y="31" width="2"  height="2"  fill="#c86868"/>
+  <rect x="40" y="31" width="2"  height="2"  fill="#c86868"/>
+  <!-- teeth hint -->
+  <rect x="26" y="32" width="12" height="2"  fill="#eeddcc"/>
+  <!-- lower lip -->
+  <rect x="24" y="34" width="16" height="2"  fill="#cc7060"/>
+  <rect x="26" y="35" width="4"  height="1"  fill="#ddaa90"/>
+
+  <!-- CHIN / JAW narrowing -->
+  <rect x="17" y="34" width="30" height="4"  fill="#f2c07a"/>
+  <rect x="18" y="38" width="28" height="2"  fill="#e8b068"/>
+
+  <!-- NECK -->
+  <rect x="26" y="40" width="12" height="8"  fill="#f2c07a"/>
+  <rect x="26" y="40" width="2"  height="8"  fill="#dfa060"/>
+  <rect x="36" y="40" width="2"  height="8"  fill="#dfa060"/>
+
+  <!-- SHIRT — dark navy/blue (cybercore) -->
+  <rect x="8"  y="48" width="48" height="32" fill="#001e77"/>
+  <!-- shirt top highlight -->
+  <rect x="8"  y="48" width="48" height="2"  fill="#2244aa"/>
+  <rect x="8"  y="48" width="2"  height="32" fill="#2244aa"/>
+  <!-- shirt shadow right + bottom -->
+  <rect x="54" y="48" width="2"  height="32" fill="#000e44"/>
+  <rect x="8"  y="78" width="48" height="2"  fill="#000e44"/>
+
+  <!-- COLLAR left -->
+  <rect x="16" y="46" width="14" height="8"  fill="#f2c07a"/>
+  <rect x="18" y="48" width="12" height="6"  fill="#f2c07a"/>
+  <!-- COLLAR right -->
+  <rect x="34" y="46" width="14" height="8"  fill="#f2c07a"/>
+  <rect x="34" y="48" width="12" height="6"  fill="#f2c07a"/>
+  <!-- collar V seam -->
+  <rect x="28" y="50" width="8"  height="2"  fill="#001e77"/>
+  <rect x="30" y="52" width="4"  height="4"  fill="#001e77"/>
+  <rect x="31" y="56" width="2"  height="8"  fill="#001e77"/>
+
+  <!-- SHIRT texture lines -->
+  <rect x="10" y="58" width="22" height="1"  fill="#0028a0" opacity="0.5"/>
+  <rect x="32" y="58" width="22" height="1"  fill="#0028a0" opacity="0.5"/>
+  <rect x="10" y="66" width="22" height="1"  fill="#0028a0" opacity="0.5"/>
+  <rect x="32" y="66" width="22" height="1"  fill="#0028a0" opacity="0.5"/>
+</svg>

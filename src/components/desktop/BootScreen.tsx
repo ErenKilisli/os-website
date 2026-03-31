@@ -68,7 +68,7 @@ export function BootScreen({ onComplete }: { onComplete: () => void }) {
           <div
             id="boot-out"
             style={{
-              fontFamily: 'var(--font-sys)',
+              fontFamily: 'monospace',
               fontSize: 18,
               lineHeight: 2,
               color: '#c0c0c0',
@@ -82,7 +82,7 @@ export function BootScreen({ onComplete }: { onComplete: () => void }) {
             <div
               id="boot-plbl"
               style={{
-                fontFamily: 'var(--font-pixel)',
+                fontFamily: 'var(--font-h)',
                 fontSize: 8,
                 color: '#808080',
                 marginBottom: 8,

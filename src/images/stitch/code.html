@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SYSTEM_V01 | ENGINEER + FILMMAKER</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700;900&amp;family=Public+Sans:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary-fixed": "#00fd00",
+                        "primary-container": "#9097ff",
+                        "secondary-fixed": "#eaea00",
+                        "on-primary": "#f3f1ff",
+                        "primary-fixed-dim": "#8189f6",
+                        "tertiary-container": "#00fd00",
+                        "inverse-primary": "#848cf9",
+                        "tertiary-dim": "#025d00",
+                        "on-background": "#2d2f2f",
+                        "secondary": "#5f5f00",
+                        "inverse-surface": "#0d0e0f",
+                        "on-secondary-container": "#555500",
+                        "on-error": "#ffefef",
+                        "on-tertiary": "#d3ffc2",
+                        "primary": "#484fb9",
+                        "error": "#b41340",
+                        "surface-tint": "#484fb9",
+                        "surface-container-high": "#e2e2e3",
+                        "surface-container-low": "#f1f1f0",
+                        "surface-variant": "#dcdddd",
+                        "on-tertiary-container": "#015a00",
+                        "background": "#f7f6f6",
+                        "primary-fixed": "#9097ff",
+                        "on-secondary-fixed-variant": "#5f5f00",
+                        "outline": "#767777",
+                        "inverse-on-surface": "#9c9d9d",
+                        "error-container": "#f74b6d",
+                        "on-surface": "#2d2f2f",
+                        "surface-bright": "#f7f6f6",
+                        "surface-container-highest": "#dcdddd",
+                        "on-primary-container": "#020381",
+                        "primary-dim": "#3c43ac",
+                        "secondary-container": "#eaea00",
+                        "tertiary-fixed-dim": "#01ed00",
+                        "on-tertiary-fixed": "#014500",
+                        "on-primary-fixed": "#000000",
+                        "on-tertiary-fixed-variant": "#026500",
+                        "on-secondary": "#fbfb00",
+                        "tertiary": "#026b00",
+                        "on-secondary-fixed": "#424200",
+                        "on-surface-variant": "#5a5c5c",
+                        "secondary-dim": "#525200",
+                        "surface-container": "#e8e8e8",
+                        "surface-dim": "#d3d4d5",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#adadad",
+                        "secondary-fixed-dim": "#dbdb00",
+                        "on-error-container": "#510017",
+                        "error-dim": "#a70138",
+                        "surface": "#f7f6f6",
+                        "on-primary-fixed-variant": "#121788"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Public Sans"],
+                        "label": ["Space Grotesk"]
+                    },
+                    borderRadius: { "DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .crt-overlay {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+        .window-bevel {
+            box-shadow: inset 1.5px 1.5px 0px #ffffff, inset -1.5px -1.5px 0px #808080, 1.5px 1.5px 0px #000000;
+        }
+        .button-bevel {
+            box-shadow: inset 1.5px 1.5px 0px #ffffff, inset -1.5px -1.5px 0px #808080;
+        }
+        .button-bevel:active {
+            box-shadow: inset 1.5px 1.5px 0px #000000, inset -1.5px -1.5px 0px #ffffff;
+        }
+        .input-inset {
+            box-shadow: inset 2px 2px 0px #808080, inset -1px -1px 0px #ffffff;
+        }
+        .desktop-bg {
+            background: radial-gradient(circle at center, #484fb9 0%, #121788 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body overflow-hidden h-screen select-none">
+<!-- TOP NAV BAR (SYSTEM_V01) -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-1 bg-[#484fb9] dark:bg-[#484fb9] h-7 border-b-2 border-b-[#d3d4d5] shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)_inset]">
+<div class="flex items-center h-full">
+<div class="text-lg font-black tracking-widest text-white px-2">SYSTEM_V01</div>
+<nav class="flex h-full items-center">
+<a class="bg-[#d3d4d5] text-[#2d2f2f] px-2 h-full flex items-center shadow-[inset_2px_2px_0px_black] font-['Space_Grotesk'] uppercase tracking-tighter text-[0.6875rem]" href="#">TERMINAL</a>
+<a class="text-white px-2 h-full flex items-center hover:bg-[#9097ff] transition-none font-['Space_Grotesk'] uppercase tracking-tighter text-[0.6875rem]" href="#">FILES</a>
+<a class="text-white px-2 h-full flex items-center hover:bg-[#9097ff] transition-none font-['Space_Grotesk'] uppercase tracking-tighter text-[0.6875rem]" href="#">NETWORK</a>
+</nav>
+</div>
+<div class="flex items-center gap-2 px-2 text-white">
+<span class="material-symbols-outlined text-[16px] cursor-pointer">settings</span>
+<span class="material-symbols-outlined text-[16px] cursor-pointer">close</span>
+</div>
+</header>
+<!-- DESKTOP CANVAS -->
+<main class="desktop-bg relative w-full h-full pt-7 pb-10 overflow-hidden">
+<!-- CRT Overlay Layer -->
+<div class="crt-overlay absolute inset-0 z-40 opacity-30"></div>
+<!-- HERO TEXT: ENGINEER + FILMMAKER -->
+<!-- DESKTOP ICONS GRID -->
+<div class="absolute top-12 left-6 grid grid-cols-1 z-10 gap-12">
+<div class="group flex flex-col items-center gap-1 cursor-pointer w-28">
+<div class="w-12 h-12 flex items-center justify-center text-primary-container group-hover:bg-white/10 w-16 h-16">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">folder</span>
+</div>
+<span class="text-[10px] text-white font-bold bg-black/40 px-1 uppercase tracking-tighter text-xs px-2 py-0.5">Software/Code</span>
+</div>
+<div class="group flex flex-col items-center gap-1 cursor-pointer w-28">
+<div class="w-12 h-12 flex items-center justify-center text-secondary-container group-hover:bg-white/10 w-16 h-16">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">movie</span>
+</div>
+<span class="text-[10px] text-white font-bold bg-black/40 px-1 uppercase tracking-tighter text-xs px-2 py-0.5">Films</span>
+</div>
+<div class="group flex flex-col items-center gap-1 cursor-pointer w-28">
+<div class="w-12 h-12 flex items-center justify-center text-tertiary-container group-hover:bg-white/10 w-16 h-16">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<span class="text-[10px] text-white font-bold bg-black/40 px-1 uppercase tracking-tighter text-xs px-2 py-0.5">Terminal</span>
+</div>
+<div class="group flex flex-col items-center gap-1 cursor-pointer w-28">
+<div class="w-12 h-12 flex items-center justify-center text-white group-hover:bg-white/10 w-16 h-16">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+</div>
+<span class="text-[10px] text-white font-bold bg-black/40 px-1 uppercase tracking-tighter text-xs px-2 py-0.5">About Me</span>
+</div>
+</div>
+<!-- OPEN WINDOW: FILMS.EXE (Asymmetric Placement) -->
+<div class="absolute top-[15%] right-[5%] md:right-[15%] w-[90%] md:w-[600px] z-20 window-bevel bg-surface-dim">
+<div class="h-8 bg-primary flex items-center justify-between px-2 cursor-move">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">movie</span>
+<span class="text-white font-bold text-xs uppercase tracking-tight">films.exe</span>
+</div>
+<button class="w-6 h-6 bg-surface-dim button-bevel flex items-center justify-center group active:shadow-[inset_2px_2px_0px_#000]">
+<span class="material-symbols-outlined text-sm text-black group-active:translate-x-[1px] group-active:translate-y-[1px] text-5xl">close</span>
+</button>
+</div>
+<div class="p-1 bg-surface-dim">
+<div class="bg-surface-container-lowest p-4 h-[350px] overflow-y-auto input-inset">
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<div class="aspect-video bg-black relative group overflow-hidden">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Cinematic low angle shot of a neon-lit futuristic city street at night with heavy film grain and atmospheric fog" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2JkIgXdR1DEGGphnCIstUM1Fcl7onBdsmvBPArVzVqcZawKUy4pDW2aH1PXwvcHvhgyn2DWe7F09wfZYqdLM5lB1cJ4ARNCjNwJH8kYA3T_gpmhG_CVxKzmVlcQpqTGK-5ugBvvlFsCcwl-T_XccCmuD18kgPgw_EksM-qXpgo4AFtFvjklK91q8mbolDcNllHkfX5TRcPAfGOO0nuFb6Tov71UwAcGV2t7mSVOOpndePzDHdDrpCBUvZQVUTxihuKowLWgyh3J4"/>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40">
+<span class="material-symbols-outlined text-white text-5xl">play_circle</span>
+</div>
+</div>
+<h3 class="font-headline font-bold text-xs uppercase text-primary">PROJECT_CYBER_2049</h3>
+<p class="text-[10px] leading-tight text-on-surface-variant">Direction / Cinematography / 35mm Scan</p>
+</div>
+<div class="space-y-2">
+<div class="aspect-video bg-black relative group overflow-hidden">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Close-up of a vintage film camera lens reflecting colorful neon lights in a dark studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN8qHO_cmvf8chZvYWyA1vk9bB3qfwboJQetiygapdFmf2BhInB9sBdp91Vu8qVDK1mXC09hGP2X8iKpq6lgZ-DI7ZKjzHK9qi2CV7AZ-5s-Tq4DFrhuWU5t8j9dkTavWbBD-QyMi8LTMHpx20ce7TOgZ7479ln4CWr1tpvUhmd_19qy15iOth-Bz7JzJZ3II63VMX8-YWvG_5tcGsm2qB4YAIa_Ad5QCLprRI_q00x5Y1RWkFHwOgJYNk0W9d4ofvQU_a1yjiXI0"/>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40">
+<span class="material-symbols-outlined text-white text-5xl">play_circle</span>
+</div>
+</div>
+<h3 class="font-headline font-bold text-xs uppercase text-primary">ANALOG_DREAMS_V2</h3>
+<p class="text-[10px] leading-tight text-on-surface-variant">Experimental Short / Color Grading</p>
+</div>
+</div>
+<div class="mt-4 p-3 bg-surface-container-low border border-outline-variant/20">
+<p class="text-[11px] font-mono leading-relaxed">
+                            [SYSTEM LOG]: FILM PORTFOLIO INITIALIZED...<br/>
+                            TOTAL_FILES: 14<br/>
+                            LAST_MODIFIED: 10.24.2023
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- OPEN WINDOW: TERMINAL.EXE (Overlapping) -->
+<div class="absolute bottom-[10%] left-[5%] md:left-[10%] w-[90%] md:w-[450px] z-30 window-bevel bg-surface-dim">
+<div class="h-8 bg-inverse-surface flex items-center justify-between px-2 cursor-move">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-fixed text-sm">terminal</span>
+<span class="text-white font-bold text-xs uppercase tracking-tight">terminal.exe</span>
+</div>
+<button class="w-6 h-6 bg-surface-dim button-bevel flex items-center justify-center active:shadow-[inset_2px_2px_0px_#000]">
+<span class="material-symbols-outlined text-sm text-black">close</span>
+</button>
+</div>
+<div class="p-1 bg-surface-dim">
+<div class="bg-black text-tertiary-fixed font-mono p-4 h-[200px] overflow-hidden text-[12px] input-inset">
+<p class="mb-1">V01 OS [Version 0.9.5]</p>
+<p class="mb-4">(c) 2002 System-V. All rights reserved.</p>
+<p class="mb-1">C:\USER\ARCHITECT&gt; ls -a</p>
+<p class="mb-1">. . . . [DIRECTORY] SOFTWARE</p>
+<p class="mb-1">. . . . [DIRECTORY] VISUALS</p>
+<p class="mb-1">. . . . [FILE] resume.pdf</p>
+<p class="mb-4">. . . . [FILE] config.sys</p>
+<p class="animate-pulse">C:\USER\ARCHITECT&gt; _</p>
+</div>
+</div>
+</div>
+<!-- DECORATION: CLUSTERED CURSORS (Corners) -->
+<div class="absolute top-10 right-10 pointer-events-none opacity-40">
+<span class="material-symbols-outlined text-white text-3xl absolute -top-2 -left-2 rotate-12">near_me</span>
+<span class="material-symbols-outlined text-white text-2xl absolute top-4 left-6 -rotate-12">near_me</span>
+<span class="material-symbols-outlined text-white text-xl absolute top-8 left-0 rotate-45">near_me</span>
+</div>
+<!-- DECORATION: TRASH BIN (Floating Translucent) -->
+<div class="absolute bottom-16 right-8 flex flex-col items-center opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+<div class="w-16 h-16 bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+<span class="material-symbols-outlined text-white text-4xl">delete</span>
+</div>
+<span class="text-[10px] text-white mt-1 uppercase font-bold tracking-tighter">Trash</span>
+</div>
+<!-- PROGRESS BAR (Bottom Center) -->
+<div class="absolute bottom-14 left-1/2 -translate-x-1/2 w-48 h-6 bg-surface-dim window-bevel p-1 z-10">
+<div class="h-full w-full bg-surface-container-high flex gap-[2px]">
+<div class="h-full w-4 bg-tertiary-fixed"></div>
+<div class="h-full w-4 bg-tertiary-fixed"></div>
+<div class="h-full w-4 bg-tertiary-fixed"></div>
+<div class="h-full w-4 bg-tertiary-fixed opacity-50"></div>
+<div class="h-full w-4 bg-tertiary-fixed opacity-30"></div>
+</div>
+<div class="absolute -top-5 left-0 w-full text-center">
+<span class="text-[9px] text-white font-bold uppercase tracking-widest animate-pulse">loading_assets... 64%</span>
+</div>
+</div>
+</main>
+<!-- BOTTOM TASKBAR -->
+<footer class="fixed bottom-0 w-full z-[100] flex justify-start items-center gap-1 px-1 py-1 bg-[#d3d4d5] dark:bg-[#d3d4d5] h-10 border-t-2 border-t-white shadow-[0_-2px_0_0_#808080]">
+<!-- START BUTTON -->
+<button class="flex items-center justify-center bg-[#d3d4d5] shadow-[2px_2px_0px_#808080,inset_1px_1px_0px_white] px-2 h-8 hover:bg-[#eeeeee] active:shadow-[inset_2px_2px_0px_#808080] group">
+<div class="flex items-center gap-1 px-1 w-16 h-16">
+<span class="material-symbols-outlined text-primary text-[20px] text-5xl" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="font-['Public_Sans'] font-bold text-[0.75rem] uppercase text-[#2d2f2f] group-active:translate-x-[1px] group-active:translate-y-[1px]">START</span>
+</div>
+</button>
+<div class="h-6 w-[2px] bg-white shadow-[1px_0px_0px_#808080] mx-1"></div>
+<!-- ACTIVE TABS -->
+<div class="flex gap-1 h-full items-center overflow-x-auto scrollbar-hide">
+<div class="flex items-center justify-center bg-[#d3d4d5] shadow-[inset_2px_2px_0px_#808080,inset_-2px_-2px_0px_white] px-4 h-8 min-w-[120px]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">folder_open</span>
+<span class="font-['Public_Sans'] font-bold text-[0.75rem] uppercase text-[#2d2f2f]">EXPLORE</span>
+</div>
+</div>
+<div class="flex items-center justify-center bg-[#d3d4d5] shadow-[2px_2px_0px_#808080,inset_1px_1px_0px_white] px-4 h-8 min-w-[120px] hover:bg-[#eeeeee]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">play_arrow</span>
+<span class="font-['Public_Sans'] font-bold text-[0.75rem] uppercase text-[#2d2f2f]">MEDIA</span>
+</div>
+</div>
+<div class="hidden md:flex items-center justify-center bg-[#d3d4d5] shadow-[2px_2px_0px_#808080,inset_1px_1px_0px_white] px-4 h-8 min-w-[120px] hover:bg-[#eeeeee]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+<span class="font-['Public_Sans'] font-bold text-[0.75rem] uppercase text-[#2d2f2f]">LOG</span>
+</div>
+</div>
+</div>
+<!-- CLOCK / SYSTEM TRAY -->
+<div class="ml-auto flex items-center justify-center bg-[#d3d4d5] shadow-[inset_2px_2px_0px_#808080,inset_-1px_-1px_0px_white] px-3 h-8">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="font-['Public_Sans'] font-bold text-[0.75rem] uppercase text-[#2d2f2f]">04:20 PM</span>
+</div>
+</div>
+</footer>
+</body></html>
