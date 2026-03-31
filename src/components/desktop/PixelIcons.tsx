@@ -44,21 +44,21 @@ function Folder({ ch }: { ch?: React.ReactNode }) {
 function GameBadge() {
   const R = '#cc2222'
   const RH = '#ee4444'
-  // Small pixel joystick in bottom-right corner (x:44-74, y:34-56)
+  // Tiny joystick in bottom-right corner only (x:54-72, y:42-56)
   return (
     <g>
-      {/* Joystick base oval */}
-      <rect x="48" y="50" width="22" height="4"  fill={R}/>
-      <rect x="50" y="49" width="18" height="2"  fill={RH}/>
+      {/* Joystick base */}
+      <rect x="56" y="52" width="14" height="3"  fill={R}/>
+      <rect x="57" y="51" width="12" height="2"  fill={RH}/>
       {/* Shaft */}
-      <rect x="56" y="40" width="6"  height="12" fill={R}/>
-      <rect x="56" y="40" width="2"  height="12" fill={RH}/>
+      <rect x="61" y="44" width="4"  height="9"  fill={R}/>
+      <rect x="61" y="44" width="2"  height="9"  fill={RH}/>
       {/* Top ball */}
-      <rect x="53" y="34" width="12" height="8"  fill={R}/>
-      <rect x="53" y="34" width="10" height="2"  fill={RH}/>
-      <rect x="53" y="34" width="2"  height="8"  fill={RH}/>
+      <rect x="58" y="40" width="9"  height="5"  fill={R}/>
+      <rect x="58" y="40" width="7"  height="2"  fill={RH}/>
+      <rect x="58" y="40" width="2"  height="5"  fill={RH}/>
       {/* Center dot */}
-      <rect x="57" y="37" width="4"  height="3"  fill="#881111"/>
+      <rect x="61" y="42" width="3"  height="2"  fill="#881111"/>
     </g>
   )
 }
@@ -67,24 +67,23 @@ function GameBadge() {
 function FilmBadge() {
   const R = '#cc2222'
   const RH = '#ee4444'
-  // Small clapperboard in bottom-right corner (x:44-74, y:34-56)
+  // Tiny clapperboard in bottom-right corner only (x:54-72, y:40-56)
   return (
     <g>
       {/* Hinge arm on top */}
-      <rect x="52" y="34" width="18" height="4"  fill={R}/>
-      <rect x="52" y="34" width="16" height="2"  fill={RH}/>
-      {/* Diagonal stripe on hinge */}
-      <rect x="54" y="34" width="2"  height="4"  fill="#881111"/>
-      <rect x="58" y="34" width="2"  height="4"  fill="#881111"/>
-      <rect x="62" y="34" width="2"  height="4"  fill="#881111"/>
-      <rect x="66" y="34" width="2"  height="4"  fill="#881111"/>
+      <rect x="56" y="40" width="14" height="3"  fill={R}/>
+      <rect x="56" y="40" width="12" height="2"  fill={RH}/>
+      {/* Diagonal stripes on hinge */}
+      <rect x="58" y="40" width="2"  height="3"  fill="#881111"/>
+      <rect x="62" y="40" width="2"  height="3"  fill="#881111"/>
+      <rect x="66" y="40" width="2"  height="3"  fill="#881111"/>
       {/* Clapper body */}
-      <rect x="48" y="38" width="24" height="16" fill={R}/>
-      <rect x="48" y="38" width="22" height="2"  fill={RH}/>
-      <rect x="48" y="38" width="2"  height="16" fill={RH}/>
+      <rect x="54" y="43" width="18" height="12" fill={R}/>
+      <rect x="54" y="43" width="16" height="2"  fill={RH}/>
+      <rect x="54" y="43" width="2"  height="12" fill={RH}/>
       {/* Lines on body */}
-      <rect x="50" y="43" width="20" height="2"  fill="#881111"/>
-      <rect x="50" y="48" width="20" height="2"  fill="#881111"/>
+      <rect x="56" y="47" width="14" height="2"  fill="#881111"/>
+      <rect x="56" y="51" width="14" height="2"  fill="#881111"/>
     </g>
   )
 }

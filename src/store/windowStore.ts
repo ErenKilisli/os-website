@@ -49,7 +49,7 @@ const WINDOW_CONFIGS: Record<WindowType, { title: string; icon: string; width: n
   game:     { title: 'GAMES.EXE',      icon: 'sports_esports', width: 500, height: 340 },
   film:     { title: 'FILMS.EXE',      icon: 'movie',          width: 600, height: 440 },
   swr:      { title: 'SOFTWARE.EXE',   icon: 'folder',         width: 520, height: 360 },
-  about:    { title: 'ABOUT.EXE',      icon: 'account_circle', width: 460, height: 400 },
+  about:    { title: 'ABOUTME.DOC',    icon: 'description',    width: 820, height: 640 },
   mail:     { title: 'MAIL.EXE',       icon: 'mail',           width: 640, height: 460 },
   terminal: { title: 'TERMINAL.EXE',   icon: 'terminal',       width: 560, height: 380 },
   settings: { title: 'SETTINGS.EXE',   icon: 'settings',       width: 440, height: 360 },
@@ -60,19 +60,15 @@ const WINDOW_CONFIGS: Record<WindowType, { title: string; icon: string; width: n
 }
 
 const INITIAL_ICONS: IconState[] = [
-  // Left column 1
-  { id: 'ico-swr',      label: 'SOFTWARE/CODE', iconName: 'folder',         iconColor: '#9097ff', x: 16,  y: 16,  windowType: 'swr'      },
-  { id: 'ico-film',     label: 'FILM PROJECTS', iconName: 'movie',          iconColor: '#eaea00', x: 16,  y: 132, windowType: 'film'     },
-  { id: 'ico-terminal', label: 'TERMINAL',      iconName: 'terminal',       iconColor: '#00fd00', x: 16,  y: 248, windowType: 'terminal' },
-  { id: 'ico-about',    label: 'ABOUT ME',      iconName: 'account_circle', iconColor: '#ffffff', x: 16,  y: 364, windowType: 'about'    },
-  { id: 'ico-mail',     label: 'CONTACT',       iconName: 'mail',           iconColor: '#9097ff', x: 16,  y: 480, windowType: 'mail'     },
-  { id: 'ico-settings', label: 'SETTINGS',      iconName: 'settings',       iconColor: '#d3d4d5', x: 16,  y: 596, windowType: 'settings' },
-  // Left column 2
-  { id: 'ico-game',     label: 'GAME PROJECTS', iconName: 'sports_esports', iconColor: '#00fd00', x: 144, y: 16,  windowType: 'game'     },
+  // Left column
+  { id: 'ico-about',    label: 'ABOUTME.DOC',   iconName: 'account_circle', iconColor: '#ffffff', x: 16,  y: 16,  windowType: 'about'    },
+  { id: 'ico-terminal', label: 'TERMINAL',      iconName: 'terminal',       iconColor: '#00fd00', x: 16,  y: 132, windowType: 'terminal' },
+  { id: 'ico-mail',     label: 'CONTACT',       iconName: 'mail',           iconColor: '#9097ff', x: 16,  y: 248, windowType: 'mail'     },
+  { id: 'ico-settings', label: 'SETTINGS',      iconName: 'settings',       iconColor: '#d3d4d5', x: 16,  y: 364, windowType: 'settings' },
   // Right side
   { id: 'ico-devfiles', label: 'DEV PROJECTS',  iconName: 'folder_code',    iconColor: '#ff8c42', x: 900, y: 16,  windowType: 'devfiles' },
-  { id: 'ico-cinema',   label: 'FILM PROJECTS', iconName: 'folder',         iconColor: '#ff4d6d', x: 900, y: 132, windowType: 'cinema'   },
-  { id: 'ico-arcade',   label: 'GAME PROJECTS', iconName: 'folder',         iconColor: '#cc44ff', x: 900, y: 248, windowType: 'arcade'   },
+  { id: 'ico-film',     label: 'FILM PROJECTS', iconName: 'movie',          iconColor: '#eaea00', x: 900, y: 132, windowType: 'film'     },
+  { id: 'ico-game',     label: 'GAME PROJECTS', iconName: 'sports_esports', iconColor: '#00fd00', x: 900, y: 248, windowType: 'game'     },
 ]
 
 let zCounter = 100
