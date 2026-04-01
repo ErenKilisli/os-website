@@ -1,8 +1,13 @@
 'use client'
 import { useWindowStore } from '@/store/windowStore'
 import { useEffect, useState } from 'react'
+import { SystemTray } from './SystemTray'
 
-export function Taskbar() {
+interface Props {
+  onSpotlight: () => void
+}
+
+export function Taskbar({ onSpotlight }: Props) {
   const { windows, focusWindow, minimizeWindow, focusedId, openWindow } = useWindowStore()
   const [time, setTime] = useState('')
 
@@ -22,13 +27,21 @@ export function Taskbar() {
 
   return (
     <div id="taskbar">
-      <button id="start-btn" onClick={() => openWindow('swr')}>
+      <button id="start-btn" onClick={() => openWindow('devfiles')}>
         <span className="material-symbols-filled" style={{ fontVariationSettings: "'FILL' 1" }}>grid_view</span>
         START
       </button>
+
+      {/* Spotlight button */}
+      <button className="tb-search-btn" onClick={onSpotlight} title="Search (Ctrl+K)">
+        <span className="material-symbols-outlined">search</span>
+        <span>SEARCH</span>
+      </button>
+
       <div className="tb-sep" />
+
       <div id="tb-wins">
-        {windows.map(win => (
+        {windows.map((win) => (
           <div
             key={win.id}
             className={`tbw${win.id === focusedId && !win.isMinimized ? ' on' : ''}`}
@@ -43,7 +56,11 @@ export function Taskbar() {
           </div>
         ))}
       </div>
+
+      {/* Right side: SystemTray + clock */}
       <div id="tb-right">
+        <SystemTray />
+        <div className="tb-right-divider" />
         <span className="material-symbols-outlined">schedule</span>
         <div id="clock">{time}</div>
       </div>
