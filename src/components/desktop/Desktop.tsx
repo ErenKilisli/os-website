@@ -6,6 +6,8 @@ import { useSystemStore } from '@/store/systemStore'
 import { DesktopIcon } from './DesktopIcon'
 import { Taskbar } from './Taskbar'
 import { BootScreen } from './BootScreen'
+import { LoginScreen } from './LoginScreen'
+import { ShutdownScreen } from './ShutdownScreen'
 import { Spotlight } from './Spotlight'
 import { SoundManager } from './SoundManager'
 import { DesktopWallpaper } from './DesktopWallpaper'
@@ -18,12 +20,17 @@ import { ProjectDetailWindow } from '../windows/ProjectDetailWindow'
 import { SnakeWindow } from '../windows/SnakeWindow'
 import { SnowboardWindow } from '../windows/SnowboardWindow'
 import { PaintWindow } from '../windows/PaintWindow'
+import { DesktopContextMenu } from './DesktopContextMenu'
+
+type Phase = 'boot' | 'login' | 'desktop' | 'shutdown' | 'restart'
 
 const LOADER_COUNT = 12
 
 export function Desktop() {
-  const [booted, setBooted] = useState(false)
+  const [phase, setPhase] = useState<Phase>('boot')
+  const [bootKey, setBootKey] = useState(0)
   const [spotlight, setSpotlight] = useState(false)
+  const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(null)
   const [isMobile, setIsMobile] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { windows, icons, openWindow } = useWindowStore()
@@ -61,7 +68,21 @@ export function Desktop() {
     <>
       <SoundManager />
 
-      {!booted && <BootScreen onComplete={() => setBooted(true)} />}
+      {phase === 'boot' && (
+        <BootScreen key={bootKey} onComplete={() => setPhase('login')} />
+      )}
+      {phase === 'login' && (
+        <LoginScreen onLogin={() => setPhase('desktop')} />
+      )}
+      {(phase === 'shutdown' || phase === 'restart') && (
+        <ShutdownScreen
+          mode={phase === 'restart' ? 'restart' : 'shutdown'}
+          onComplete={() => {
+            setBootKey(k => k + 1)
+            setPhase('boot')
+          }}
+        />
+      )}
 
       {/* Top nav bar */}
       <nav id="top-nav">
@@ -100,7 +121,13 @@ export function Desktop() {
         />
       )}
 
-      <div id="desktop">
+      <div
+        id="desktop"
+        onContextMenu={e => {
+          e.preventDefault()
+          setCtxMenu({ x: e.clientX, y: e.clientY })
+        }}
+      >
         <DesktopWallpaper />
 
         {/* Desktop icons */}
@@ -149,9 +176,24 @@ export function Desktop() {
         </div>
       </div>
 
-      <Taskbar onSpotlight={() => setSpotlight(true)} />
+      <Taskbar
+        onSpotlight={() => setSpotlight(true)}
+        onShutdown={() => setPhase('shutdown')}
+        onRestart={() => setPhase('restart')}
+      />
 
       <Spotlight open={spotlight} onClose={() => setSpotlight(false)} />
+
+      <AnimatePresence>
+        {ctxMenu && (
+          <DesktopContextMenu
+            key="ctx"
+            x={ctxMenu.x}
+            y={ctxMenu.y}
+            onClose={() => setCtxMenu(null)}
+          />
+        )}
+      </AnimatePresence>
     </>
   )
 }

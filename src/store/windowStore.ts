@@ -43,6 +43,7 @@ interface Store {
   updateWindowPos: (id: string, x: number, y: number) => void
   updateIconPos: (id: string, x: number, y: number) => void
   openProjectDetail: (project: Project) => void
+  resetIconPositions: () => void
 }
 
 const WINDOW_CONFIGS: Record<WindowType, { title: string; icon: string; width: number; height: number }> = {
@@ -183,4 +184,6 @@ export const useWindowStore = create<Store>((set, get) => ({
   updateIconPos: (id, x, y) => set(s => ({
     icons: s.icons.map(ico => ico.id === id ? { ...ico, x, y } : ico),
   })),
+
+  resetIconPositions: () => set({ icons: INITIAL_ICONS }),
 }))
