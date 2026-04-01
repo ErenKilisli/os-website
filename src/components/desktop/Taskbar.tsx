@@ -1,7 +1,8 @@
 'use client'
 import { useWindowStore } from '@/store/windowStore'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { SystemTray } from './SystemTray'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { CSSProperties } from 'react'
 
 const menuItemStyle: CSSProperties = {
@@ -30,6 +31,9 @@ export function Taskbar({ onSpotlight, onShutdown, onRestart }: Props) {
   const { windows, focusWindow, minimizeWindow, focusedId, openWindow } = useWindowStore()
   const [time, setTime] = useState('')
   const [startOpen, setStartOpen] = useState(false)
+  const [previewId, setPreviewId] = useState<string | null>(null)
+  const [previewX, setPreviewX] = useState(0)
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     const tick = () => {
@@ -136,12 +140,95 @@ export function Taskbar({ onSpotlight, onShutdown, onRestart }: Props) {
               else if (win.id === focusedId) minimizeWindow(win.id)
               else focusWindow(win.id)
             }}
+            onMouseEnter={(e) => {
+              if (hideTimer.current) clearTimeout(hideTimer.current)
+              const rect = e.currentTarget.getBoundingClientRect()
+              setPreviewX(rect.left + rect.width / 2)
+              setPreviewId(win.id)
+            }}
+            onMouseLeave={() => {
+              hideTimer.current = setTimeout(() => setPreviewId(null), 120)
+            }}
           >
             <span className="material-symbols-outlined">{win.icon}</span>
             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{win.title}</span>
           </div>
         ))}
       </div>
+
+      {/* Window preview tooltip */}
+      <AnimatePresence>
+        {previewId && (() => {
+          const pw = windows.find(w => w.id === previewId)
+          if (!pw) return null
+          const cardW = 172
+          const safeX = Math.min(Math.max(previewX - cardW / 2, 8), window.innerWidth - cardW - 8)
+          return (
+            <motion.div
+              key={previewId}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={{ duration: 0.12 }}
+              style={{
+                position: 'fixed',
+                bottom: 44,
+                left: safeX,
+                width: cardW,
+                background: '#05070e',
+                border: '2px solid #00ffff',
+                boxShadow: '0 0 20px rgba(0,255,255,0.15)',
+                zIndex: 90002,
+                pointerEvents: 'none',
+              }}
+            >
+              {/* Titlebar */}
+              <div style={{
+                background: '#000080',
+                padding: '4px 8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                borderBottom: '1px solid #00007a',
+              }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 12 }}>{pw.icon}</span>
+                <span style={{
+                  fontFamily: 'var(--font-h)',
+                  fontSize: 8,
+                  color: '#fff',
+                  letterSpacing: '0.06em',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {pw.title}
+                </span>
+              </div>
+              {/* Body */}
+              <div style={{ padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <div style={{ fontFamily: 'monospace', fontSize: 10, color: pw.isMinimized ? '#606080' : '#00ffff' }}>
+                  {pw.isMinimized ? '■ MINIMIZED' : pw.id === focusedId ? '▶ ACTIVE' : '● OPEN'}
+                </div>
+                <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#202040' }}>
+                  {pw.width} × {pw.height} px
+                </div>
+              </div>
+              {/* Arrow */}
+              <div style={{
+                position: 'absolute',
+                bottom: -8,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 0,
+                height: 0,
+                borderLeft: '7px solid transparent',
+                borderRight: '7px solid transparent',
+                borderTop: '8px solid #00ffff',
+              }} />
+            </motion.div>
+          )
+        })()}
+      </AnimatePresence>
 
       {/* Right side: SystemTray + clock */}
       <div id="tb-right">
