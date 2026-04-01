@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 export type Theme = 'cybercore' | 'vaporwave' | 'matrix' | 'amber'
-export type Wallpaper = 'bliss' | 'grid' | 'stars' | 'scanlines'
+export type Wallpaper = 'synthwave' | 'grid' | 'stars' | 'scanlines'
 
 export const THEME_LABELS: Record<Theme, string> = {
   cybercore: 'CYBERCORE',
@@ -12,7 +12,7 @@ export const THEME_LABELS: Record<Theme, string> = {
 }
 
 export const WALLPAPER_LABELS: Record<Wallpaper, string> = {
-  bliss: 'PIXEL BLISS',
+  synthwave: 'SYNTHWAVE',
   grid: 'GRID',
   stars: 'STARS',
   scanlines: 'SCANLINES',
@@ -35,12 +35,20 @@ export const useSystemStore = create<SystemStore>()(
       volume: 70,
       brightness: 100,
       theme: 'cybercore',
-      wallpaper: 'bliss',
+      wallpaper: 'synthwave',
       setVolume: (volume) => set({ volume }),
       setBrightness: (brightness) => set({ brightness }),
       setTheme: (theme) => set({ theme }),
       setWallpaper: (wallpaper) => set({ wallpaper }),
     }),
-    { name: 'eren-os-system' }
+    {
+      name: 'eren-os-system',
+      // Migrate old 'bliss' value to 'synthwave'
+      onRehydrateStorage: () => (state) => {
+        if (state && (state.wallpaper as string) === 'bliss') {
+          state.wallpaper = 'synthwave'
+        }
+      },
+    }
   )
 )

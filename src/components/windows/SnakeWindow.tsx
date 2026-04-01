@@ -90,13 +90,13 @@ export function SnakeWindow({ win, isMobile = false }: { win: WindowState; isMob
 
       if (!g.started) {
         ctx.fillStyle = '#00fd00'
-        ctx.font = `bold 13px "Space Grotesk", monospace`
+        ctx.font = `bold 13px monospace`
         ctx.textAlign = 'center'
         ctx.fillText('[ SNAKE.EXE ]', CW / 2, CH / 2 - 22)
-        ctx.font = `bold 10px "Space Grotesk", monospace`
+        ctx.font = `10px monospace`
         ctx.fillStyle = 'rgba(0,253,0,0.6)'
         ctx.fillText('PRESS ARROW / WASD TO START', CW / 2, CH / 2 + 2)
-        ctx.fillText('EAT RED PIXELS. DON\'T CRASH.', CW / 2, CH / 2 + 18)
+        ctx.fillText("EAT RED PIXELS. DON'T CRASH.", CW / 2, CH / 2 + 18)
         return
       }
 
@@ -136,14 +136,14 @@ export function SnakeWindow({ win, isMobile = false }: { win: WindowState; isMob
         ctx.fillStyle = 'rgba(0,0,0,0.75)'
         ctx.fillRect(0, 0, CW, CH)
         ctx.fillStyle = '#ff3366'
-        ctx.font = `bold 15px "Space Grotesk", monospace`
+        ctx.font = `bold 15px monospace`
         ctx.textAlign = 'center'
         ctx.fillText('// GAME OVER //', CW / 2, CH / 2 - 20)
         ctx.fillStyle = '#00fd00'
-        ctx.font = `bold 12px "Space Grotesk", monospace`
+        ctx.font = `bold 12px monospace`
         ctx.fillText(`SCORE: ${g.score}`, CW / 2, CH / 2 + 4)
         ctx.fillStyle = 'rgba(0,253,0,0.45)'
-        ctx.font = `bold 9px "Space Grotesk", monospace`
+        ctx.font = `9px monospace`
         ctx.fillText('PRESS ANY KEY TO RESTART', CW / 2, CH / 2 + 26)
       }
     }

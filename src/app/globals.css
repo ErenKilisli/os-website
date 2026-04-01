@@ -107,7 +107,7 @@ html, body {
   right: 0;
   bottom: 52px;
   left: 0;
-  background: radial-gradient(circle at center, #484fb9 0%, #121788 100%);
+  background: #020812;
   overflow: hidden;
 }
 
@@ -1578,9 +1578,7 @@ html, body {
   --secondary-container: #01cdfe;
   --tertiary-fixed: #fffb96;
 }
-[data-theme="vaporwave"] #desktop {
-  background: radial-gradient(circle at center, #7b2fc9 0%, #1a0a3e 100%);
-}
+[data-theme="vaporwave"] #desktop { background: #0d0020; }
 [data-theme="vaporwave"] #top-nav { background: #7b2fc9; }
 
 [data-theme="matrix"] {
@@ -1589,9 +1587,7 @@ html, body {
   --secondary-container: #00b327;
   --tertiary-fixed: #00ff41;
 }
-[data-theme="matrix"] #desktop {
-  background: radial-gradient(circle at center, #001800 0%, #000800 100%);
-}
+[data-theme="matrix"] #desktop { background: #000800; }
 [data-theme="matrix"] #top-nav { background: #003b00; }
 
 [data-theme="amber"] {
@@ -1600,9 +1596,7 @@ html, body {
   --secondary-container: #ffcc00;
   --tertiary-fixed: #ff6600;
 }
-[data-theme="amber"] #desktop {
-  background: radial-gradient(circle at center, #3d1e00 0%, #1a0a00 100%);
-}
+[data-theme="amber"] #desktop { background: #0d0500; }
 [data-theme="amber"] #top-nav { background: #7a3e00; }
 
 /* ── Spotlight ──────────────────────────────────────────── */

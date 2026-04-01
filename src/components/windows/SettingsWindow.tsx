@@ -8,7 +8,7 @@ type Tab = 'Display' | 'Sound' | 'Network' | 'About'
 const TABS: Tab[] = ['Display', 'Sound', 'Network', 'About']
 
 const THEMES: Theme[] = ['cybercore', 'vaporwave', 'matrix', 'amber']
-const WALLPAPERS: Wallpaper[] = ['bliss', 'grid', 'stars', 'scanlines']
+const WALLPAPERS: Wallpaper[] = ['synthwave', 'grid', 'stars', 'scanlines']
 
 interface Props {
   win: WindowState

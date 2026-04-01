@@ -68,13 +68,14 @@ const INITIAL_ICONS: IconState[] = [
   { id: 'ico-terminal', label: 'TERMINAL',      iconName: 'terminal',       iconColor: '#00fd00', x: 16,  y: 132, windowType: 'terminal' },
   { id: 'ico-mail',     label: 'CONTACT',       iconName: 'mail',           iconColor: '#9097ff', x: 16,  y: 248, windowType: 'mail'     },
   { id: 'ico-settings', label: 'SETTINGS',      iconName: 'settings',       iconColor: '#d3d4d5', x: 16,  y: 364, windowType: 'settings' },
-  // Right side
+  // Second left column — games
+  { id: 'ico-snake',      label: 'SNAKE.EXE',     iconName: 'sports_esports', iconColor: '#00fd00', x: 136, y: 16,  windowType: 'snake'     },
+  { id: 'ico-snowboard',  label: 'SNOWBOARD.EXE', iconName: 'downhill_skiing',iconColor: '#00ffff', x: 136, y: 132, windowType: 'snowboard' },
+  { id: 'ico-paint',      label: 'PAINT.EXE',     iconName: 'brush',          iconColor: '#ff71ce', x: 136, y: 248, windowType: 'paint'     },
+  // Right column — projects
   { id: 'ico-devfiles',   label: 'DEV PROJECTS',  iconName: 'folder_code',    iconColor: '#ff8c42', x: 900, y: 16,  windowType: 'devfiles'  },
   { id: 'ico-film',       label: 'FILM PROJECTS', iconName: 'movie',          iconColor: '#eaea00', x: 900, y: 132, windowType: 'film'      },
   { id: 'ico-game',       label: 'GAME PROJECTS', iconName: 'sports_esports', iconColor: '#00fd00', x: 900, y: 248, windowType: 'game'      },
-  { id: 'ico-snake',      label: 'SNAKE.EXE',     iconName: 'sports_esports', iconColor: '#00fd00', x: 900, y: 364, windowType: 'snake'     },
-  { id: 'ico-snowboard',  label: 'SNOWBOARD.EXE', iconName: 'downhill_skiing',iconColor: '#00ffff', x: 900, y: 480, windowType: 'snowboard' },
-  { id: 'ico-paint',      label: 'PAINT.EXE',     iconName: 'brush',          iconColor: '#ff71ce', x: 900, y: 596, windowType: 'paint'     },
 ]
 
 let zCounter = 100

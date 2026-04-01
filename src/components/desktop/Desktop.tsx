@@ -25,8 +25,12 @@ export function Desktop() {
   const [booted, setBooted] = useState(false)
   const [spotlight, setSpotlight] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const { windows, icons, openWindow } = useWindowStore()
   const { brightness, theme } = useSystemStore()
+
+  // Mark mounted — prevents Zustand persist mismatch on brightness overlay
+  useEffect(() => { setMounted(true) }, [])
 
   // Apply theme data attribute to <html>
   useEffect(() => {
@@ -82,8 +86,8 @@ export function Desktop() {
         </div>
       </nav>
 
-      {/* Brightness overlay */}
-      {brightness < 100 && (
+      {/* Brightness overlay — only after mount to avoid Zustand persist hydration mismatch */}
+      {mounted && brightness < 100 && (
         <div
           style={{
             position: 'fixed',
