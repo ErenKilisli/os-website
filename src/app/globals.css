@@ -272,7 +272,7 @@ html, body {
 .wbody {
   flex: 1;
   overflow: auto;
-  background: #fff;
+  background: #020812;
   font-family: var(--font-b);
   font-size: 14px;
   box-shadow: inset 2px 2px 0px #808080, inset -1px -1px 0px #ffffff;

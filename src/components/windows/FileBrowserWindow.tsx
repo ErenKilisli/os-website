@@ -6,393 +6,281 @@ import { GAME_PROJECTS, FILM_PROJECTS, DEVFILES_PROJECTS, CINEMA_PROJECTS, ARCAD
 
 interface Props { win: WindowState; category: string; isMobile?: boolean }
 
-const CATEGORY_DATA: Record<string, { projects: Project[]; label: string; accent: string; icon: string; path: string }> = {
-  game:     { projects: GAME_PROJECTS,     label: 'GAME PROJECTS',  accent: '#00fd00', icon: 'sports_esports', path: 'C:\\Projects\\Games' },
-  film:     { projects: FILM_PROJECTS,     label: 'FILM PROJECTS',  accent: '#eaea00', icon: 'movie',          path: 'C:\\Projects\\Films' },
-  devfiles: { projects: DEVFILES_PROJECTS, label: 'DEV PROJECTS',   accent: '#ff8c42', icon: 'folder_code',    path: 'C:\\Projects\\Dev'   },
-  cinema:   { projects: CINEMA_PROJECTS,   label: 'FILM PROJECTS',  accent: '#eaea00', icon: 'movie',          path: 'C:\\Projects\\Films' },
-  arcade:   { projects: ARCADE_PROJECTS,   label: 'GAME PROJECTS',  accent: '#00fd00', icon: 'sports_esports', path: 'C:\\Projects\\Games' },
+const CATEGORY_DATA: Record<string, {
+  projects: Project[]; label: string; accent: string; icon: string; path: string
+}> = {
+  game:     { projects: GAME_PROJECTS,     label: 'GAME PROJECTS',  accent: '#00a800', icon: 'sports_esports', path: 'C:\\Projects\\Games'  },
+  film:     { projects: FILM_PROJECTS,     label: 'FILM PROJECTS',  accent: '#b8a000', icon: 'movie',          path: 'C:\\Projects\\Films'  },
+  devfiles: { projects: DEVFILES_PROJECTS, label: 'DEV PROJECTS',   accent: '#c06000', icon: 'folder_code',    path: 'C:\\Projects\\Dev'    },
+  cinema:   { projects: CINEMA_PROJECTS,   label: 'FILM PROJECTS',  accent: '#b8a000', icon: 'movie',          path: 'C:\\Projects\\Films'  },
+  arcade:   { projects: ARCADE_PROJECTS,   label: 'GAME PROJECTS',  accent: '#00a800', icon: 'sports_esports', path: 'C:\\Projects\\Games'  },
 }
 
-const TYPE_TAG_COLOR: Record<string, string> = {
-  'Unreal Engine': '#9b59b6', 'C++': '#3498db', 'React': '#61dafb',
-  'TypeScript': '#3178c6', 'Rust': '#e67e22', 'Go': '#00add8',
-  'Short Film': '#eaea00', 'Director': '#ff6b6b', 'Cinematics': '#ff71ce',
-  'Game Dev': '#00fd00', 'AI': '#00ffff', 'Web': '#ff8c42',
-  'Platform': '#ff8c42', 'Game Design': '#00fd00', 'Game Development': '#00fd00',
-  'Music Video': '#eaea00', 'Commercial': '#eaea00',
+const TAG_COLOR: Record<string, string> = {
+  'Unreal Engine': '#6a3d9b', 'C++': '#1a6aab', 'React': '#0090bb',
+  'TypeScript': '#1060a0', 'Rust': '#c05010', 'Go': '#007890',
+  'Short Film': '#907000', 'Director': '#903030', 'Cinematics': '#804080',
+  'Game Dev': '#007000', 'AI': '#008080', 'Web': '#805030',
+  'Platform': '#805030', 'Game Design': '#007000', 'Game Development': '#007000',
+  'Music Video': '#907000', 'Commercial': '#907000',
 }
-
-function tagColor(tag: string) { return TYPE_TAG_COLOR[tag] ?? '#4a6080' }
+function tagColor(t: string) { return TAG_COLOR[t] ?? '#505870' }
 
 type ViewMode = 'list' | 'icon'
 
-// ── Icon view card ────────────────────────────────────────────────────
-function IconCard({ p, accent, icon, selected, onClick, onDoubleClick }: {
-  p: Project; accent: string; icon: string; selected: boolean
-  onClick: () => void; onDoubleClick: () => void
+// ── Toolbar button (Win95 style) ──────────────────────────────────────
+function TBtn({ children, active, onClick, title, disabled }: {
+  children: React.ReactNode; active?: boolean; onClick?: () => void
+  title?: string; disabled?: boolean
 }) {
-  const [hovered, setHovered] = useState(false)
   return (
-    <div
+    <button
+      title={title}
       onClick={onClick}
-      onDoubleClick={onDoubleClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      disabled={disabled}
       style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-        padding: '14px 10px 10px',
-        cursor: 'pointer', userSelect: 'none', width: 90,
-        background: selected ? accent + '18' : hovered ? '#0a1628' : 'transparent',
-        border: `1px solid ${selected ? accent + '66' : hovered ? '#1a3050' : 'transparent'}`,
-        transition: 'background 0.1s, border-color 0.1s',
+        width: 26, height: 22, border: 'none',
+        background: 'var(--surface-dim)',
+        boxShadow: active
+          ? 'inset 1.5px 1.5px 0 #808080, inset -1.5px -1.5px 0 #fff'
+          : 'inset 1.5px 1.5px 0 #fff, inset -1.5px -1.5px 0 #808080',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: disabled ? '#aaa' : '#000',
+        cursor: disabled ? 'default' : 'pointer', flexShrink: 0,
       }}
     >
-      {/* Folder icon */}
-      <div style={{ position: 'relative' }}>
-        <span className="material-symbols-outlined" style={{
-          fontSize: 46, color: accent,
-          fontVariationSettings: "'FILL' 1",
-          filter: selected ? `drop-shadow(0 0 8px ${accent}88)` : 'none',
-          display: 'block',
-        }}>
-          folder
-        </span>
-        {/* badge icon overlay */}
-        <span className="material-symbols-outlined" style={{
-          position: 'absolute', bottom: 6, right: -2,
-          fontSize: 16, color: '#000',
-          fontVariationSettings: "'FILL' 1",
-          background: accent,
-          borderRadius: 2,
-          padding: 1,
-        }}>
-          {icon}
-        </span>
-      </div>
-      {/* Label */}
-      <div style={{
-        fontFamily: 'var(--font-h)', fontSize: 6,
-        color: selected ? accent : '#8aaabb',
-        textAlign: 'center', lineHeight: 1.5,
-        letterSpacing: '0.04em',
-        maxWidth: 84, wordBreak: 'break-word',
-      }}>
-        {p.name}
-      </div>
-      <div style={{
-        fontFamily: 'var(--font-h)', fontSize: 5,
-        color: '#2a4060', letterSpacing: '0.06em',
-      }}>
-        {p.year}
-      </div>
-    </div>
+      {children}
+    </button>
   )
 }
 
-// ── List view row ─────────────────────────────────────────────────────
+// ── List row ──────────────────────────────────────────────────────────
 function ListRow({ p, accent, icon, selected, onClick, onDoubleClick }: {
   p: Project; accent: string; icon: string; selected: boolean
   onClick: () => void; onDoubleClick: () => void
 }) {
-  const [hovered, setHovered] = useState(false)
+  const [hov, setHov] = useState(false)
   return (
     <div
       onClick={onClick}
       onDoubleClick={onDoubleClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
       style={{
         display: 'grid',
-        gridTemplateColumns: '28px 1fr 120px 50px 1fr',
+        gridTemplateColumns: '30px 1fr 110px 44px',
         alignItems: 'center',
-        gap: 0,
-        padding: '0 12px',
-        height: 32,
+        height: 28,
+        borderBottom: '1px solid #e8e8e8',
+        background: selected ? '#000080' : hov ? '#d8e8f8' : '#fff',
         cursor: 'pointer', userSelect: 'none',
-        background: selected ? accent + '14' : hovered ? '#0a1628' : 'transparent',
-        borderBottom: '1px solid #06121e',
-        borderLeft: `2px solid ${selected ? accent : 'transparent'}`,
-        transition: 'background 0.08s',
       }}
     >
-      {/* Icon */}
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <span className="material-symbols-outlined" style={{
-          fontSize: 16, color: accent + 'cc',
-          fontVariationSettings: "'FILL' 1",
-        }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span className="material-symbols-outlined"
+          style={{ fontSize: 20, color: selected ? '#fff' : accent, fontVariationSettings: "'FILL' 1" }}>
           {icon}
         </span>
       </div>
-
-      {/* Name */}
       <div style={{
-        fontFamily: 'var(--font-h)', fontSize: 7,
-        color: selected ? accent : '#c8d8e8',
-        letterSpacing: '0.05em',
+        fontFamily: 'var(--font-h)', fontSize: 9,
+        color: selected ? '#fff' : '#000',
+        letterSpacing: '0.03em',
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        paddingRight: 8,
+        paddingRight: 6,
       }}>
         {p.name}
       </div>
-
-      {/* Type */}
       <div style={{
-        fontFamily: 'var(--font-b)', fontSize: 12, color: '#3a5570',
+        fontFamily: 'var(--font-b)', fontSize: 13,
+        color: selected ? '#cce' : '#444',
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        paddingRight: 8,
+        paddingRight: 6,
       }}>
         {p.type}
       </div>
-
-      {/* Year */}
       <div style={{
-        fontFamily: 'var(--font-h)', fontSize: 6, color: '#2a4060',
-        letterSpacing: '0.08em',
+        fontFamily: 'var(--font-h)', fontSize: 6,
+        color: selected ? '#aac' : '#888',
+        letterSpacing: '0.06em',
       }}>
         {p.year}
-      </div>
-
-      {/* Tags */}
-      <div style={{ display: 'flex', gap: 4, overflow: 'hidden' }}>
-        {p.tags.slice(0, 3).map(tag => (
-          <span key={tag} style={{
-            fontFamily: 'var(--font-h)', fontSize: 5,
-            padding: '1px 4px',
-            background: tagColor(tag) + '22',
-            color: tagColor(tag),
-            border: `1px solid ${tagColor(tag)}44`,
-            letterSpacing: '0.05em',
-            whiteSpace: 'nowrap',
-          }}>
-            {tag}
-          </span>
-        ))}
       </div>
     </div>
   )
 }
 
-// ── Main component ────────────────────────────────────────────────────
+// ── Icon card ─────────────────────────────────────────────────────────
+function IconCard({ p, accent, icon, selected, onClick, onDoubleClick }: {
+  p: Project; accent: string; icon: string; selected: boolean
+  onClick: () => void; onDoubleClick: () => void
+}) {
+  const [hov, setHov] = useState(false)
+  return (
+    <div
+      onClick={onClick}
+      onDoubleClick={onDoubleClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        width: 86, padding: '10px 6px 8px',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+        cursor: 'pointer', userSelect: 'none',
+        background: selected ? '#000080' : hov ? '#d8e8f8' : 'transparent',
+        outline: hov && !selected ? '1px dashed #808080' : 'none',
+      }}
+    >
+      <div style={{ position: 'relative', display: 'flex' }}>
+        <span className="material-symbols-outlined"
+          style={{ fontSize: 40, color: accent, fontVariationSettings: "'FILL' 1" }}>
+          folder
+        </span>
+        <span className="material-symbols-outlined"
+          style={{
+            position: 'absolute', bottom: 4, right: -4,
+            fontSize: 14, color: '#fff',
+            fontVariationSettings: "'FILL' 1",
+            background: accent,
+            padding: '1px',
+            boxShadow: '1px 1px 0 #000',
+          }}>
+          {icon}
+        </span>
+      </div>
+      <div style={{
+        fontFamily: 'var(--font-h)', fontSize: 6,
+        color: selected ? '#fff' : '#000',
+        textAlign: 'center', lineHeight: 1.6, letterSpacing: '0.03em',
+        maxWidth: 80, wordBreak: 'break-word',
+        background: selected ? '#000080' : 'transparent',
+        padding: '0 2px',
+      }}>
+        {p.name}
+      </div>
+    </div>
+  )
+}
+
+// ── Main ──────────────────────────────────────────────────────────────
 export function FileBrowserWindow({ win, category, isMobile = false }: Props) {
   const { openProjectDetail } = useWindowStore()
   const data = CATEGORY_DATA[category]
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [viewMode, setViewMode] = useState<ViewMode>('list')
+  const [viewMode, setViewMode]     = useState<ViewMode>('list')
 
   if (!data) return null
 
-  const selected = data.projects.find(p => p.id === selectedId) ?? null
+  const sel = data.projects.find(p => p.id === selectedId) ?? null
+  const open = (p: Project) => { setSelectedId(p.id); openProjectDetail(p) }
 
   return (
     <Window
       win={win}
-      menu={['File', 'Edit', 'View', 'Help']}
-      status={selectedId ? `1 object selected  ·  ${data.label}` : `${data.projects.length} object(s)  ·  ${data.label}`}
+      menu={[]}
+      status={sel ? `1 object selected` : `${data.projects.length} object(s)`}
       isMobile={isMobile}
     >
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#020812' }}>
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--surface-dim)' }}>
 
         {/* ── Toolbar ── */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 0,
-          padding: '0 0 0 0', height: 30,
-          borderBottom: '1px solid #0a1628',
-          background: '#000', flexShrink: 0,
+          display: 'flex', alignItems: 'center', gap: 2,
+          padding: '3px 4px',
+          background: 'var(--surface-dim)',
+          borderBottom: '1px solid #808080',
+          flexShrink: 0,
         }}>
-          {/* Nav buttons */}
-          {(['arrow_back', 'arrow_forward', 'arrow_upward'] as const).map((ico, i) => (
-            <button key={i} style={{
-              width: 30, height: 30, background: 'none', border: 'none',
-              borderRight: '1px solid #0a1628',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#2a4060', cursor: 'default',
-            }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 15 }}>{ico}</span>
-            </button>
-          ))}
+          <TBtn disabled title="Back">
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
+          </TBtn>
+          <TBtn disabled title="Forward">
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
+          </TBtn>
+          <TBtn disabled title="Up">
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_upward</span>
+          </TBtn>
+
+          <div style={{ width: 1, height: 18, background: '#808080', margin: '0 2px', boxShadow: '1px 0 0 #fff' }} />
 
           {/* Address bar */}
           <div style={{
-            flex: 1, height: '100%',
-            display: 'flex', alignItems: 'center',
-            borderRight: '1px solid #0a1628',
-            padding: '0 10px', gap: 6,
+            flex: 1, height: 22,
+            display: 'flex', alignItems: 'center', gap: 6,
+            padding: '0 8px',
+            background: '#fff',
+            boxShadow: 'inset 1.5px 1.5px 0 #808080, inset -1.5px -1.5px 0 #fff',
           }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 12, color: data.accent + '88' }}>
+            <span className="material-symbols-outlined"
+              style={{ fontSize: 13, color: data.accent, fontVariationSettings: "'FILL' 1", flexShrink: 0 }}>
               {data.icon}
             </span>
-            <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#3a5570', letterSpacing: '0.06em' }}>
+            <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#333', letterSpacing: '0.04em' }}>
               {data.path}
             </span>
           </div>
 
-          {/* View mode toggles */}
-          <div style={{ display: 'flex', borderLeft: '1px solid #0a1628' }}>
-            {(['list', 'icon'] as ViewMode[]).map(mode => (
-              <button
-                key={mode}
-                onClick={() => setViewMode(mode)}
-                style={{
-                  width: 30, height: 30, background: viewMode === mode ? data.accent + '22' : 'none',
-                  border: 'none',
-                  borderLeft: mode === 'icon' ? '1px solid #0a1628' : 'none',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: viewMode === mode ? data.accent : '#2a4060',
-                  cursor: 'pointer',
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 15 }}>
-                  {mode === 'list' ? 'format_list_bulleted' : 'grid_view'}
-                </span>
-              </button>
-            ))}
-          </div>
+          <div style={{ width: 1, height: 18, background: '#808080', margin: '0 2px', boxShadow: '1px 0 0 #fff' }} />
+
+          <TBtn active={viewMode === 'list'} onClick={() => setViewMode('list')} title="Details">
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>format_list_bulleted</span>
+          </TBtn>
+          <TBtn active={viewMode === 'icon'} onClick={() => setViewMode('icon')} title="Icons">
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>grid_view</span>
+          </TBtn>
         </div>
 
-        {/* ── Body: sidebar + content ── */}
+        {/* ── Body ── */}
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
-          {/* Sidebar */}
-          <div style={{
-            width: 140, flexShrink: 0,
-            borderRight: '1px solid #0a1628',
-            background: '#000',
-            display: 'flex', flexDirection: 'column',
-            padding: '10px 0',
-            gap: 0,
-          }}>
-            {/* Category section */}
-            <div style={{
-              padding: '0 12px 8px',
-              borderBottom: '1px solid #0a1628',
-              marginBottom: 8,
-            }}>
-              <div style={{ fontFamily: 'var(--font-h)', fontSize: 5, color: '#2a4060', letterSpacing: '0.12em', marginBottom: 6 }}>
-                LOCATION
-              </div>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '5px 6px',
-                background: data.accent + '14',
-                border: `1px solid ${data.accent}33`,
-              }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 14, color: data.accent }}>
-                  {data.icon}
-                </span>
-                <span style={{ fontFamily: 'var(--font-h)', fontSize: 5, color: data.accent, letterSpacing: '0.06em' }}>
-                  {data.label}
-                </span>
-              </div>
-            </div>
+          {/* Content */}
+          <div style={{ flex: 1, overflow: 'auto', background: '#fff' }}>
 
-            {/* Quick info */}
-            <div style={{ padding: '0 12px' }}>
-              <div style={{ fontFamily: 'var(--font-h)', fontSize: 5, color: '#2a4060', letterSpacing: '0.12em', marginBottom: 6 }}>
-                INFO
-              </div>
-              {[
-                { label: 'ITEMS', value: data.projects.length },
-                { label: 'TYPE', value: category.toUpperCase() },
-              ].map(row => (
-                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <span style={{ fontFamily: 'var(--font-h)', fontSize: 5, color: '#2a4060', letterSpacing: '0.08em' }}>{row.label}</span>
-                  <span style={{ fontFamily: 'var(--font-h)', fontSize: 5, color: '#4a6080', letterSpacing: '0.06em' }}>{row.value}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Selected file info */}
-            {selected && (
-              <div style={{
-                margin: '10px 8px 0',
-                padding: 8,
-                border: `1px solid ${data.accent}33`,
-                background: data.accent + '0a',
-              }}>
-                <div style={{ fontFamily: 'var(--font-h)', fontSize: 5, color: '#2a4060', letterSpacing: '0.12em', marginBottom: 6 }}>
-                  SELECTED
-                </div>
-                <div style={{ fontFamily: 'var(--font-h)', fontSize: 5, color: data.accent, letterSpacing: '0.05em', lineHeight: 1.6, marginBottom: 4 }}>
-                  {selected.name}
-                </div>
-                <div style={{ fontFamily: 'var(--font-h)', fontSize: 5, color: '#2a4060', letterSpacing: '0.06em' }}>
-                  {selected.year}
-                </div>
-                <div style={{ marginTop: 6, fontFamily: 'var(--font-h)', fontSize: 5, color: '#2a5070', letterSpacing: '0.05em', lineHeight: 1.5 }}>
-                  {selected.tags.slice(0, 2).join(' · ')}
-                </div>
-              </div>
-            )}
-
-            <div style={{ flex: 1 }} />
-
-            {/* Hint */}
-            <div style={{ padding: '0 12px 4px' }}>
-              <div style={{ fontFamily: 'var(--font-h)', fontSize: 4, color: '#1a2a3a', letterSpacing: '0.08em', lineHeight: 1.8 }}>
-                DOUBLE-CLICK<br />TO OPEN
-              </div>
-            </div>
-          </div>
-
-          {/* Main content */}
-          <div style={{ flex: 1, overflow: 'auto', background: '#020812' }}>
-
-            {/* List header (only in list mode) */}
-            {viewMode === 'list' && (
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '28px 1fr 120px 50px 1fr',
-                gap: 0,
-                padding: '0 12px',
-                height: 22,
-                borderBottom: '1px solid #0a1628',
-                background: '#000',
-                position: 'sticky', top: 0, zIndex: 1,
-              }}>
-                {['', 'NAME', 'TYPE', 'YEAR', 'TAGS'].map((col, i) => (
-                  <div key={i} style={{
-                    fontFamily: 'var(--font-h)', fontSize: 5,
-                    color: '#1a3050', letterSpacing: '0.12em',
-                    display: 'flex', alignItems: 'center',
-                  }}>
-                    {col}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Items */}
             {viewMode === 'list' ? (
-              <div>
+              <>
+                {/* Column headers */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '30px 1fr 110px 44px',
+                  height: 22,
+                  position: 'sticky', top: 0, zIndex: 1,
+                  background: 'var(--surface-dim)',
+                  boxShadow: 'inset 1.5px 1.5px 0 #fff, inset -1.5px -1.5px 0 #808080',
+                  borderBottom: '1px solid #808080',
+                }}>
+                  {['', 'Name', 'Type', 'Year'].map((col, i) => (
+                    <div key={i} style={{
+                      display: 'flex', alignItems: 'center',
+                      paddingLeft: i === 0 ? 0 : 6,
+                      fontFamily: 'var(--font-h)', fontSize: 6,
+                      color: '#333', letterSpacing: '0.06em',
+                      borderRight: i < 3 ? '1px solid #808080' : 'none',
+                    }}>
+                      {col}
+                    </div>
+                  ))}
+                </div>
+
                 {data.projects.map(p => (
                   <ListRow
-                    key={p.id}
-                    p={p}
-                    accent={data.accent}
-                    icon={data.icon}
+                    key={p.id} p={p} accent={data.accent} icon={data.icon}
                     selected={selectedId === p.id}
                     onClick={() => setSelectedId(p.id)}
-                    onDoubleClick={() => { setSelectedId(p.id); openProjectDetail(p) }}
+                    onDoubleClick={() => open(p)}
                   />
                 ))}
-              </div>
+              </>
             ) : (
               <div style={{
                 display: 'flex', flexWrap: 'wrap',
                 alignContent: 'flex-start',
-                padding: 16, gap: 4,
+                padding: '10px 8px', gap: 2,
               }}>
                 {data.projects.map(p => (
                   <IconCard
-                    key={p.id}
-                    p={p}
-                    accent={data.accent}
-                    icon={data.icon}
+                    key={p.id} p={p} accent={data.accent} icon={data.icon}
                     selected={selectedId === p.id}
                     onClick={() => setSelectedId(p.id)}
-                    onDoubleClick={() => { setSelectedId(p.id); openProjectDetail(p) }}
+                    onDoubleClick={() => open(p)}
                   />
                 ))}
               </div>

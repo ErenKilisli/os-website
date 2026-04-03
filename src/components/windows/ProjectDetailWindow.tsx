@@ -1,121 +1,110 @@
 'use client'
 import { Window } from './Window'
-import { WindowState } from '@/store/windowStore'
-import { useWindowStore } from '@/store/windowStore'
+import { WindowState, useWindowStore } from '@/store/windowStore'
 import { Project } from '@/data/projects'
 
-interface Props {
-  win: WindowState
-  isMobile?: boolean
+interface Props { win: WindowState; isMobile?: boolean }
+
+const TAG_COLOR: Record<string, string> = {
+  'Unreal Engine': '#6a3d9b', 'C++': '#1a6aab', 'React': '#0090bb',
+  'TypeScript': '#1060a0', 'Rust': '#c05010', 'Go': '#007890',
+  'Short Film': '#907000', 'Director': '#903030', 'Cinematics': '#804080',
+  'Game Dev': '#007000', 'AI': '#008080', 'Web': '#805030',
+  'Platform': '#805030', 'Game Design': '#007000', 'Game Development': '#007000',
+  'Music Video': '#907000', 'Commercial': '#907000',
+  'Writer': '#903030', 'Rendering': '#c05010', 'Native': '#c05010',
+  'CLI': '#007890', 'Tooling': '#1060a0',
 }
+function tagColor(t: string) { return TAG_COLOR[t] ?? '#505870' }
 
-const TYPE_TAG_COLOR: Record<string, string> = {
-  'Unreal Engine': '#9b59b6', 'C++': '#3498db', 'React': '#61dafb',
-  'TypeScript': '#3178c6', 'Rust': '#e67e22', 'Go': '#00add8',
-  'Short Film': '#eaea00', 'Director': '#ff6b6b', 'Cinematics': '#ff71ce',
-  'Game Dev': '#00fd00', 'AI': '#00ffff', 'Web': '#ff8c42',
-  'Platform': '#ff8c42', 'Game Design': '#00fd00', 'Game Development': '#00fd00',
-  'Music Video': '#eaea00', 'Commercial': '#eaea00', 'Lighting': '#eaea00',
-  'Camera': '#eaea00', 'Production': '#eaea00', 'Festival': '#eaea00',
-  'Writer': '#ff6b6b', 'Rendering': '#e67e22', 'Native': '#e67e22',
-  'CLI': '#00add8', 'Tooling': '#3178c6',
-}
+const GAME_TAGS = new Set(['Unreal Engine', 'Game Dev', 'Game Design', 'Game Development', 'C++'])
+const FILM_TAGS = new Set(['Short Film', 'Director', 'Cinematics', 'Music Video', 'Commercial', 'Camera', 'Lighting'])
 
-function tagColor(tag: string) {
-  return TYPE_TAG_COLOR[tag] ?? '#4a6080'
-}
-
-const GAME_TAGS  = new Set(['Unreal Engine', 'Game Dev', 'Game Design', 'Game Development', 'C++'])
-const FILM_TAGS  = new Set(['Short Film', 'Director', 'Cinematics', 'Music Video', 'Commercial', 'Camera', 'Lighting'])
-
-function detectCategory(p: Project): { accent: string; icon: string; label: string } {
-  if (p.tags.some(t => GAME_TAGS.has(t))) return { accent: '#00fd00', icon: 'sports_esports', label: 'GAME PROJECT' }
-  if (p.tags.some(t => FILM_TAGS.has(t)))  return { accent: '#eaea00', icon: 'movie',          label: 'FILM PROJECT'  }
-  return                                           { accent: '#ff8c42', icon: 'folder_code',    label: 'DEV PROJECT'   }
+function detectCat(p: Project): { accent: string; icon: string; label: string } {
+  if (p.tags.some(t => GAME_TAGS.has(t))) return { accent: '#00a800', icon: 'sports_esports', label: 'GAME PROJECT' }
+  if (p.tags.some(t => FILM_TAGS.has(t)))  return { accent: '#b8a000', icon: 'movie',          label: 'FILM PROJECT'  }
+  return                                           { accent: '#c06000', icon: 'folder_code',    label: 'DEV PROJECT'   }
 }
 
 export function ProjectDetailWindow({ win, isMobile = false }: Props) {
-  const { currentProject } = useWindowStore()
-  const p = currentProject
-
+  const { currentProject: p } = useWindowStore()
   if (!p) return null
 
-  const cat = detectCategory(p)
+  const cat = detectCat(p)
 
   return (
-    <Window win={win} menu={['File', 'Edit', 'Help']} status={`${p.name}.EXE  ·  READ ONLY`} isMobile={isMobile}>
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#020812', overflow: 'hidden' }}>
-
-        {/* Top accent bar */}
-        <div style={{ height: 2, background: `linear-gradient(90deg, ${cat.accent}, transparent)`, flexShrink: 0 }} />
+    <Window win={win} menu={['File', 'Edit', 'Help']} status={`${p.name}  ·  Read-only`} isMobile={isMobile}>
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--surface-dim)', overflow: 'hidden' }}>
 
         {/* Header */}
         <div style={{
-          display: 'flex', alignItems: 'flex-start', gap: 14,
-          padding: '16px 18px 14px',
-          borderBottom: '1px solid #0a1628',
-          background: '#000',
+          display: 'flex', alignItems: 'flex-start', gap: 12,
+          padding: '12px 14px 10px',
+          background: 'var(--surface-dim)',
+          borderBottom: '1px solid #808080',
+          boxShadow: '0 1px 0 #fff',
           flexShrink: 0,
         }}>
+          {/* Icon box */}
           <div style={{
             width: 48, height: 48, flexShrink: 0,
+            background: '#fff',
+            boxShadow: 'inset 1.5px 1.5px 0 #808080, inset -1.5px -1.5px 0 #fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: `1px solid ${cat.accent}44`,
-            background: cat.accent + '11',
           }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 26, color: cat.accent }}>
+            <span className="material-symbols-outlined"
+              style={{ fontSize: 28, color: cat.accent, fontVariationSettings: "'FILL' 1" }}>
               {cat.icon}
             </span>
           </div>
 
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
-              fontFamily: 'var(--font-h)', fontSize: 10, color: cat.accent,
-              letterSpacing: '0.08em', lineHeight: 1.5,
-              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              fontFamily: 'var(--font-h)', fontSize: 9,
+              color: '#000', letterSpacing: '0.04em', lineHeight: 1.5,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
               {p.name}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
               <span style={{
-                fontFamily: 'var(--font-h)', fontSize: 6, color: '#2a5070',
-                background: '#0a1628', padding: '2px 6px', letterSpacing: '0.1em',
+                fontFamily: 'var(--font-h)', fontSize: 5.5,
+                background: cat.accent, color: '#fff',
+                padding: '1px 5px', letterSpacing: '0.08em',
               }}>
-                {p.year}
-              </span>
-              <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: cat.accent + '88', letterSpacing: '0.1em' }}>
                 {cat.label}
               </span>
+              <span style={{ fontFamily: 'var(--font-h)', fontSize: 5.5, color: '#666', letterSpacing: '0.08em' }}>
+                {p.year}
+              </span>
             </div>
-            <div style={{
-              fontFamily: 'var(--font-b)', fontSize: 13, color: '#4a6080',
-              marginTop: 4, lineHeight: 1.3,
-            }}>
+            <div style={{ fontFamily: 'var(--font-b)', fontSize: 14, color: '#555', marginTop: 4 }}>
               {p.type}
             </div>
           </div>
         </div>
 
         {/* Scrollable body */}
-        <div style={{ flex: 1, overflow: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div style={{ flex: 1, overflow: 'auto', background: '#fff', padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* Tags */}
           <div>
             <div style={{
-              fontFamily: 'var(--font-h)', fontSize: 6, color: '#2a4060',
-              letterSpacing: '0.12em', marginBottom: 8,
+              fontFamily: 'var(--font-h)', fontSize: 5.5, color: '#555',
+              letterSpacing: '0.1em', marginBottom: 6,
+              textTransform: 'uppercase',
             }}>
-              TAGS
+              Tags
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {p.tags.map(tag => (
                 <span key={tag} style={{
                   fontFamily: 'var(--font-h)', fontSize: 6,
-                  padding: '3px 8px',
+                  padding: '2px 7px',
                   background: tagColor(tag) + '18',
                   color: tagColor(tag),
-                  border: `1px solid ${tagColor(tag)}44`,
-                  letterSpacing: '0.07em',
+                  border: `1px solid ${tagColor(tag)}55`,
+                  letterSpacing: '0.05em',
                 }}>
                   {tag}
                 </span>
@@ -123,22 +112,19 @@ export function ProjectDetailWindow({ win, isMobile = false }: Props) {
             </div>
           </div>
 
-          {/* Divider */}
-          <div style={{ height: 1, background: '#0a1628' }} />
+          <div style={{ height: 1, background: '#e0e0e0', boxShadow: '0 1px 0 #fff' }} />
 
           {/* Description */}
           <div>
             <div style={{
-              fontFamily: 'var(--font-h)', fontSize: 6, color: '#2a4060',
-              letterSpacing: '0.12em', marginBottom: 8,
-              display: 'flex', alignItems: 'center', gap: 6,
+              fontFamily: 'var(--font-h)', fontSize: 5.5, color: '#555',
+              letterSpacing: '0.1em', marginBottom: 6,
+              textTransform: 'uppercase',
             }}>
-              <span style={{ display: 'inline-block', width: 8, height: 1, background: cat.accent + '88' }} />
-              DESCRIPTION
+              Description
             </div>
             <div style={{
-              fontFamily: 'var(--font-b)', fontSize: 17, color: '#8aaabb',
-              lineHeight: 1.6,
+              fontFamily: 'var(--font-b)', fontSize: 17, color: '#222', lineHeight: 1.6,
             }}>
               {p.description}
             </div>
@@ -147,17 +133,15 @@ export function ProjectDetailWindow({ win, isMobile = false }: Props) {
           {/* Links */}
           {p.links.length > 0 && (
             <>
-              <div style={{ height: 1, background: '#0a1628' }} />
+              <div style={{ height: 1, background: '#e0e0e0', boxShadow: '0 1px 0 #fff' }} />
               <div>
                 <div style={{
-                  fontFamily: 'var(--font-h)', fontSize: 6, color: '#2a4060',
-                  letterSpacing: '0.12em', marginBottom: 10,
-                  display: 'flex', alignItems: 'center', gap: 6,
+                  fontFamily: 'var(--font-h)', fontSize: 5.5, color: '#555',
+                  letterSpacing: '0.1em', marginBottom: 8, textTransform: 'uppercase',
                 }}>
-                  <span style={{ display: 'inline-block', width: 8, height: 1, background: cat.accent + '88' }} />
-                  LINKS
+                  Links
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {p.links.map(link => (
                     <a
                       key={link.label}
@@ -165,27 +149,24 @@ export function ProjectDetailWindow({ win, isMobile = false }: Props) {
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 8,
+                        display: 'inline-flex', alignItems: 'center', gap: 6,
                         fontFamily: 'var(--font-h)', fontSize: 7,
-                        padding: '8px 14px',
-                        background: cat.accent + '14',
-                        border: `1px solid ${cat.accent}44`,
-                        color: cat.accent,
+                        padding: '6px 12px',
+                        background: 'var(--surface-dim)',
+                        boxShadow: 'inset 1.5px 1.5px 0 #fff, inset -1.5px -1.5px 0 #808080',
+                        color: '#000080',
                         textDecoration: 'none',
-                        letterSpacing: '0.1em',
+                        letterSpacing: '0.06em',
                         alignSelf: 'flex-start',
-                        transition: 'background 0.1s, border-color 0.1s',
                       }}
                       onMouseEnter={e => {
-                        e.currentTarget.style.background = cat.accent + '28'
-                        e.currentTarget.style.borderColor = cat.accent + 'aa'
+                        e.currentTarget.style.boxShadow = 'inset 1.5px 1.5px 0 #808080, inset -1.5px -1.5px 0 #fff'
                       }}
                       onMouseLeave={e => {
-                        e.currentTarget.style.background = cat.accent + '14'
-                        e.currentTarget.style.borderColor = cat.accent + '44'
+                        e.currentTarget.style.boxShadow = 'inset 1.5px 1.5px 0 #fff, inset -1.5px -1.5px 0 #808080'
                       }}
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>open_in_new</span>
+                      <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#000080' }}>open_in_new</span>
                       {link.label}
                     </a>
                   ))}
@@ -195,18 +176,19 @@ export function ProjectDetailWindow({ win, isMobile = false }: Props) {
           )}
         </div>
 
-        {/* Bottom accent */}
+        {/* Footer info */}
         <div style={{
-          padding: '6px 18px', borderTop: '1px solid #0a1628',
+          padding: '5px 14px',
+          background: 'var(--surface-dim)',
+          borderTop: '1px solid #808080',
+          boxShadow: 'inset 0 1px 0 #fff',
           display: 'flex', alignItems: 'center', gap: 8,
-          background: '#000', flexShrink: 0,
+          flexShrink: 0,
         }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 10, color: '#1a3050' }}>info</span>
-          <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#1a3050', letterSpacing: '0.1em' }}>
-            {p.tags.length} TAGS  ·  {p.links.length} LINK{p.links.length !== 1 ? 'S' : ''}  ·  {p.year}
+          <span style={{ fontFamily: 'var(--font-h)', fontSize: 5.5, color: '#666', letterSpacing: '0.06em' }}>
+            {p.tags.length} tag(s)  ·  {p.links.length} link(s)  ·  {p.year}
           </span>
         </div>
-
       </div>
     </Window>
   )

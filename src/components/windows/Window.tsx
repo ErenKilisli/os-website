@@ -4,6 +4,10 @@ import { useWindowStore, WindowState } from '@/store/windowStore'
 import { ReactNode, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
+type ResizeDir = 'e' | 's' | 'se' | 'sw' | 'w' | 'n' | 'ne' | 'nw'
+const MIN_W = 240
+const MIN_H = 160
+
 interface Props {
   win: WindowState
   children: ReactNode
@@ -34,7 +38,7 @@ const WIN_FILENAMES: Record<string, string> = {
 const SNAP_THRESHOLD = 48
 
 export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status, isMobile = false, bodyClass }: Props) {
-  const { closeWindow, focusWindow, minimizeWindow, maximizeWindow, updateWindowPos, focusedId } = useWindowStore()
+  const { closeWindow, focusWindow, minimizeWindow, maximizeWindow, updateWindowPos, updateWindowSize, focusedId } = useWindowStore()
   const dragControls = useDragControls()
   const x = useMotionValue(win.x)
   const y = useMotionValue(win.y)
@@ -42,6 +46,81 @@ export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status,
   const [snapped, setSnapped] = useState<'left' | 'right' | null>(null)
   const [snapZone, setSnapZone] = useState<'left' | 'right' | null>(null)
   const prevGeom = useRef<{ x: number; y: number } | null>(null)
+
+  // ── Resize state ──────────────────────────────────────────────
+  const resizing = useRef<{
+    dir: ResizeDir
+    startX: number; startY: number
+    startW: number; startH: number
+    startPX: number; startPY: number
+  } | null>(null)
+  const liveW = useMotionValue(win.width)
+  const liveH = useMotionValue(win.height)
+  const liveX = useMotionValue(win.x)
+  const liveY = useMotionValue(win.y)
+
+  // sync live values when store updates externally
+  if (!resizing.current) {
+    if (liveW.get() !== win.width) liveW.set(win.width)
+    if (liveH.get() !== win.height) liveH.set(win.height)
+  }
+
+  const startResize = (e: React.PointerEvent, dir: ResizeDir) => {
+    e.stopPropagation()
+    e.preventDefault()
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    resizing.current = {
+      dir,
+      startX: e.clientX, startY: e.clientY,
+      startW: liveW.get(), startH: liveH.get(),
+      startPX: x.get(), startPY: y.get(),
+    }
+  }
+
+  const onResizeMove = (e: React.PointerEvent) => {
+    if (!resizing.current) return
+    const { dir, startX, startY, startW, startH, startPX, startPY } = resizing.current
+    const dx = e.clientX - startX
+    const dy = e.clientY - startY
+
+    let newW = startW, newH = startH, newX = startPX, newY = startPY
+
+    if (dir.includes('e')) newW = Math.max(MIN_W, startW + dx)
+    if (dir.includes('s')) newH = Math.max(MIN_H, startH + dy)
+    if (dir.includes('w')) {
+      newW = Math.max(MIN_W, startW - dx)
+      newX = startPX + (startW - newW)
+    }
+    if (dir.includes('n')) {
+      newH = Math.max(MIN_H, startH - dy)
+      newY = startPY + (startH - newH)
+    }
+
+    liveW.set(newW)
+    liveH.set(newH)
+    liveX.set(newX)
+    liveY.set(newY)
+    x.set(newX)
+    y.set(newY)
+  }
+
+  const onResizeEnd = () => {
+    if (!resizing.current) return
+    updateWindowSize(win.id, liveW.get(), liveH.get())
+    updateWindowPos(win.id, x.get(), y.get())
+    resizing.current = null
+  }
+
+  const HANDLES: { dir: ResizeDir; style: React.CSSProperties }[] = [
+    { dir: 'e',  style: { right: 0, top: 4, bottom: 4, width: 4, cursor: 'ew-resize' } },
+    { dir: 'w',  style: { left: 0, top: 4, bottom: 4, width: 4, cursor: 'ew-resize' } },
+    { dir: 's',  style: { bottom: 0, left: 4, right: 4, height: 4, cursor: 'ns-resize' } },
+    { dir: 'n',  style: { top: 0, left: 4, right: 4, height: 4, cursor: 'ns-resize' } },
+    { dir: 'se', style: { right: 0, bottom: 0, width: 8, height: 8, cursor: 'nwse-resize' } },
+    { dir: 'sw', style: { left: 0, bottom: 0, width: 8, height: 8, cursor: 'nesw-resize' } },
+    { dir: 'ne', style: { right: 0, top: 0, width: 8, height: 8, cursor: 'nesw-resize' } },
+    { dir: 'nw', style: { left: 0, top: 0, width: 8, height: 8, cursor: 'nwse-resize' } },
+  ]
 
   if (win.isMinimized) return null
 
@@ -65,9 +144,11 @@ export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status,
             </button>
           </div>
         </div>
-        <div className="win-menu">
-          {menu.map(m => <div key={m} className="wmenu-item">{m}</div>)}
-        </div>
+        {menu.length > 0 && (
+          <div className="win-menu">
+            {menu.map(m => <div key={m} className="wmenu-item">{m}</div>)}
+          </div>
+        )}
         <div className={`wbody${bodyClass ? ` ${bodyClass}` : ''}`} style={{ flex: 1, height: 'calc(100% - 80px)' }}>
           {children}
         </div>
@@ -89,7 +170,7 @@ export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status,
 
   const bodyHeight = isFixed
     ? 'calc(100vh - 68px - 32px - 24px - 22px)'
-    : win.height - 90
+    : undefined  // flex:1 handles it when not fixed
 
   // ── Drag handlers ─────────────────────────────────────────────
   const handleDrag = () => {
@@ -155,8 +236,8 @@ export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status,
           y: isFixed ? 0 : y,
           zIndex: win.zIndex,
           position: isFixed ? 'fixed' : 'absolute',
-          width: winW,
-          height: winH,
+          width: isFixed ? winW : liveW,
+          height: isFixed ? winH : liveH,
           top: winTop,
           left: winLeft,
           right: winRight,
@@ -164,6 +245,8 @@ export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status,
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         onMouseDown={() => focusWindow(win.id)}
+        onPointerMove={onResizeMove}
+        onPointerUp={onResizeEnd}
         initial={{ scale: 0.05, opacity: 0, filter: 'brightness(4)' }}
         animate={{ scale: 1, opacity: 1, filter: 'brightness(1)' }}
         exit={{ scale: 0.05, opacity: 0 }}
@@ -188,16 +271,35 @@ export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status,
             </button>
           </div>
         </div>
-        <div className="win-menu">
-          {menu.map(m => <div key={m} className="wmenu-item">{m}</div>)}
-        </div>
-        <div className={`wbody${bodyClass ? ` ${bodyClass}` : ''}`} style={{ height: bodyHeight }}>
+        {menu.length > 0 && (
+          <div className="win-menu">
+            {menu.map(m => <div key={m} className="wmenu-item">{m}</div>)}
+          </div>
+        )}
+        <div
+          className={`wbody${bodyClass ? ` ${bodyClass}` : ''}`}
+          style={{ height: bodyHeight, flex: isFixed ? undefined : 1, minHeight: 0 }}
+        >
           {children}
         </div>
         <div className="wstatus">
           <span className="wstatus-panel">{status ?? `${filename} | SYSTEM_V01`}</span>
           <span className="wstatus-panel" style={{ flex: 'none', minWidth: 'auto' }}>V01</span>
         </div>
+
+        {/* ── Resize handles ── */}
+        {!isFixed && HANDLES.map(h => (
+          <div
+            key={h.dir}
+            data-cursor={h.dir}
+            onPointerDown={e => startResize(e, h.dir)}
+            style={{
+              position: 'absolute',
+              zIndex: 10,
+              ...h.style,
+            }}
+          />
+        ))}
       </motion.div>
     </>
   )

@@ -42,6 +42,7 @@ interface Store {
   minimizeWindow: (id: string) => void
   maximizeWindow: (id: string) => void
   updateWindowPos: (id: string, x: number, y: number) => void
+  updateWindowSize: (id: string, width: number, height: number) => void
   updateIconPos: (id: string, x: number, y: number) => void
   openProjectDetail: (project: Project) => void
   resetIconPositions: () => void
@@ -202,6 +203,10 @@ export const useWindowStore = create<Store>((set, get) => ({
 
   updateWindowPos: (id, x, y) => set(s => ({
     windows: s.windows.map(w => w.id === id ? { ...w, x, y } : w),
+  })),
+
+  updateWindowSize: (id, width, height) => set(s => ({
+    windows: s.windows.map(w => w.id === id ? { ...w, width, height } : w),
   })),
 
   updateIconPos: (id, x, y) => set(s => ({
