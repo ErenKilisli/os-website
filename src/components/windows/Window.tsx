@@ -24,6 +24,11 @@ const WIN_FILENAMES: Record<string, string> = {
   devfiles: 'DEV_PROJECTS.EXE',
   cinema:   'FILM_PROJECTS.EXE',
   arcade:   'GAME_PROJECTS.EXE',
+  music:    'MUSIC',
+  notepad:  'NOTEPAD',
+  calc:     'CALC',
+  sysinfo:  'SYSINFO',
+  browser:  'BROWSER',
 }
 
 const SNAP_THRESHOLD = 48
@@ -77,14 +82,12 @@ export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status,
   // ── Snap geometry ─────────────────────────────────────────────
   const isFixed = win.isMaximized || !!snapped
   const winW = win.isMaximized ? '100vw' : snapped ? '50vw' : win.width
-  const winH = win.isMaximized ? 'calc(100vh - 40px)' : snapped ? 'calc(100vh - 68px)' : win.height
-  const winTop = win.isMaximized ? 0 : snapped ? 28 : undefined
+  const winH = isFixed ? 'calc(100vh - 68px)' : win.height
+  const winTop = isFixed ? 28 : undefined
   const winLeft = win.isMaximized ? 0 : snapped === 'left' ? 0 : undefined
   const winRight = snapped === 'right' ? 0 : undefined
 
-  const bodyHeight = win.isMaximized
-    ? 'calc(100vh - 40px - 32px - 24px - 22px)'
-    : snapped
+  const bodyHeight = isFixed
     ? 'calc(100vh - 68px - 32px - 24px - 22px)'
     : win.height - 90
 

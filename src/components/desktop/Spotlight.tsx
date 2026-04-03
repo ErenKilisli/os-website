@@ -100,7 +100,7 @@ export function Spotlight({ open, onClose }: Props) {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKey}
-                placeholder="SEARCH EREN.OS..."
+                placeholder="SEARCH OS.WEBSITE..."
                 spellCheck={false}
                 autoComplete="off"
               />
@@ -134,7 +134,7 @@ export function Spotlight({ open, onClose }: Props) {
               <span>↑↓ NAVIGATE</span>
               <span>↵ OPEN</span>
               <span>ESC CLOSE</span>
-              <span style={{ marginLeft: 'auto' }}>EREN.OS SEARCH</span>
+              <span style={{ marginLeft: 'auto' }}>OS.WEBSITE SEARCH</span>
             </div>
           </motion.div>
         </>

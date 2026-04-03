@@ -69,7 +69,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
               borderBottom: '2px solid #00ffff',
             }}>
               <span style={{ fontFamily: 'var(--font-h)', fontSize: 10, color: '#fff', letterSpacing: '0.1em' }}>
-                EREN.OS — BEGIN LOGON
+                OS.WEBSITE — BEGIN LOGON
               </span>
             </div>
 

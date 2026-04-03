@@ -1,19 +1,13 @@
 'use client'
 import { motion, useMotionValue } from 'framer-motion'
 import { useWindowStore, IconState } from '@/store/windowStore'
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { FolderFilmIcon, FolderGameIcon, FolderEmptyIcon } from './FolderIcons'
 
 function IconGraphic({ icon }: { icon: IconState }) {
-  if (icon.windowType === 'cinema') {
-    return <FolderFilmIcon color={icon.iconColor} size={48} />
-  }
-  if (icon.windowType === 'arcade') {
-    return <FolderGameIcon color={icon.iconColor} size={48} />
-  }
-  if (icon.id === 'ico-devfiles2' || icon.id === 'ico-devfiles3') {
-    return <FolderEmptyIcon color={icon.iconColor} size={48} />
-  }
+  if (icon.windowType === 'cinema') return <FolderFilmIcon color={icon.iconColor} size={48} />
+  if (icon.windowType === 'arcade') return <FolderGameIcon color={icon.iconColor} size={48} />
+  if (icon.id === 'ico-devfiles2' || icon.id === 'ico-devfiles3') return <FolderEmptyIcon color={icon.iconColor} size={48} />
   return (
     <span
       className="material-symbols-filled"
@@ -25,35 +19,30 @@ function IconGraphic({ icon }: { icon: IconState }) {
 }
 
 export function DesktopIcon({ icon }: { icon: IconState }) {
-  const { openWindow, updateIconPos } = useWindowStore()
+  const { openWindow, updateIconPos, selectedIconId, selectIcon } = useWindowStore()
   const x = useMotionValue(icon.x)
   const y = useMotionValue(icon.y)
-  const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const clickCount = useRef(0)
-  const [selected, setSelected] = useState(false)
+  const dragging = useRef(false)
 
-  const handleClick = () => {
-    setSelected(true)
-    clickCount.current += 1
-    if (clickCount.current === 2) {
-      if (clickTimer.current) clearTimeout(clickTimer.current)
-      clickCount.current = 0
-      openWindow(icon.windowType)
-      return
-    }
-    clickTimer.current = setTimeout(() => {
-      clickCount.current = 0
-    }, 400)
-  }
+  const selected = selectedIconId === icon.id
 
   return (
     <motion.div
       drag
       dragMomentum={false}
       style={{ x, y, position: 'absolute', zIndex: 10, touchAction: 'none' }}
-      onDragEnd={() => updateIconPos(icon.id, x.get(), y.get())}
-      onClick={handleClick}
-      onBlur={() => setSelected(false)}
+      onDragStart={() => { dragging.current = true }}
+      onDragEnd={() => { updateIconPos(icon.id, x.get(), y.get()); setTimeout(() => { dragging.current = false }, 50) }}
+      onClick={(e) => {
+        e.stopPropagation()
+        if (dragging.current) return
+        selectIcon(icon.id)
+      }}
+      onDoubleClick={(e) => {
+        e.stopPropagation()
+        if (dragging.current) return
+        openWindow(icon.windowType)
+      }}
       className={`dic${selected ? ' selected' : ''}`}
       whileDrag={{ zIndex: 9990, scale: 1.05 }}
     >

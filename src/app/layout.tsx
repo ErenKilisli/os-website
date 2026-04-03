@@ -18,7 +18,7 @@ const publicSans = Public_Sans({
 
 export const metadata: Metadata = {
   title: 'SYSTEM_V01 | ENGINEER + FILMMAKER',
-  description: 'Eren Kılışlı — Portfolio',
+  description: 'Ibrahim Eren Kilisli — Portfolio',
 }
 
 export default function RootLayout({

@@ -20,11 +20,16 @@ import { ProjectDetailWindow } from '../windows/ProjectDetailWindow'
 import { SnakeWindow } from '../windows/SnakeWindow'
 import { SnowboardWindow } from '../windows/SnowboardWindow'
 import { PaintWindow } from '../windows/PaintWindow'
+import { MusicWindow } from '../windows/MusicWindow'
+import { NotePadWindow } from '../windows/NotePadWindow'
+import { CalcWindow } from '../windows/CalcWindow'
+import { SysInfoWindow } from '../windows/SysInfoWindow'
+import { BrowserWindow } from '../windows/BrowserWindow'
 import { DesktopContextMenu } from './DesktopContextMenu'
+import { CustomCursor } from './CustomCursor'
 
 type Phase = 'boot' | 'login' | 'desktop' | 'shutdown' | 'restart'
 
-const LOADER_COUNT = 12
 
 export function Desktop() {
   const [phase, setPhase] = useState<Phase>('boot')
@@ -33,7 +38,7 @@ export function Desktop() {
   const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(null)
   const [isMobile, setIsMobile] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const { windows, icons, openWindow } = useWindowStore()
+  const { windows, icons, openWindow, selectIcon } = useWindowStore()
   const { brightness, theme } = useSystemStore()
 
   // Mark mounted — prevents Zustand persist mismatch on brightness overlay
@@ -66,6 +71,7 @@ export function Desktop() {
 
   return (
     <>
+      <CustomCursor />
       <SoundManager />
 
       {phase === 'boot' && (
@@ -87,7 +93,7 @@ export function Desktop() {
       {/* Top nav bar */}
       <nav id="top-nav">
         <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-          <div className="nav-brand">EREN.OS</div>
+          <div className="nav-brand">OS.WEBSITE</div>
           <div className="nav-links">
             <span className="nav-link active" onClick={() => openWindow('terminal')}>TERMINAL</span>
             <span className="nav-link" onClick={() => openWindow('devfiles')}>FILES</span>
@@ -123,8 +129,10 @@ export function Desktop() {
 
       <div
         id="desktop"
+        onClick={() => selectIcon(null)}
         onContextMenu={e => {
           e.preventDefault()
+          selectIcon(null)
           setCtxMenu({ x: e.clientX, y: e.clientY })
         }}
       >
@@ -146,6 +154,11 @@ export function Desktop() {
             if (win.type === 'snake')         return <SnakeWindow         key={win.id} win={win} isMobile={isMobile} />
             if (win.type === 'snowboard')     return <SnowboardWindow     key={win.id} win={win} isMobile={isMobile} />
             if (win.type === 'paint')         return <PaintWindow         key={win.id} win={win} isMobile={isMobile} />
+            if (win.type === 'music')         return <MusicWindow         key={win.id} win={win} isMobile={isMobile} />
+            if (win.type === 'notepad')       return <NotePadWindow       key={win.id} win={win} isMobile={isMobile} />
+            if (win.type === 'calc')          return <CalcWindow          key={win.id} win={win} isMobile={isMobile} />
+            if (win.type === 'sysinfo')       return <SysInfoWindow       key={win.id} win={win} isMobile={isMobile} />
+            if (win.type === 'browser')       return <BrowserWindow       key={win.id} win={win} isMobile={isMobile} />
             return <FileBrowserWindow key={win.id} win={win} category={win.type} isMobile={isMobile} />
           })}
         </AnimatePresence>
@@ -155,16 +168,6 @@ export function Desktop() {
           <span className="material-symbols-outlined" style={{ fontSize: 30, top: -8, left: -8, transform: 'rotate(12deg)' }}>near_me</span>
           <span className="material-symbols-outlined" style={{ fontSize: 22, top: 16, left: 24, transform: 'rotate(-12deg)' }}>near_me</span>
           <span className="material-symbols-outlined" style={{ fontSize: 18, top: 32, left: 0, transform: 'rotate(45deg)' }}>near_me</span>
-        </div>
-
-        {/* Decorative loading bar */}
-        <div className="deco-loader">
-          <div className="deco-loader-lbl">LOADING_ASSETS... 64%</div>
-          <div className="deco-loader-bar">
-            {Array.from({ length: LOADER_COUNT }).map((_, i) => (
-              <div key={i} className="deco-loader-sq" />
-            ))}
-          </div>
         </div>
 
         {/* Trash bin decoration */}

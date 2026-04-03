@@ -2,13 +2,14 @@
 import { useState } from 'react'
 import { Window } from './Window'
 import { WindowState } from '@/store/windowStore'
-import { useSystemStore, Theme, Wallpaper, THEME_LABELS, WALLPAPER_LABELS } from '@/store/systemStore'
+import { useSystemStore, Theme, Wallpaper, CursorStyle, THEME_LABELS, WALLPAPER_LABELS, CURSOR_LABELS } from '@/store/systemStore'
 
-type Tab = 'Display' | 'Sound' | 'Network' | 'About'
-const TABS: Tab[] = ['Display', 'Sound', 'Network', 'About']
+type Tab = 'Display' | 'Sound' | 'Network' | 'SysInfo' | 'About'
+const TABS: Tab[] = ['Display', 'Sound', 'Network', 'SysInfo', 'About']
 
 const THEMES: Theme[] = ['cybercore', 'vaporwave', 'matrix', 'amber']
 const WALLPAPERS: Wallpaper[] = ['synthwave', 'grid', 'stars', 'scanlines']
+const CURSORS: CursorStyle[] = ['cyberwave', 'pixel', 'box']
 
 interface Props {
   win: WindowState
@@ -17,7 +18,7 @@ interface Props {
 
 export function SettingsWindow({ win, isMobile = false }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('Display')
-  const { volume, brightness, theme, wallpaper, setVolume, setBrightness, setTheme, setWallpaper } = useSystemStore()
+  const { volume, brightness, theme, wallpaper, cursorStyle, setVolume, setBrightness, setTheme, setWallpaper, setCursorStyle } = useSystemStore()
 
   return (
     <Window
@@ -89,6 +90,20 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
                 </div>
               </div>
               <div className="srow">
+                <label>Cursor:</label>
+                <div className="swallpaper-grid">
+                  {CURSORS.map((c) => (
+                    <button
+                      key={c}
+                      className={`swp-btn${cursorStyle === c ? ' active' : ''}`}
+                      onClick={() => setCursorStyle(c)}
+                    >
+                      {CURSOR_LABELS[c]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="srow">
                 <label>Resolution:</label>
                 <div className="sfake-select"><span>1920×1080</span><span>▼</span></div>
               </div>
@@ -145,7 +160,7 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
               </div>
               <div className="srow">
                 <label>Sound Scheme:</label>
-                <div className="sfake-select"><span>EREN.OS Classic</span><span>▼</span></div>
+                <div className="sfake-select"><span>OS.WEBSITE Classic</span><span>▼</span></div>
               </div>
               <div className="sbtn-row">
                 <button className="sbtn">Cancel</button>
@@ -185,13 +200,57 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
             </>
           )}
 
+          {/* ── SysInfo ── */}
+          {activeTab === 'SysInfo' && (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, paddingBottom: 10, borderBottom: '1px solid #0a1628' }}>
+                <div style={{ width: 44, height: 44, background: '#000', border: '2px solid #00ffff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 12px rgba(0,255,255,0.2)' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 24, color: '#00ffff' }}>memory</span>
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'var(--font-h)', fontSize: 10, color: '#fff', letterSpacing: '0.1em' }}>OS.WEBSITE</div>
+                  <div style={{ fontFamily: 'var(--font-b)', fontSize: 12, color: '#4a6080' }}>Build 2026 · Registered to: Ibrahim Eren Kilisli</div>
+                </div>
+              </div>
+              {[
+                { section: 'HARDWARE', rows: [
+                  { label: 'OS',        value: 'OS.WEBSITE LIZARD VERSION (Build 2026)' },
+                  { label: 'PROCESSOR', value: 'Creative Engine™ @ ∞ GHz' },
+                  { label: 'MEMORY',    value: '∞ MB RAM · 0 MB available' },
+                  { label: 'STORAGE',   value: '/projects/eren/ · 47 GB free' },
+                  { label: 'DISPLAY',   value: '1920×1080 · 32-bit TrueColor' },
+                  { label: 'UPTIME',    value: '26 years, 0 months, 0 days' },
+                ]},
+                { section: 'TECH STACK', rows: [
+                  { label: 'FRAMEWORK', value: 'Next.js 16 (Turbopack)' },
+                  { label: 'LANGUAGE',  value: 'TypeScript 5' },
+                  { label: 'STYLING',   value: 'Tailwind CSS v4' },
+                  { label: 'ANIMATION', value: 'Framer Motion 12' },
+                  { label: 'STATE',     value: 'Zustand (persist)' },
+                  { label: 'CANVAS',    value: 'HTML5 Canvas' },
+                  { label: 'DEPLOY',    value: 'Vercel (Edge Runtime)' },
+                ]},
+              ].map(({ section, rows }) => (
+                <div key={section} style={{ marginBottom: 10 }}>
+                  <div style={{ fontFamily: 'var(--font-h)', fontSize: 7, color: '#00ffff', letterSpacing: '0.15em', marginBottom: 4, paddingBottom: 3, borderBottom: '1px solid #00ffff' }}>{section}</div>
+                  {rows.map(r => (
+                    <div key={r.label} style={{ display: 'flex', gap: 8, padding: '3px 0', borderBottom: '1px solid #0a1628' }}>
+                      <span style={{ fontFamily: 'var(--font-h)', fontSize: 7, color: '#4a6080', minWidth: 70, paddingTop: 2, flexShrink: 0 }}>{r.label}</span>
+                      <span style={{ fontFamily: 'var(--font-b)', fontSize: 13, color: '#c8d8e8' }}>{r.value}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </>
+          )}
+
           {/* ── About ── */}
           {activeTab === 'About' && (
             <>
               <div className="srow" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
-                <div style={{ fontFamily: 'var(--font-h)', fontSize: '9px', color: 'var(--primary)', marginBottom: '4px', fontWeight: 900 }}>EREN.OS</div>
+                <div style={{ fontFamily: 'var(--font-h)', fontSize: '9px', color: 'var(--primary)', marginBottom: '4px', fontWeight: 900 }}>OS.WEBSITE</div>
                 <div style={{ fontFamily: 'var(--font-b)', fontSize: '15px' }}>Version 0.1.0 (Build 2025)</div>
-                <div style={{ fontFamily: 'var(--font-b)', fontSize: '14px', color: '#444' }}>Copyright © 2025 Eren Kilisli</div>
+                <div style={{ fontFamily: 'var(--font-b)', fontSize: '14px', color: '#444' }}>Copyright © 2025 Ibrahim Eren Kilisli</div>
                 <div style={{ fontFamily: 'var(--font-b)', fontSize: '13px', color: '#888' }}>MIT License — Open Source</div>
               </div>
               <div className="srow">

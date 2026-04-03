@@ -54,7 +54,7 @@ export function ShutdownScreen({ mode, onComplete }: Props) {
             transition={{ duration: 0.3 }}
             style={{ fontFamily: 'monospace', fontSize: 18, color: '#c0c0c0', textAlign: 'center' }}
           >
-            {mode === 'shutdown' ? 'Shutting down EREN.OS' : 'Restarting EREN.OS'}
+            {mode === 'shutdown' ? 'Shutting down OS.WEBSITE' : 'Restarting OS.WEBSITE'}
             <Blink />
           </motion.div>
         )}

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { Project } from '@/data/projects'
 
-export type WindowType = 'game' | 'film' | 'swr' | 'about' | 'mail' | 'terminal' | 'settings' | 'devfiles' | 'cinema' | 'arcade' | 'projectdetail' | 'snake' | 'snowboard' | 'paint'
+export type WindowType = 'game' | 'film' | 'swr' | 'about' | 'mail' | 'terminal' | 'settings' | 'devfiles' | 'cinema' | 'arcade' | 'projectdetail' | 'snake' | 'snowboard' | 'paint' | 'music' | 'notepad' | 'calc' | 'sysinfo' | 'browser'
 
 export interface WindowState {
   id: string
@@ -34,6 +34,7 @@ interface Store {
   icons: IconState[]
   maxZ: number
   focusedId: string | null
+  selectedIconId: string | null
   currentProject: Project | null
   openWindow: (type: WindowType) => void
   closeWindow: (id: string) => void
@@ -44,6 +45,7 @@ interface Store {
   updateIconPos: (id: string, x: number, y: number) => void
   openProjectDetail: (project: Project) => void
   resetIconPositions: () => void
+  selectIcon: (id: string | null) => void
 }
 
 const WINDOW_CONFIGS: Record<WindowType, { title: string; icon: string; width: number; height: number }> = {
@@ -60,24 +62,43 @@ const WINDOW_CONFIGS: Record<WindowType, { title: string; icon: string; width: n
   projectdetail: { title: 'PROJECT.EXE',       icon: 'description', width: 580, height: 460 },
   snake:         { title: 'SNAKE.EXE',          icon: 'sports_esports', width: 444, height: 450 },
   snowboard:     { title: 'SNOWBOARD.EXE',      icon: 'downhill_skiing', width: 510, height: 510 },
-  paint:         { title: 'PAINT.EXE',          icon: 'brush',           width: 620, height: 520 },
+  paint:         { title: 'PAINT',              icon: 'brush',           width: 620, height: 520 },
+  music:         { title: 'MUSIC',              icon: 'music_note',      width: 380, height: 440 },
+  notepad:       { title: 'NOTEPAD',            icon: 'edit_note',       width: 520, height: 420 },
+  calc:          { title: 'CALC',               icon: 'calculate',       width: 280, height: 420 },
+  sysinfo:       { title: 'SYSINFO',            icon: 'memory',          width: 500, height: 440 },
+  browser:       { title: 'BROWSER',            icon: 'public',          width: 860, height: 580 },
 }
 
-const INITIAL_ICONS: IconState[] = [
-  // Left column
-  { id: 'ico-about',    label: 'ABOUTME.DOC',   iconName: 'account_circle', iconColor: '#ffffff', x: 16,  y: 16,  windowType: 'about'    },
-  { id: 'ico-terminal', label: 'TERMINAL',      iconName: 'terminal',       iconColor: '#00fd00', x: 16,  y: 132, windowType: 'terminal' },
-  { id: 'ico-mail',     label: 'CONTACT',       iconName: 'mail',           iconColor: '#9097ff', x: 16,  y: 248, windowType: 'mail'     },
-  { id: 'ico-settings', label: 'SETTINGS',      iconName: 'settings',       iconColor: '#d3d4d5', x: 16,  y: 364, windowType: 'settings' },
-  // Second left column — games
-  { id: 'ico-snake',      label: 'SNAKE.EXE',     iconName: 'sports_esports', iconColor: '#00fd00', x: 136, y: 16,  windowType: 'snake'     },
-  { id: 'ico-snowboard',  label: 'SNOWBOARD.EXE', iconName: 'downhill_skiing',iconColor: '#00ffff', x: 136, y: 132, windowType: 'snowboard' },
-  { id: 'ico-paint',      label: 'PAINT.EXE',     iconName: 'brush',          iconColor: '#ff71ce', x: 136, y: 248, windowType: 'paint'     },
-  // Right column — projects
-  { id: 'ico-devfiles',   label: 'DEV PROJECTS',  iconName: 'folder_code',    iconColor: '#ff8c42', x: 900, y: 16,  windowType: 'devfiles'  },
-  { id: 'ico-film',       label: 'FILM PROJECTS', iconName: 'movie',          iconColor: '#eaea00', x: 900, y: 132, windowType: 'film'      },
-  { id: 'ico-game',       label: 'GAME PROJECTS', iconName: 'sports_esports', iconColor: '#00fd00', x: 900, y: 248, windowType: 'game'      },
-]
+function makeIcons(): IconState[] {
+  const sw = typeof window !== 'undefined' ? window.innerWidth : 1280
+  const r1 = sw - 100   // rightmost column (projects)
+  const r2 = sw - 220   // second-from-right (games)
+  const L1 = 16        // left col
+  const L2 = 110       // second col
+  const Y  = (n: number) => 16 + n * 100
+  return [
+    // Left col: about, contact, notepad, music, calc, terminal
+    { id: 'ico-about',    label: 'ABOUTME.DOC',   iconName: 'account_circle', iconColor: '#ffffff', x: L1, y: Y(0), windowType: 'about'    },
+    { id: 'ico-mail',     label: 'CONTACT',       iconName: 'mail',           iconColor: '#9097ff', x: L1, y: Y(1), windowType: 'mail'     },
+    { id: 'ico-notepad',  label: 'NOTEPAD',       iconName: 'edit_note',      iconColor: '#ffffff', x: L1, y: Y(2), windowType: 'notepad'  },
+    { id: 'ico-music',    label: 'MUSIC',         iconName: 'music_note',     iconColor: '#ff71ce', x: L1, y: Y(3), windowType: 'music'    },
+    { id: 'ico-calc',     label: 'CALC',          iconName: 'calculate',      iconColor: '#00ffff', x: L1, y: Y(4), windowType: 'calc'     },
+    { id: 'ico-terminal', label: 'TERMINAL',      iconName: 'terminal',       iconColor: '#00fd00', x: L1, y: Y(5), windowType: 'terminal' },
+    // Second col: settings, browser, paint
+    { id: 'ico-settings', label: 'SETTINGS',      iconName: 'settings',       iconColor: '#d3d4d5', x: L2, y: Y(0), windowType: 'settings' },
+    { id: 'ico-browser',  label: 'BROWSER',       iconName: 'public',         iconColor: '#00ffff', x: L2, y: Y(1), windowType: 'browser'  },
+    { id: 'ico-paint',    label: 'PAINT',         iconName: 'brush',          iconColor: '#ff71ce', x: L2, y: Y(2), windowType: 'paint'    },
+    // Right col: dev, film, game, snowboard, snake (trash is decoration below)
+    { id: 'ico-devfiles',  label: 'DEV PROJECTS',  iconName: 'folder_code',    iconColor: '#ff8c42', x: r1, y: Y(0), windowType: 'devfiles'  },
+    { id: 'ico-film',      label: 'FILM PROJECTS', iconName: 'movie',          iconColor: '#eaea00', x: r1, y: Y(1), windowType: 'film'      },
+    { id: 'ico-game',      label: 'GAME PROJECTS', iconName: 'sports_esports', iconColor: '#00fd00', x: r1, y: Y(2), windowType: 'game'      },
+    { id: 'ico-snowboard', label: 'SNOWBOARD.EXE', iconName: 'downhill_skiing',iconColor: '#00ffff', x: r1, y: Y(3), windowType: 'snowboard' },
+    { id: 'ico-snake',     label: 'SNAKE.EXE',     iconName: 'sports_esports', iconColor: '#00fd00', x: r1, y: Y(4), windowType: 'snake'     },
+  ]
+}
+
+const INITIAL_ICONS = makeIcons()
 
 let zCounter = 100
 
@@ -86,7 +107,9 @@ export const useWindowStore = create<Store>((set, get) => ({
   icons: INITIAL_ICONS,
   maxZ: 100,
   focusedId: null,
+  selectedIconId: null,
   currentProject: null,
+  selectIcon: (id) => set({ selectedIconId: id }),
 
   openProjectDetail: (project) => {
     const existing = get().windows.find(w => w.type === 'projectdetail')
@@ -185,5 +208,5 @@ export const useWindowStore = create<Store>((set, get) => ({
     icons: s.icons.map(ico => ico.id === id ? { ...ico, x, y } : ico),
   })),
 
-  resetIconPositions: () => set({ icons: INITIAL_ICONS }),
+  resetIconPositions: () => set({ icons: makeIcons() }),
 }))

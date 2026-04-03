@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const LINES = [
-  { html: '<span class="hi">EREN.OS version 1.0</span>' },
-  { html: '<span class="dim">Copyright (C) 2026 Eren Kılışlı. All rights reserved.</span>' },
+  { html: '<span class="hi">OS.WEBSITE LIZARD VERSION</span>' },
+  { html: '<span class="dim">Copyright (C) 2026 Ibrahim Eren Kilisli. All rights reserved.</span>' },
   { html: '' },
   { html: 'Initializing hardware...' },
   { html: 'CPU: Creative Mind 3.6GHz &nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">[OK]</span>' },

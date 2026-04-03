@@ -3,6 +3,13 @@ import { persist } from 'zustand/middleware'
 
 export type Theme = 'cybercore' | 'vaporwave' | 'matrix' | 'amber'
 export type Wallpaper = 'synthwave' | 'grid' | 'stars' | 'scanlines'
+export type CursorStyle = 'cyberwave' | 'pixel' | 'box'
+
+export const CURSOR_LABELS: Record<CursorStyle, string> = {
+  cyberwave: 'CYBERWAVE',
+  pixel: 'PIXEL BLACK',
+  box: 'BOX',
+}
 
 export const THEME_LABELS: Record<Theme, string> = {
   cybercore: 'CYBERCORE',
@@ -23,10 +30,12 @@ interface SystemStore {
   brightness: number   // 20–100
   theme: Theme
   wallpaper: Wallpaper
+  cursorStyle: CursorStyle
   setVolume: (v: number) => void
   setBrightness: (v: number) => void
   setTheme: (t: Theme) => void
   setWallpaper: (w: Wallpaper) => void
+  setCursorStyle: (c: CursorStyle) => void
 }
 
 export const useSystemStore = create<SystemStore>()(
@@ -36,10 +45,12 @@ export const useSystemStore = create<SystemStore>()(
       brightness: 100,
       theme: 'cybercore',
       wallpaper: 'synthwave',
+      cursorStyle: 'cyberwave',
       setVolume: (volume) => set({ volume }),
       setBrightness: (brightness) => set({ brightness }),
       setTheme: (theme) => set({ theme }),
       setWallpaper: (wallpaper) => set({ wallpaper }),
+      setCursorStyle: (cursorStyle) => set({ cursorStyle }),
     }),
     {
       name: 'eren-os-system',
@@ -47,6 +58,9 @@ export const useSystemStore = create<SystemStore>()(
       onRehydrateStorage: () => (state) => {
         if (state && (state.wallpaper as string) === 'bliss') {
           state.wallpaper = 'synthwave'
+        }
+        if (state && state.brightness < 20) {
+          state.brightness = 20
         }
       },
     }

@@ -78,7 +78,7 @@ export function Taskbar({ onSpotlight, onShutdown, onRestart }: Props) {
               gap: 8,
             }}>
               <span style={{ fontFamily: 'var(--font-h)', fontSize: 11, color: '#fff', letterSpacing: '0.08em' }}>
-                EREN.OS
+                OS.WEBSITE
               </span>
             </div>
             {/* Menu items */}
