@@ -123,7 +123,7 @@ function IconCard({ p, accent, icon, selected, onClick, onDoubleClick }: {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        width: 86, padding: '10px 6px 8px',
+        width: 100, padding: '12px 6px 10px',
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
         cursor: 'pointer', userSelect: 'none',
         background: selected ? '#000080' : hov ? '#d8e8f8' : 'transparent',
@@ -132,26 +132,26 @@ function IconCard({ p, accent, icon, selected, onClick, onDoubleClick }: {
     >
       <div style={{ position: 'relative', display: 'flex' }}>
         <span className="material-symbols-outlined"
-          style={{ fontSize: 40, color: accent, fontVariationSettings: "'FILL' 1" }}>
+          style={{ fontSize: 54, color: accent, fontVariationSettings: "'FILL' 1" }}>
           folder
         </span>
         <span className="material-symbols-outlined"
           style={{
-            position: 'absolute', bottom: 4, right: -4,
-            fontSize: 14, color: '#fff',
+            position: 'absolute', bottom: 6, right: -5,
+            fontSize: 18, color: '#fff',
             fontVariationSettings: "'FILL' 1",
             background: accent,
-            padding: '1px',
+            padding: '2px',
             boxShadow: '1px 1px 0 #000',
           }}>
           {icon}
         </span>
       </div>
       <div style={{
-        fontFamily: 'var(--font-h)', fontSize: 6,
+        fontFamily: 'var(--font-h)', fontSize: 8,
         color: selected ? '#fff' : '#000',
         textAlign: 'center', lineHeight: 1.6, letterSpacing: '0.03em',
-        maxWidth: 80, wordBreak: 'break-word',
+        maxWidth: 94, wordBreak: 'break-word',
         background: selected ? '#000080' : 'transparent',
         padding: '0 2px',
       }}>
