@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware'
 export type Theme = 'cybercore' | 'vaporwave' | 'matrix' | 'amber'
 export type Wallpaper = 'synthwave' | 'grid' | 'stars' | 'scanlines'
 export type CursorStyle = 'cyberwave' | 'pixel' | 'box'
+export type ViewMode = 'desktop' | 'phone' | 'terminal'
 
 export const CURSOR_LABELS: Record<CursorStyle, string> = {
   cyberwave: 'CYBERWAVE',
@@ -31,11 +32,13 @@ interface SystemStore {
   theme: Theme
   wallpaper: Wallpaper
   cursorStyle: CursorStyle
+  viewMode: ViewMode
   setVolume: (v: number) => void
   setBrightness: (v: number) => void
   setTheme: (t: Theme) => void
   setWallpaper: (w: Wallpaper) => void
   setCursorStyle: (c: CursorStyle) => void
+  setViewMode: (v: ViewMode) => void
 }
 
 export const useSystemStore = create<SystemStore>()(
@@ -46,11 +49,13 @@ export const useSystemStore = create<SystemStore>()(
       theme: 'cybercore',
       wallpaper: 'synthwave',
       cursorStyle: 'cyberwave',
+      viewMode: 'desktop',
       setVolume: (volume) => set({ volume }),
       setBrightness: (brightness) => set({ brightness }),
       setTheme: (theme) => set({ theme }),
       setWallpaper: (wallpaper) => set({ wallpaper }),
       setCursorStyle: (cursorStyle) => set({ cursorStyle }),
+      setViewMode: (viewMode) => set({ viewMode }),
     }),
     {
       name: 'eren-os-system',

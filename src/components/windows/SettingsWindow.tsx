@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Window } from './Window'
 import { WindowState } from '@/store/windowStore'
-import { useSystemStore, Theme, Wallpaper, CursorStyle, THEME_LABELS, WALLPAPER_LABELS, CURSOR_LABELS } from '@/store/systemStore'
+import { useSystemStore, Theme, Wallpaper, CursorStyle, ViewMode, THEME_LABELS, WALLPAPER_LABELS, CURSOR_LABELS } from '@/store/systemStore'
 
 type Tab = 'Display' | 'Sound' | 'Network' | 'SysInfo' | 'About'
 const TABS: Tab[] = ['Display', 'Sound', 'Network', 'SysInfo', 'About']
@@ -18,7 +18,7 @@ interface Props {
 
 export function SettingsWindow({ win, isMobile = false }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('Display')
-  const { volume, brightness, theme, wallpaper, cursorStyle, setVolume, setBrightness, setTheme, setWallpaper, setCursorStyle } = useSystemStore()
+  const { volume, brightness, theme, wallpaper, cursorStyle, viewMode, setVolume, setBrightness, setTheme, setWallpaper, setCursorStyle, setViewMode } = useSystemStore()
 
   return (
     <Window
@@ -47,6 +47,27 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
           {/* ── Display ── */}
           {activeTab === 'Display' && (
             <>
+              {/* View Mode */}
+              <div className="srow">
+                <label>View Mode:</label>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {([
+                    { v: 'desktop'  as ViewMode, label: 'DESKTOP',  icon: 'desktop_windows' },
+                    { v: 'phone'    as ViewMode, label: 'PHONE',    icon: 'smartphone' },
+                    { v: 'terminal' as ViewMode, label: 'TERMINAL', icon: 'terminal' },
+                  ]).map(m => (
+                    <button
+                      key={m.v}
+                      className={`swp-btn${viewMode === m.v ? ' active' : ''}`}
+                      onClick={() => setViewMode(m.v)}
+                      style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px' }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 13 }}>{m.icon}</span>
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="srow">
                 <label>Brightness:</label>
                 <div className="sslider-wrap">
