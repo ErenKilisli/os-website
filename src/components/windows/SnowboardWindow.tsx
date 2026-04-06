@@ -5,7 +5,7 @@ import { WindowState } from '@/store/windowStore'
 
 const CW = 480
 const CH = 400
-const PLAYER_Y = CH * 0.82
+const PLAYER_Y = CH * 0.18    // near top — player goes DOWN the slope
 const SPAWN_INTERVAL_START = 1600
 const SPAWN_INTERVAL_MIN = 400
 
@@ -22,34 +22,21 @@ interface Obstacle {
 
 let oid = 0
 
-// ─── Color palette ──────────────────────────────────────────────────────────
-const PB = '#00ffff'  // player body (cyan)
-const PY = '#eaea00'  // player goggles
-const PW = '#ffffff'  // board
+// ─── Colors ─────────────────────────────────────────────────────────────────
+const PB = '#00ffff'
+const PY = '#eaea00'
+const PW = '#ffffff'
 
-const TG = '#1a5c1a'  // tree green dark
-const TL = '#2a7a2a'  // tree green light
-const TS = '#ddeeff'  // tree snow
-const TT = '#5d3a1a'  // trunk
+const TG = '#1a5c1a'; const TL = '#2a7a2a'; const TS = '#ddeeff'; const TT = '#5d3a1a'
 
-const BBR = '#8B5E3C' // bear brown
-const BDB = '#5C3A1E' // bear dark
-const BSN = '#C9956C' // snout
-const BEY = '#0a0400' // eye
+const BBR = '#8B5E3C'; const BDB = '#5C3A1E'
+const BSN = '#C9956C'; const BEY = '#0a0400'; const CLW = '#f0e060'
 
-const RGR = '#909090' // rock gray
-const RDK = '#606060' // rock shadow
-const RLT = '#c4c4c4' // rock highlight
+const RGR = '#909090'; const RDK = '#606060'; const RLT = '#c4c4c4'
 
 type Px = string | 0
 
-function drawGrid(
-  ctx: CanvasRenderingContext2D,
-  grid: Px[][],
-  ox: number,
-  oy: number,
-  cs: number
-) {
+function drawGrid(ctx: CanvasRenderingContext2D, grid: Px[][], ox: number, oy: number, cs: number) {
   for (let r = 0; r < grid.length; r++) {
     for (let c = 0; c < grid[r].length; c++) {
       const v = grid[r][c]
@@ -60,10 +47,8 @@ function drawGrid(
   }
 }
 
-// ─── Player sprites (12 cols × 10 rows, cs=3 → 36×30px) ────────────────────
-// Based on the existing SnowboarderPixelIcon pixel layout
-
-const PLAYER_S: Px[][] = [  // straight
+// ─── Player sprites (12 cols × 10 rows, cs=3) ───────────────────────────────
+const PLAYER_S: Px[][] = [
   [0,   0,   0,  PB,  PB,  PB,   0,   0,   0,   0,   0,  0],
   [0,   0,   0,  PB,  PB,  PB,  PB,   0,   0,   0,   0,  0],
   [0,   0,   0,  PB,  PY,  PB,  PB,   0,   0,   0,   0,  0],
@@ -75,8 +60,7 @@ const PLAYER_S: Px[][] = [  // straight
   [0,  PW,  PB,  PB,   0,   0,   0,  PB,  PB,  PW,   0,  0],
   [0,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  0],
 ]
-
-const PLAYER_L: Px[][] = [  // lean left — body 1 col left, board offset left
+const PLAYER_L: Px[][] = [
   [0,   0,  PB,  PB,  PB,   0,   0,   0,   0,   0,   0,  0],
   [0,   0,  PB,  PB,  PB,  PB,   0,   0,   0,   0,   0,  0],
   [0,   0,  PB,  PY,  PB,  PB,   0,   0,   0,   0,   0,  0],
@@ -88,8 +72,7 @@ const PLAYER_L: Px[][] = [  // lean left — body 1 col left, board offset left
   [PW,  PB,  PB,   0,   0,   0,  PB,  PB,  PW,   0,   0,  0],
   [PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,   0,  0],
 ]
-
-const PLAYER_R: Px[][] = [  // lean right — body 1 col right, board offset right
+const PLAYER_R: Px[][] = [
   [0,   0,   0,   0,  PB,  PB,  PB,   0,   0,   0,   0,  0],
   [0,   0,   0,   0,  PB,  PB,  PB,  PB,   0,   0,   0,  0],
   [0,   0,   0,   0,  PB,  PY,  PB,  PB,   0,   0,   0,  0],
@@ -108,43 +91,40 @@ function drawPixelPlayer(ctx: CanvasRenderingContext2D, x: number, dir: Directio
   drawGrid(ctx, grid, Math.round(x - 6 * cs), Math.round(PLAYER_Y - 10 * cs), cs)
 }
 
-// ─── Bear (8 cols × 10 rows, 2 walk frames) ─────────────────────────────────
-
-const BEAR_TOP: Px[][] = [
-  [0,   BBR, BBR,   0,   0, BBR, BBR,   0],  // ears
-  [BBR, BDB, BBR, BBR, BBR, BBR, BDB, BBR],  // head outer
-  [BBR, BBR, BEY, BBR, BBR, BEY, BBR, BBR],  // eyes
-  [0,   BBR, BSN, BSN, BSN, BSN, BBR,   0],  // snout
-  [BBR, BBR, BBR, BBR, BBR, BBR, BBR, BBR],  // body
-  [BBR, BBR, BBR, BBR, BBR, BBR, BBR, BBR],  // body
-  [BBR, BBR, BBR, BBR, BBR, BBR, BBR, BBR],  // body lower
-]
-
-const BEAR_LEGS: Px[][][] = [
-  [ // frame 0: left legs forward
-    [BBR,   0, BBR, BBR, BBR, BBR,   0, BBR],
-    [0,     0, BBR,   0,   0, BBR,   0,   0],
-    [0,     0, BBR,   0,   0, BBR,   0,   0],
+// ─── Bear sprites — claw swipe animation (10 cols × 9 rows) ─────────────────
+// Frame 0: claws raised above head
+// Frame 1: claws swiped to sides
+const BEAR_FRAMES: Px[][][] = [
+  [ // frame 0 — claws UP
+    [CLW,  0,   0,  BBR, BBR,   0,  BBR, BBR,   0,  CLW],
+    [0,    0,  BBR, BDB, BBR,  BBR, BDB, BBR,   0,   0 ],
+    [0,    0,  BBR, BBR, BEY,  BBR, BEY, BBR,   0,   0 ],
+    [0,    0,   0,  BBR, BSN,  BSN, BBR,   0,   0,   0 ],
+    [CLW, BBR, BBR, BBR, BBR,  BBR, BBR, BBR,  BBR, CLW],
+    [0,   BBR, BBR, BBR, BBR,  BBR, BBR, BBR,  BBR,  0 ],
+    [0,   BBR, BBR, BBR, BBR,  BBR, BBR, BBR,  BBR,  0 ],
+    [0,    0,  BBR,   0, BBR,  BBR,   0, BBR,   0,   0 ],
+    [0,    0,  BBR,   0,   0,    0,   0, BBR,   0,   0 ],
   ],
-  [ // frame 1: right legs forward
-    [BBR,   0, BBR, BBR, BBR, BBR,   0, BBR],
-    [BBR,   0,   0, BBR, BBR,   0,   0, BBR],
-    [BBR,   0,   0,   0,   0,   0,   0, BBR],
+  [ // frame 1 — claws to SIDES
+    [0,    0,   0,  BBR, BBR,   0,  BBR, BBR,   0,   0 ],
+    [0,    0,  BBR, BDB, BBR,  BBR, BDB, BBR,   0,   0 ],
+    [0,    0,  BBR, BBR, BEY,  BBR, BEY, BBR,   0,   0 ],
+    [0,    0,   0,  BBR, BSN,  BSN, BBR,   0,   0,   0 ],
+    [0,   BBR, BBR, BBR, BBR,  BBR, BBR, BBR,  BBR,  0 ],
+    [CLW, BBR, BBR, BBR, BBR,  BBR, BBR, BBR,  BBR, CLW],
+    [0,   BBR, BBR, BBR, BBR,  BBR, BBR, BBR,  BBR,  0 ],
+    [0,    0,  BBR,   0, BBR,  BBR,   0, BBR,   0,   0 ],
+    [0,    0,  BBR,   0,   0,    0,   0, BBR,   0,   0 ],
   ],
 ]
 
 function drawPixelBear(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, frame: number) {
-  const cs = Math.max(2, Math.round(size / 8))
-  const topH = 7 * cs
-  const legH = 3 * cs
-  const ox = Math.round(x - 4 * cs)
-  const oy = Math.round(y - topH - legH)
-  drawGrid(ctx, BEAR_TOP, ox, oy, cs)
-  drawGrid(ctx, BEAR_LEGS[frame % 2], ox, oy + topH, cs)
+  const cs = Math.max(2, Math.round(size / 10))
+  drawGrid(ctx, BEAR_FRAMES[frame % 2], Math.round(x - 5 * cs), Math.round(y - 9 * cs), cs)
 }
 
 // ─── Tree (10 cols × 13 rows) ────────────────────────────────────────────────
-
 const TREE_GRID: Px[][] = [
   [0,   0,   0,   0,  TG,  TS,   0,   0,   0,  0],
   [0,   0,   0,  TG,  TG,  TS,  TG,   0,   0,  0],
@@ -160,14 +140,12 @@ const TREE_GRID: Px[][] = [
   [0,   0,   0,   0,  TT,  TT,   0,   0,   0,  0],
   [0,   0,   0,   0,  TT,  TT,   0,   0,   0,  0],
 ]
-
 function drawPixelTree(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
   const cs = Math.max(2, Math.round(size / 10))
   drawGrid(ctx, TREE_GRID, Math.round(x - 5 * cs), Math.round(y - 13 * cs), cs)
 }
 
 // ─── Rock (8 cols × 5 rows) ──────────────────────────────────────────────────
-
 const ROCK_GRID: Px[][] = [
   [0,   0,  RLT, RLT, RGR, RGR,   0,   0],
   [0,  RLT, RGR, RGR, RGR, RGR, RDK,   0],
@@ -175,16 +153,13 @@ const ROCK_GRID: Px[][] = [
   [RGR, RGR, RDK, RDK, RDK, RDK, RDK, RDK],
   [0,  RDK, RDK, RDK, RDK, RDK, RDK,   0],
 ]
-
 function drawPixelRock(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
   const cs = Math.max(2, Math.round(size / 8))
   drawGrid(ctx, ROCK_GRID, Math.round(x - 4 * cs), Math.round(y - 5 * cs), cs)
 }
 
 // ─── Background ──────────────────────────────────────────────────────────────
-
 function drawBg(ctx: CanvasRenderingContext2D, scroll: number) {
-  // Sky bands
   const sky: [number, number, string][] = [
     [0,  30, '#8aafc8'],
     [30, 35, '#9abbd4'],
@@ -192,7 +167,6 @@ function drawBg(ctx: CanvasRenderingContext2D, scroll: number) {
   ]
   sky.forEach(([y, h, c]) => { ctx.fillStyle = c; ctx.fillRect(0, y, CW, h) })
 
-  // Mountains
   ctx.fillStyle = '#b8d0e0'
   ctx.beginPath()
   const pts = [0,100, 60,22, 80,50, 150,10, 220,40, 290,8, 360,35, 420,14, 480,30, 480,100]
@@ -202,7 +176,6 @@ function drawBg(ctx: CanvasRenderingContext2D, scroll: number) {
   )
   ctx.closePath(); ctx.fill()
 
-  // Snow slope bands
   const slope: [number, number, string][] = [
     [100, 45, '#eef4fc'],
     [145, 65, '#e4eef8'],
@@ -212,22 +185,33 @@ function drawBg(ctx: CanvasRenderingContext2D, scroll: number) {
   ]
   slope.forEach(([y, h, c]) => { ctx.fillStyle = c; ctx.fillRect(0, y, CW, h) })
 
-  // Ski tracks
+  // Ski tracks scroll upward (world moving up as player descends)
   ctx.strokeStyle = 'rgba(175,210,235,0.35)'
   ctx.lineWidth = 1
   for (let i = 0; i < 5; i++) {
-    const tx = ((i * 96 + scroll * 0.16) % (CW + 30)) - 15
-    ctx.beginPath(); ctx.moveTo(tx, 120); ctx.lineTo(tx - 20, CH); ctx.stroke()
-    ctx.beginPath(); ctx.moveTo(tx + 8, 120); ctx.lineTo(tx - 12, CH); ctx.stroke()
+    const ty = ((i * 90 + scroll * 0.18) % (CH - 100 + 30)) + 100
+    const tx = 60 + i * 84
+    ctx.beginPath(); ctx.moveTo(tx - 8, ty); ctx.lineTo(tx - 8, Math.min(ty + 60, CH)); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(tx,     ty); ctx.lineTo(tx,     Math.min(ty + 60, CH)); ctx.stroke()
+  }
+}
+
+// ─── Trail (ski tracks left by player) ───────────────────────────────────────
+function drawTrail(ctx: CanvasRenderingContext2D, playerX: number, speed: number) {
+  const maxLen = Math.min(120, Math.floor(speed * 14))
+  const step = 3
+  for (let i = step; i <= maxLen; i += step) {
+    const alpha = (1 - i / maxLen) * 0.55
+    ctx.fillStyle = `rgba(220,240,255,${alpha})`
+    ctx.fillRect(Math.round(playerX) - 3, Math.round(PLAYER_Y) + 14 + i, 2, step)
+    ctx.fillRect(Math.round(playerX) + 2, Math.round(PLAYER_Y) + 14 + i, 2, step)
   }
 }
 
 // ─── HUD ─────────────────────────────────────────────────────────────────────
-
 function drawHUD(ctx: CanvasRenderingContext2D, dist: number, best: number, speed: number) {
   ctx.fillStyle = 'rgba(0,8,24,0.82)'
   ctx.fillRect(6, 6, 210, 46)
-  // Cyan border
   ctx.fillStyle = '#00ffff'
   ctx.fillRect(6, 6, 210, 2); ctx.fillRect(6, 50, 210, 2)
   ctx.fillRect(6, 6, 2, 46); ctx.fillRect(214, 6, 2, 46)
@@ -239,7 +223,6 @@ function drawHUD(ctx: CanvasRenderingContext2D, dist: number, best: number, spee
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
-
 export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; isMobile?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const stateRef = useRef({
@@ -298,7 +281,7 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
       const s = stateRef.current
       ctx.clearRect(0, 0, CW, CH)
 
-      // ── Idle screen ───────────────────────────────────────────────────────
+      // ── Idle ──────────────────────────────────────────────────────────────
       if (!s.started) {
         drawBg(ctx, 0)
         drawPixelPlayer(ctx, CW / 2, 'straight')
@@ -318,16 +301,14 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
         return
       }
 
-      // ── Physics & game logic ──────────────────────────────────────────────
+      // ── Physics ───────────────────────────────────────────────────────────
       if (!s.dead) {
         s.tick++
 
-        // Direction state
         if      (s.keys.left  && !s.keys.right) s.direction = 'left'
         else if (s.keys.right && !s.keys.left)  s.direction = 'right'
         else                                      s.direction = 'straight'
 
-        // Physics
         if (s.keys.left)  s.playerVX -= 0.55
         if (s.keys.right) s.playerVX += 0.55
         if (!s.keys.left && !s.keys.right) s.playerVX *= 0.80
@@ -335,13 +316,15 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
         s.playerX  = Math.max(20, Math.min(CW - 20, s.playerX + s.playerVX))
 
         s.scroll += s.speed
-        s.obstacles.forEach(o => {
-          o.y += s.speed
-          if (o.type === 'bear') o.frame = Math.floor(s.tick / 8)
-        })
-        s.obstacles = s.obstacles.filter(o => o.y < CH + 80)
 
-        // Spawn obstacles
+        // Obstacles move UPWARD — player descends into them
+        s.obstacles.forEach(o => {
+          o.y -= s.speed
+          if (o.type === 'bear') o.frame = Math.floor(s.tick / 10)
+        })
+        s.obstacles = s.obstacles.filter(o => o.y > -100)
+
+        // Spawn from below
         const interval = Math.max(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_START - s.distance * 1.8)
         if (Date.now() - s.lastSpawn > interval) {
           const rnd  = Math.random()
@@ -349,11 +332,11 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
           const size = type === 'bear' ? 28 + Math.random() * 18
                      : type === 'rock' ? 20 + Math.random() * 16
                      :                   22 + Math.random() * 24
-          s.obstacles.push({ id: oid++, x: 40 + Math.random() * (CW - 80), y: -80, type, size, frame: 0 })
+          s.obstacles.push({ id: oid++, x: 40 + Math.random() * (CW - 80), y: CH + 80, type, size, frame: 0 })
           if (s.distance > 80 && Math.random() < 0.35) {
             const r2 = Math.random()
             const t2: Obstacle['type'] = r2 < 0.3 ? 'bear' : r2 < 0.55 ? 'rock' : 'tree'
-            s.obstacles.push({ id: oid++, x: 40 + Math.random() * (CW - 80), y: -130, type: t2, size: 18 + Math.random() * 20, frame: 0 })
+            s.obstacles.push({ id: oid++, x: 40 + Math.random() * (CW - 80), y: CH + 140, type: t2, size: 18 + Math.random() * 20, frame: 0 })
           }
           s.lastSpawn = Date.now()
         }
@@ -362,7 +345,7 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
         s.speed = Math.min(2.8 + s.distance * 0.018, 10)
         setDistance(Math.floor(s.distance))
 
-        // Collision detection
+        // Collision
         for (const o of s.obstacles) {
           const hitR = o.type === 'tree' ? o.size * 0.28 : o.type === 'rock' ? o.size * 0.50 : o.size * 0.44
           const dx   = Math.abs(o.x - s.playerX)
@@ -379,8 +362,11 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
       // ── Draw ──────────────────────────────────────────────────────────────
       drawBg(ctx, s.scroll)
 
-      // Obstacles sorted back-to-front
-      ;[...s.obstacles].sort((a, b) => a.y - b.y).forEach(o => {
+      // Trail behind player (below = higher y = further down the slope)
+      if (!s.dead) drawTrail(ctx, s.playerX, s.speed)
+
+      // Obstacles (sorted front-to-back relative to player at top)
+      ;[...s.obstacles].sort((a, b) => b.y - a.y).forEach(o => {
         if (o.type === 'tree') drawPixelTree(ctx, o.x, o.y, o.size)
         else if (o.type === 'bear') drawPixelBear(ctx, o.x, o.y, o.size, o.frame)
         else drawPixelRock(ctx, o.x, o.y, o.size)
@@ -390,7 +376,7 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
 
       drawHUD(ctx, s.distance, s.best, s.speed)
 
-      // ── Dead screen ───────────────────────────────────────────────────────
+      // ── Dead ──────────────────────────────────────────────────────────────
       if (s.dead) {
         ctx.fillStyle = 'rgba(0,8,24,0.80)'
         ctx.fillRect(0, 0, CW, CH)
