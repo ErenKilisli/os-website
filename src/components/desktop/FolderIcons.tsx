@@ -44,6 +44,38 @@ export function FolderEmptyIcon({ color, size = 48 }: Props) {
   )
 }
 
+/* ─── SNOWBOARDER pixel-art icon ─────────────────────────────────────────
+   12×12 grid, viewBox="0 0 12 12", imageRendering:pixelated
+   0=transparent  1=#00ffff(body)  2=#eaea00(goggle)  3=#ffffff(board)
+*/
+export function SnowboarderPixelIcon({ size = 48 }: { size?: number }) {
+  const G: number[][] = [
+    [0,0,0,1,1,1,0,0,0,0,0,0], // 0  helmet
+    [0,0,0,1,1,1,1,0,0,0,0,0], // 1  head
+    [0,0,0,1,2,1,1,0,0,0,0,0], // 2  face + goggle
+    [0,0,0,0,1,1,0,0,0,0,0,0], // 3  neck
+    [0,1,1,1,1,1,1,1,1,0,0,0], // 4  arms spread + torso
+    [0,0,0,1,1,1,1,1,0,0,0,0], // 5  body / jacket
+    [0,0,0,0,1,1,1,1,0,0,0,0], // 6  waist (leaning forward)
+    [0,0,0,1,1,0,1,1,0,0,0,0], // 7  bent knees
+    [0,3,1,1,0,0,0,1,1,3,0,0], // 8  lower legs + board tips lifted
+    [0,3,3,3,3,3,3,3,3,3,3,0], // 9  snowboard
+    [0,0,0,0,0,0,0,0,0,0,0,0], // 10 padding
+    [0,0,0,0,0,0,0,0,0,0,0,0], // 11 padding
+  ]
+  const C: Record<number,string> = { 1:'#00ffff', 2:'#eaea00', 3:'#ffffff' }
+  return (
+    <svg viewBox="0 0 12 12" width={size} height={size}
+      style={{ imageRendering: 'pixelated', display: 'block' }}>
+      {G.flatMap((row, ry) =>
+        row.map((v, cx) =>
+          v ? <rect key={`${ry}-${cx}`} x={cx} y={ry} width={1} height={1} fill={C[v]} /> : null
+        )
+      )}
+    </svg>
+  )
+}
+
 /* ─── GAME PROJECTS ─── same folder, joystick in bottom-right corner only */
 export function FolderGameIcon({ color, size = 48 }: Props) {
   const R = '#cc2222'

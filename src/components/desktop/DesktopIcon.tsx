@@ -2,11 +2,12 @@
 import { motion, useMotionValue } from 'framer-motion'
 import { useWindowStore, IconState } from '@/store/windowStore'
 import { useRef } from 'react'
-import { FolderFilmIcon, FolderGameIcon, FolderEmptyIcon } from './FolderIcons'
+import { FolderFilmIcon, FolderGameIcon, FolderEmptyIcon, SnowboarderPixelIcon } from './FolderIcons'
 
 function IconGraphic({ icon }: { icon: IconState }) {
-  if (icon.windowType === 'cinema') return <FolderFilmIcon color={icon.iconColor} size={48} />
-  if (icon.windowType === 'arcade') return <FolderGameIcon color={icon.iconColor} size={48} />
+  if (icon.windowType === 'cinema')   return <FolderFilmIcon color={icon.iconColor} size={48} />
+  if (icon.windowType === 'arcade')   return <FolderGameIcon color={icon.iconColor} size={48} />
+  if (icon.windowType === 'snowboard') return <SnowboarderPixelIcon size={48} />
   if (icon.id === 'ico-devfiles2' || icon.id === 'ico-devfiles3') return <FolderEmptyIcon color={icon.iconColor} size={48} />
   return (
     <span

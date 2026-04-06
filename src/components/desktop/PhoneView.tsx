@@ -6,6 +6,7 @@ import { useWindowStore, WindowType } from '@/store/windowStore'
 import {
   DEVFILES_PROJECTS, FILM_PROJECTS, GAME_PROJECTS, Project,
 } from '@/data/projects'
+import { SnowboarderPixelIcon } from './FolderIcons'
 
 // ── App registry ──────────────────────────────────────────────────
 interface PhoneAppDef {
@@ -119,10 +120,14 @@ function HomeScreen({ onOpen }: { onOpen: (app: PhoneAppDef) => void }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 3px 10px rgba(0,0,0,0.45)',
             }}>
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: 26, color: '#fff' }}
-              >{app.icon}</span>
+              {app.type === 'snowboard' ? (
+                <SnowboarderPixelIcon size={34} />
+              ) : (
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 26, color: '#fff' }}
+                >{app.icon}</span>
+              )}
             </div>
             <span style={{
               fontFamily: 'var(--font-h)', fontSize: 6, color: '#ccd',
@@ -809,7 +814,11 @@ export function PhoneView() {
                     boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
                   }}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: 24, color: '#fff' }}>{app.icon}</span>
+                  {app.type === 'snowboard' ? (
+                    <SnowboarderPixelIcon size={32} />
+                  ) : (
+                    <span className="material-symbols-outlined" style={{ fontSize: 24, color: '#fff' }}>{app.icon}</span>
+                  )}
                 </button>
               ))}
             </div>
