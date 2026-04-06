@@ -13,30 +13,32 @@ interface PhoneAppDef {
   icon: string
   color: string
   label: string
+  bg: string   // icon tile gradient background
 }
 
 const PHONE_APPS: PhoneAppDef[] = [
-  { type: 'about',     icon: 'account_circle',  color: '#ffffff', label: 'ABOUT'    },
-  { type: 'mail',      icon: 'mail',            color: '#9097ff', label: 'CONTACT'  },
-  { type: 'devfiles',  icon: 'folder_code',     color: '#ff8c42', label: 'DEV'      },
-  { type: 'film',      icon: 'movie',           color: '#eaea00', label: 'FILMS'    },
-  { type: 'game',      icon: 'sports_esports',  color: '#00fd00', label: 'GAMES'    },
-  { type: 'terminal',  icon: 'terminal',        color: '#00fd00', label: 'TERMINAL' },
-  { type: 'browser',   icon: 'public',          color: '#00ffff', label: 'BROWSER'  },
-  { type: 'settings',  icon: 'settings',        color: '#d3d4d5', label: 'SETTINGS' },
-  { type: 'music',     icon: 'music_note',      color: '#ff71ce', label: 'MUSIC'    },
-  { type: 'notepad',   icon: 'edit_note',       color: '#ffffff', label: 'NOTES'    },
-  { type: 'calc',      icon: 'calculate',       color: '#00ffff', label: 'CALC'     },
-  { type: 'paint',     icon: 'brush',           color: '#ff71ce', label: 'PAINT'    },
-  { type: 'snake',     icon: 'sports_esports',  color: '#00fd00', label: 'SNAKE'    },
-  { type: 'snowboard', icon: 'downhill_skiing', color: '#00ffff', label: 'SKI'      },
-  { type: 'sysinfo',   icon: 'memory',          color: '#4a6080', label: 'SYSINFO'  },
+  { type: 'about',     icon: 'account_circle',  color: '#fff', label: 'PROFILE',  bg: 'linear-gradient(145deg,#3a42c4,#6a5acd)' },
+  { type: 'mail',      icon: 'mail',            color: '#fff', label: 'MESSAGE',  bg: 'linear-gradient(145deg,#4a40d0,#8b78ee)' },
+  { type: 'devfiles',  icon: 'folder_code',     color: '#fff', label: 'DEV',      bg: 'linear-gradient(145deg,#c05018,#e07030)' },
+  { type: 'film',      icon: 'movie',           color: '#fff', label: 'FILMS',    bg: 'linear-gradient(145deg,#907800,#c8a800)' },
+  { type: 'game',      icon: 'sports_esports',  color: '#fff', label: 'GAMES',    bg: 'linear-gradient(145deg,#186018,#28a028)' },
+  { type: 'terminal',  icon: 'terminal',        color: '#fff', label: 'TERMINAL', bg: 'linear-gradient(145deg,#082808,#105010)' },
+  { type: 'browser',   icon: 'public',          color: '#fff', label: 'BROWSER',  bg: 'linear-gradient(145deg,#006880,#00a8c0)' },
+  { type: 'settings',  icon: 'settings',        color: '#fff', label: 'SETTINGS', bg: 'linear-gradient(145deg,#303848,#505868)' },
+  { type: 'music',     icon: 'music_note',      color: '#fff', label: 'MUSIC',    bg: 'linear-gradient(145deg,#a03070,#d060a0)' },
+  { type: 'notepad',   icon: 'edit_note',       color: '#fff', label: 'NOTES',    bg: 'linear-gradient(145deg,#604800,#988000)' },
+  { type: 'calc',      icon: 'calculate',       color: '#fff', label: 'CALC',     bg: 'linear-gradient(145deg,#102060,#1840a0)' },
+  { type: 'paint',     icon: 'brush',           color: '#fff', label: 'PAINT',    bg: 'linear-gradient(145deg,#701890,#a040c0)' },
+  { type: 'snake',     icon: 'sports_esports',  color: '#fff', label: 'SNAKE',    bg: 'linear-gradient(145deg,#0a4020,#188040)' },
+  { type: 'snowboard', icon: 'downhill_skiing', color: '#fff', label: 'SKI',      bg: 'linear-gradient(145deg,#083870,#1060b0)' },
+  { type: 'sysinfo',   icon: 'memory',          color: '#fff', label: 'SYSINFO',  bg: 'linear-gradient(145deg,#141c28,#202c3e)' },
 ]
 
+// Dock: Profile, Message, Browser, Settings
 const DOCK_APPS: PhoneAppDef[] = [
-  PHONE_APPS[0], // about
-  PHONE_APPS[1], // mail
-  PHONE_APPS[5], // terminal
+  PHONE_APPS[0], // about / profile
+  PHONE_APPS[1], // mail / message
+  PHONE_APPS[6], // browser
   PHONE_APPS[7], // settings
 ]
 
@@ -94,12 +96,11 @@ function PhoneStatusBar() {
 // ── Home screen ───────────────────────────────────────────────────
 function HomeScreen({ onOpen }: { onOpen: (app: PhoneAppDef) => void }) {
   return (
-    <div style={{ flex: 1, overflow: 'auto', padding: '12px 6px 6px' }}>
+    <div style={{ flex: 1, overflow: 'auto', padding: '16px 8px 8px' }}>
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: '10px 2px',
-        marginBottom: 10,
+        gap: '14px 4px',
       }}>
         {PHONE_APPS.map(app => (
           <button
@@ -108,27 +109,25 @@ function HomeScreen({ onOpen }: { onOpen: (app: PhoneAppDef) => void }) {
             style={{
               background: 'none', border: 'none',
               display: 'flex', flexDirection: 'column', alignItems: 'center',
-              gap: 4, padding: '6px 2px',
+              gap: 5, padding: '2px',
             }}
           >
             <div style={{
-              width: 50, height: 50,
-              background: 'rgba(255,255,255,0.055)',
-              border: `1px solid ${app.color}30`,
-              borderRadius: 13,
+              width: 54, height: 54,
+              background: app.bg,
+              borderRadius: 14,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: `0 2px 12px ${app.color}18`,
-              transition: 'background 0.15s',
+              boxShadow: '0 3px 10px rgba(0,0,0,0.45)',
             }}>
               <span
                 className="material-symbols-outlined"
-                style={{ fontSize: 24, color: app.color }}
+                style={{ fontSize: 26, color: '#fff' }}
               >{app.icon}</span>
             </div>
             <span style={{
-              fontFamily: 'var(--font-h)', fontSize: 6, color: '#bbc',
-              letterSpacing: '0.03em', textAlign: 'center',
-              maxWidth: 52, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              fontFamily: 'var(--font-h)', fontSize: 6, color: '#ccd',
+              letterSpacing: '0.02em', textAlign: 'center',
+              maxWidth: 58, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>{app.label}</span>
           </button>
         ))}
@@ -784,70 +783,52 @@ export function PhoneView() {
 
           {/* Dock */}
           <div style={{
-            flexShrink: 0, height: 66,
-            background: 'rgba(0,0,0,0.55)',
-            borderTop: '1px solid rgba(0,255,255,0.1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-around',
-            padding: '0 10px',
+            flexShrink: 0,
+            padding: '8px 16px 6px',
+            background: 'rgba(255,255,255,0.04)',
+            backdropFilter: 'blur(12px)',
+            borderTop: '1px solid rgba(255,255,255,0.08)',
           }}>
-            {DOCK_APPS.map(app => (
-              <button
-                key={app.type}
-                onClick={() => handleOpenApp(app)}
-                style={{
-                  background: 'rgba(255,255,255,0.06)',
-                  border: `1px solid ${app.color}28`,
-                  borderRadius: 13,
-                  width: 48, height: 48,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 22, color: app.color }}>{app.icon}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Bottom nav bar */}
-          <div style={{
-            flexShrink: 0, height: 38,
-            background: '#030408',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-around',
-            padding: '0 20px',
-          }}>
-            {/* Back */}
-            <button
-              onClick={activeApp ? handleBack : () => setViewMode('desktop')}
-              style={{ background: 'none', border: 'none', color: activeApp ? '#9097ff' : '#2a3040', display: 'flex', alignItems: 'center' }}
-              title={activeApp ? 'Back' : 'Back to Desktop'}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_back</span>
-            </button>
-
-            {/* Home */}
-            <button
-              onClick={() => setActiveApp(null)}
-              style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center' }}
-            >
-              <div style={{
-                width: 28, height: 28, borderRadius: '50%',
-                border: '2px solid #2a3848',
-                background: activeApp ? 'rgba(255,255,255,0.06)' : 'rgba(0,255,255,0.1)',
-              }} />
-            </button>
-
-            {/* Switch to desktop */}
-            <button
-              onClick={() => setViewMode('desktop')}
-              style={{ background: 'none', border: 'none', color: '#2a3040', display: 'flex', alignItems: 'center' }}
-              title="Exit Phone Mode"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>desktop_windows</span>
-            </button>
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-around',
+              background: 'rgba(255,255,255,0.06)',
+              borderRadius: 20,
+              padding: '8px 12px',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}>
+              {DOCK_APPS.map(app => (
+                <button
+                  key={app.type}
+                  onClick={() => handleOpenApp(app)}
+                  style={{
+                    background: app.bg,
+                    border: 'none',
+                    borderRadius: 14,
+                    width: 52, height: 52,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 24, color: '#fff' }}>{app.icon}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Bottom bezel */}
-        <div style={{ height: 8, flexShrink: 0, background: '#030408' }} />
+        {/* Bottom bezel — home indicator only */}
+        <div style={{
+          height: 22, flexShrink: 0, background: '#030408',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div
+            onClick={() => setActiveApp(null)}
+            style={{
+              width: 120, height: 5, background: '#fff',
+              borderRadius: 3, opacity: 0.25,
+            }}
+          />
+        </div>
       </motion.div>
     </motion.div>
   )

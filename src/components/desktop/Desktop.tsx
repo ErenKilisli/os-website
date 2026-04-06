@@ -200,62 +200,6 @@ export function Desktop() {
         )}
       </AnimatePresence>
 
-      {/* ── Phone mode button (floating on desktop) ── */}
-      {phase === 'desktop' && viewMode === 'desktop' && (
-        <button
-          onClick={() => setViewMode('phone')}
-          title="Phone Mode"
-          style={{
-            position: 'fixed',
-            bottom: 60,
-            right: 18,
-            zIndex: 9980,
-            background: '#06070f',
-            border: '2px solid rgba(0,255,255,0.4)',
-            borderRadius: 12,
-            width: 44,
-            height: 72,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 3,
-            boxShadow: '0 0 18px rgba(0,255,255,0.14)',
-            cursor: 'pointer',
-            transition: 'border-color 0.2s, box-shadow 0.2s',
-          }}
-          onMouseEnter={e => {
-            ;(e.currentTarget as HTMLButtonElement).style.borderColor = '#00ffff'
-            ;(e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 28px rgba(0,255,255,0.35)'
-          }}
-          onMouseLeave={e => {
-            ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0,255,255,0.4)'
-            ;(e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 18px rgba(0,255,255,0.14)'
-          }}
-        >
-          {/* mini phone screen area */}
-          <div style={{
-            width: 28, height: 46, background: '#020812',
-            border: '1.5px solid rgba(0,255,255,0.3)',
-            borderRadius: 5,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
-            {/* scanline */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              backgroundImage: 'linear-gradient(rgba(0,255,255,0.04) 50%, transparent 50%)',
-              backgroundSize: '100% 3px',
-              pointerEvents: 'none',
-            }} />
-            <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#00ffff' }}>smartphone</span>
-          </div>
-          {/* home indicator */}
-          <div style={{ width: 16, height: 2, background: 'rgba(0,255,255,0.4)', borderRadius: 1 }} />
-        </button>
-      )}
-
       {/* ── Phone / Terminal overlays ── */}
       <AnimatePresence>
         {viewMode === 'phone'    && phase === 'desktop' && <PhoneView    key="phone" />}
