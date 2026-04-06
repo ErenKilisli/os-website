@@ -29,7 +29,7 @@ const PHONE_APPS: PhoneAppDef[] = [
   { type: 'notepad',   icon: 'edit_note',       color: '#fff', label: 'NOTES',    bg: 'linear-gradient(145deg,#604800,#988000)' },
   { type: 'calc',      icon: 'calculate',       color: '#fff', label: 'CALC',     bg: 'linear-gradient(145deg,#102060,#1840a0)' },
   { type: 'paint',     icon: 'brush',           color: '#fff', label: 'PAINT',    bg: 'linear-gradient(145deg,#701890,#a040c0)' },
-  { type: 'snake',     icon: 'sports_esports',  color: '#fff', label: 'SNAKE',    bg: 'linear-gradient(145deg,#0a4020,#188040)' },
+  { type: 'snake',     icon: '🐍',               color: '#fff', label: 'SNAKE',    bg: 'linear-gradient(145deg,#0a4020,#188040)' },
   { type: 'snowboard', icon: 'downhill_skiing', color: '#fff', label: 'SKI',      bg: 'linear-gradient(145deg,#083870,#1060b0)' },
   { type: 'sysinfo',   icon: 'memory',          color: '#fff', label: 'SYSINFO',  bg: 'linear-gradient(145deg,#141c28,#202c3e)' },
 ]

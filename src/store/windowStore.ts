@@ -61,7 +61,7 @@ const WINDOW_CONFIGS: Record<WindowType, { title: string; icon: string; width: n
   cinema:        { title: 'FILM_PROJECTS.EXE', icon: 'folder',      width: 600, height: 440 },
   arcade:        { title: 'GAME_PROJECTS.EXE', icon: 'folder',      width: 500, height: 340 },
   projectdetail: { title: 'PROJECT.EXE',       icon: 'description', width: 580, height: 460 },
-  snake:         { title: 'SNAKE.EXE',          icon: 'sports_esports', width: 444, height: 450 },
+  snake:         { title: 'SNAKE.EXE',          icon: '🐍',             width: 444, height: 450 },
   snowboard:     { title: 'SNOWBOARD.EXE',      icon: 'downhill_skiing', width: 510, height: 510 },
   paint:         { title: 'PAINT',              icon: 'brush',           width: 620, height: 520 },
   music:         { title: 'MUSIC',              icon: 'music_note',      width: 380, height: 440 },
@@ -95,7 +95,7 @@ function makeIcons(): IconState[] {
     { id: 'ico-film',      label: 'FILM PROJECTS', iconName: 'movie',          iconColor: '#eaea00', x: r1, y: Y(1), windowType: 'film'      },
     { id: 'ico-game',      label: 'GAME PROJECTS', iconName: 'sports_esports', iconColor: '#00fd00', x: r1, y: Y(2), windowType: 'game'      },
     { id: 'ico-snowboard', label: 'SNOWBOARD.EXE', iconName: 'downhill_skiing',iconColor: '#00ffff', x: r1, y: Y(3), windowType: 'snowboard' },
-    { id: 'ico-snake',     label: 'SNAKE.EXE',     iconName: 'sports_esports', iconColor: '#00fd00', x: r1, y: Y(4), windowType: 'snake'     },
+    { id: 'ico-snake',     label: 'SNAKE.EXE',     iconName: '🐍',             iconColor: '#00fd00', x: r1, y: Y(4), windowType: 'snake'     },
   ]
 }
 
