@@ -41,15 +41,19 @@ export function Desktop() {
   const [isMobile, setIsMobile] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { windows, icons, openWindow, selectIcon } = useWindowStore()
-  const { brightness, theme, viewMode, setViewMode } = useSystemStore()
+  const { brightness, theme, viewMode, uiMode, setViewMode } = useSystemStore()
 
   // Mark mounted — prevents Zustand persist mismatch on brightness overlay
   useEffect(() => { setMounted(true) }, [])
 
-  // Apply theme data attribute to <html>
+  // Apply theme & uiMode data attributes to <html>
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-uimode', uiMode)
+  }, [uiMode])
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)

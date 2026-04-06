@@ -17,6 +17,33 @@
   --font-b: var(--font-body), 'Public Sans', sans-serif;
 }
 
+/* ── UI Mode: Light ─────────────────────────────────────── */
+[data-uimode="light"] {
+  --surface-dim: #ffffff;
+  --surface-hi: #f8f8f8;
+  --surface-lo: #b0b0b0;
+  --on-surface: #1a1a1a;
+  --inverse-surface: #e0e0e0;
+}
+[data-uimode="light"] .wbody {
+  background: #f0f0f0;
+}
+[data-uimode="light"] .win-menu {
+  background: #f0f0f0;
+}
+[data-uimode="light"] .settings-panel {
+  background: #f8f8f8;
+}
+
+/* ── UI Mode: Dark (explicit override) ─────────────────── */
+[data-uimode="dark"] {
+  --surface-dim: #d3d4d5;
+  --surface-hi: #ffffff;
+  --surface-lo: #808080;
+  --on-surface: #2d2f2f;
+  --inverse-surface: #0d0e0f;
+}
+
 *, *::before, *::after {
   cursor: none !important;
 }
@@ -859,15 +886,16 @@ html, body {
 }
 .settings-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 0;
   margin-bottom: -1px;
   padding-left: 4px;
 }
 .stab {
   font-family: var(--font-h);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  padding: 4px 14px;
+  padding: 4px 10px;
   cursor: default;
   color: var(--on-surface);
   background: var(--surface-dim);
@@ -875,6 +903,7 @@ html, body {
   margin-right: 2px;
   border: none;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 .stab.active {
   background: #fff;

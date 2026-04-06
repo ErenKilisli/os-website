@@ -3,9 +3,12 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { Window } from './Window'
 import { WindowState } from '@/store/windowStore'
 
+// Logical grid dimensions (pixel art resolution)
 const CELL = 16
 const COLS = 26
 const ROWS = 20
+const CW = COLS * CELL   // 416
+const CH = ROWS * CELL   // 320
 const TICK = 120
 
 type Dir = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT'
@@ -21,7 +24,8 @@ function newFood(snake: Pos[]): Pos {
 }
 
 export function SnakeWindow({ win, isMobile = false }: { win: WindowState; isMobile?: boolean }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const canvasRef    = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const gameRef = useRef({
     snake: [{ x: 13, y: 10 }] as Pos[],
     dir: 'RIGHT' as Dir,
@@ -49,6 +53,24 @@ export function SnakeWindow({ win, isMobile = false }: { win: WindowState; isMob
     setDead(false)
   }, [])
 
+  // Scale canvas to fill container (responsive)
+  useEffect(() => {
+    const scaleCanvas = () => {
+      const container = containerRef.current
+      const canvas = canvasRef.current
+      if (!container || !canvas) return
+      const scaleX = container.clientWidth / CW
+      const scaleY = (container.clientHeight - 28) / CH
+      const scale = Math.min(scaleX, scaleY, 2.5)
+      canvas.style.width  = `${Math.round(CW * scale)}px`
+      canvas.style.height = `${Math.round(CH * scale)}px`
+    }
+    scaleCanvas()
+    const observer = new ResizeObserver(scaleCanvas)
+    if (containerRef.current) observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const g = gameRef.current
@@ -72,8 +94,6 @@ export function SnakeWindow({ win, isMobile = false }: { win: WindowState; isMob
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-    const CW = COLS * CELL
-    const CH = ROWS * CELL
 
     const draw = () => {
       const g = gameRef.current
@@ -195,14 +215,30 @@ export function SnakeWindow({ win, isMobile = false }: { win: WindowState; isMob
       status={`SNAKE.EXE | SCORE: ${score}${dead ? ' | GAME OVER — PRESS ANY KEY' : ''}`}
       isMobile={isMobile}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', background: '#0a0f0a', gap: 6 }}>
+      <div
+        ref={containerRef}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+          background: '#0a0f0a',
+          overflow: 'hidden',
+        }}
+      >
         <canvas
           ref={canvasRef}
-          width={COLS * CELL}
-          height={ROWS * CELL}
+          width={CW}
+          height={CH}
           style={{ imageRendering: 'pixelated', display: 'block', border: '2px solid rgba(0,253,0,0.2)' }}
         />
-        <div style={{ fontFamily: 'var(--font-h)', fontSize: '8px', color: 'rgba(0,253,0,0.4)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+        <div style={{
+          fontFamily: 'var(--font-h)', fontSize: '8px', color: 'rgba(0,253,0,0.4)',
+          letterSpacing: '0.12em', textTransform: 'uppercase',
+          padding: '3px 0', flexShrink: 0,
+        }}>
           ARROW KEYS / WASD — EAT RED — AVOID WALLS
         </div>
       </div>

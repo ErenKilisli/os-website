@@ -3,9 +3,10 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { Window } from './Window'
 import { WindowState } from '@/store/windowStore'
 
+// Logical canvas dimensions (pixel art resolution)
 const CW = 480
 const CH = 400
-const PLAYER_Y = CH * 0.18    // near top — player goes DOWN the slope
+const PLAYER_Y = CH * 0.15    // player near top — obstacles rise up
 const SPAWN_INTERVAL_START = 1600
 const SPAWN_INTERVAL_MIN = 400
 
@@ -23,15 +24,18 @@ interface Obstacle {
 let oid = 0
 
 // ─── Colors ─────────────────────────────────────────────────────────────────
-const PB = '#00ffff'
-const PY = '#eaea00'
-const PW = '#ffffff'
+const PB = '#00ccff'   // player cyan body
+const PY = '#eaea00'   // player yellow accent
+const PW = '#ffffff'   // player white board
 
-const TG = '#1a5c1a'; const TL = '#2a7a2a'; const TS = '#ddeeff'; const TT = '#5d3a1a'
+// Tree colors
+const TG = '#1a6020'; const TL = '#2a8030'; const TS = '#ddeeff'; const TT = '#5d3a1a'
 
-const BBR = '#8B5E3C'; const BDB = '#5C3A1E'
-const BSN = '#C9956C'; const BEY = '#0a0400'; const CLW = '#f0e060'
+// Bear colors — redesigned for clarity
+const BBR = '#8B5E3C'; const BDB = '#5C3A1E'; const BLT = '#a87050'
+const BSN = '#C9956C'; const BEY = '#1a0800'; const CLW = '#f5f0d0'
 
+// Rock colors
 const RGR = '#909090'; const RDK = '#606060'; const RLT = '#c4c4c4'
 
 type Px = string | 0
@@ -60,29 +64,31 @@ const PLAYER_S: Px[][] = [
   [0,  PW,  PB,  PB,   0,   0,   0,  PB,  PB,  PW,   0,  0],
   [0,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  0],
 ]
+// Leaning left — body shifts left, board tilts
 const PLAYER_L: Px[][] = [
-  [0,   0,  PB,  PB,  PB,   0,   0,   0,   0,   0,   0,  0],
+  [0,  PB,  PB,  PB,   0,   0,   0,   0,   0,   0,   0,  0],
+  [0,  PB,  PB,  PB,  PB,   0,   0,   0,   0,   0,   0,  0],
+  [0,  PB,  PY,  PB,  PB,   0,   0,   0,   0,   0,   0,  0],
+  [0,   0,  PB,  PB,   0,   0,   0,   0,   0,   0,   0,  0],
+  [PB, PB,  PB,  PB,  PB,  PB,  PB,  PB,   0,   0,   0,  0],
+  [0,  PB,  PB,  PB,  PB,  PB,  PB,   0,   0,   0,   0,  0],
   [0,   0,  PB,  PB,  PB,  PB,   0,   0,   0,   0,   0,  0],
-  [0,   0,  PB,  PY,  PB,  PB,   0,   0,   0,   0,   0,  0],
-  [0,   0,   0,  PB,  PB,   0,   0,   0,   0,   0,   0,  0],
-  [PB,  PB,  PB,  PB,  PB,  PB,  PB,  PB,   0,   0,   0,  0],
-  [0,   0,  PB,  PB,  PB,  PB,  PB,   0,   0,   0,   0,  0],
-  [0,   0,   0,  PB,  PB,  PB,  PB,   0,   0,   0,   0,  0],
-  [0,   0,  PB,  PB,   0,  PB,  PB,   0,   0,   0,   0,  0],
-  [PW,  PB,  PB,   0,   0,   0,  PB,  PB,  PW,   0,   0,  0],
-  [PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,   0,  0],
+  [0,  PB,  PB,   0,  PB,  PB,   0,   0,   0,   0,   0,  0],
+  [PW, PB,  PB,   0,   0,  PB,  PB,  PW,   0,   0,   0,  0],
+  [PW, PW,  PW,  PW,  PW,  PW,  PW,  PW,   0,   0,   0,  0],
 ]
+// Leaning right — body shifts right, board tilts
 const PLAYER_R: Px[][] = [
-  [0,   0,   0,   0,  PB,  PB,  PB,   0,   0,   0,   0,  0],
-  [0,   0,   0,   0,  PB,  PB,  PB,  PB,   0,   0,   0,  0],
-  [0,   0,   0,   0,  PB,  PY,  PB,  PB,   0,   0,   0,  0],
-  [0,   0,   0,   0,   0,  PB,  PB,   0,   0,   0,   0,  0],
-  [0,   0,  PB,  PB,  PB,  PB,  PB,  PB,  PB,  PB,   0,  0],
-  [0,   0,   0,   0,  PB,  PB,  PB,  PB,  PB,   0,   0,  0],
+  [0,   0,   0,   0,   0,  PB,  PB,  PB,   0,   0,   0,  0],
   [0,   0,   0,   0,   0,  PB,  PB,  PB,  PB,   0,   0,  0],
-  [0,   0,   0,   0,  PB,  PB,   0,  PB,  PB,   0,   0,  0],
-  [0,   0,  PW,  PB,  PB,   0,   0,   0,  PB,  PB,  PW,  0],
-  [0,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW, PW],
+  [0,   0,   0,   0,   0,  PB,  PY,  PB,  PB,   0,   0,  0],
+  [0,   0,   0,   0,   0,   0,  PB,  PB,   0,   0,   0,  0],
+  [0,   0,   0,   0,  PB,  PB,  PB,  PB,  PB,  PB,  PB, PB],
+  [0,   0,   0,   0,   0,  PB,  PB,  PB,  PB,  PB,  PB,  0],
+  [0,   0,   0,   0,   0,   0,  PB,  PB,  PB,  PB,   0,  0],
+  [0,   0,   0,   0,   0,  PB,  PB,   0,  PB,  PB,   0,  0],
+  [0,   0,   0,  PW,  PB,  PB,   0,   0,  PB,  PB,  PW,  0],
+  [0,   0,   0,  PW,  PW,  PW,  PW,  PW,  PW,  PW,  PW, PW],
 ]
 
 function drawPixelPlayer(ctx: CanvasRenderingContext2D, x: number, dir: Direction) {
@@ -91,37 +97,41 @@ function drawPixelPlayer(ctx: CanvasRenderingContext2D, x: number, dir: Directio
   drawGrid(ctx, grid, Math.round(x - 6 * cs), Math.round(PLAYER_Y - 10 * cs), cs)
 }
 
-// ─── Bear sprites — claw swipe animation (10 cols × 9 rows) ─────────────────
-// Frame 0: claws raised above head
-// Frame 1: claws swiped to sides
+// ─── Bear sprites — redesigned, cleaner animation (10 cols × 11 rows) ──────
+// Frame 0: arms at sides
+// Frame 1: arms raised / roaring
 const BEAR_FRAMES: Px[][][] = [
-  [ // frame 0 — claws UP
-    [CLW,  0,   0,  BBR, BBR,   0,  BBR, BBR,   0,  CLW],
-    [0,    0,  BBR, BDB, BBR,  BBR, BDB, BBR,   0,   0 ],
-    [0,    0,  BBR, BBR, BEY,  BBR, BEY, BBR,   0,   0 ],
-    [0,    0,   0,  BBR, BSN,  BSN, BBR,   0,   0,   0 ],
-    [CLW, BBR, BBR, BBR, BBR,  BBR, BBR, BBR,  BBR, CLW],
-    [0,   BBR, BBR, BBR, BBR,  BBR, BBR, BBR,  BBR,  0 ],
-    [0,   BBR, BBR, BBR, BBR,  BBR, BBR, BBR,  BBR,  0 ],
-    [0,    0,  BBR,   0, BBR,  BBR,   0, BBR,   0,   0 ],
-    [0,    0,  BBR,   0,   0,    0,   0, BBR,   0,   0 ],
+  [ // frame 0 — resting, arms at sides
+    [0,    0,   BDB, BBR, BBR, BBR, BBR, BDB,   0,   0],  // head + ears
+    [0,   BBR,  BBR, BBR, BBR, BBR, BBR, BBR,  BBR,  0],  // head wide
+    [0,   BBR,  BEY, BBR, BSN, BSN, BBR, BEY,  BBR,  0],  // eyes + snout
+    [0,    0,   BBR, BSN, BSN, BSN, BSN, BBR,   0,   0],  // muzzle
+    [0,    0,   BBR, BLT, BLT, BLT, BLT, BBR,   0,   0],  // belly
+    [BBR, BBR,  BBR, BBR, BBR, BBR, BBR, BBR,  BBR, BBR], // shoulders
+    [CLW, BBR,  BBR, BLT, BLT, BLT, BLT, BBR,  BBR, CLW], // arms + belly
+    [0,    0,   BBR, BBR, BBR, BBR, BBR, BBR,   0,   0],  // lower body
+    [0,    0,   BBR,  0,  BBR, BBR,  0,  BBR,   0,   0],  // legs
+    [0,    0,   BBR,  0,   0,   0,   0,  BBR,   0,   0],  // legs lower
+    [0,   CLW,  CLW,  0,   0,   0,   0,  CLW,  CLW,  0],  // paws
   ],
-  [ // frame 1 — claws to SIDES
-    [0,    0,   0,  BBR, BBR,   0,  BBR, BBR,   0,   0 ],
-    [0,    0,  BBR, BDB, BBR,  BBR, BDB, BBR,   0,   0 ],
-    [0,    0,  BBR, BBR, BEY,  BBR, BEY, BBR,   0,   0 ],
-    [0,    0,   0,  BBR, BSN,  BSN, BBR,   0,   0,   0 ],
-    [0,   BBR, BBR, BBR, BBR,  BBR, BBR, BBR,  BBR,  0 ],
-    [CLW, BBR, BBR, BBR, BBR,  BBR, BBR, BBR,  BBR, CLW],
-    [0,   BBR, BBR, BBR, BBR,  BBR, BBR, BBR,  BBR,  0 ],
-    [0,    0,  BBR,   0, BBR,  BBR,   0, BBR,   0,   0 ],
-    [0,    0,  BBR,   0,   0,    0,   0, BBR,   0,   0 ],
+  [ // frame 1 — arms raised, roaring
+    [CLW,  0,   BDB, BBR, BBR, BBR, BBR, BDB,   0,  CLW], // claws raised
+    [0,   BBR,   0,  BBR, BBR, BBR, BBR,  0,   BBR,  0],  // arms up
+    [0,   BBR,  BBR, BBR, BBR, BBR, BBR, BBR,  BBR,  0],  // head wide
+    [0,   BBR,  BEY, BBR, BSN, BSN, BBR, BEY,  BBR,  0],  // eyes
+    [0,    0,   BBR, BSN, BSN, BSN, BSN, BBR,   0,   0],  // muzzle open
+    [0,    0,   BBR, BLT, BDB, BDB, BLT, BBR,   0,   0],  // mouth open
+    [0,    0,   BBR, BBR, BBR, BBR, BBR, BBR,   0,   0],  // body
+    [0,    0,   BLT, BLT, BLT, BLT, BLT, BLT,  0,   0],  // belly
+    [0,    0,   BBR,  0,  BBR, BBR,  0,  BBR,   0,   0],  // legs
+    [0,    0,   BBR,  0,   0,   0,   0,  BBR,   0,   0],
+    [0,   CLW,  CLW,  0,   0,   0,   0,  CLW,  CLW,  0],  // paws
   ],
 ]
 
 function drawPixelBear(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, frame: number) {
   const cs = Math.max(2, Math.round(size / 10))
-  drawGrid(ctx, BEAR_FRAMES[frame % 2], Math.round(x - 5 * cs), Math.round(y - 9 * cs), cs)
+  drawGrid(ctx, BEAR_FRAMES[frame % 2], Math.round(x - 5 * cs), Math.round(y - 11 * cs), cs)
 }
 
 // ─── Tree (10 cols × 13 rows) ────────────────────────────────────────────────
@@ -158,59 +168,89 @@ function drawPixelRock(ctx: CanvasRenderingContext2D, x: number, y: number, size
   drawGrid(ctx, ROCK_GRID, Math.round(x - 4 * cs), Math.round(y - 5 * cs), cs)
 }
 
-// ─── Background ──────────────────────────────────────────────────────────────
+// ─── Background — white snow ──────────────────────────────────────────────────
 function drawBg(ctx: CanvasRenderingContext2D, scroll: number) {
-  const sky: [number, number, string][] = [
-    [0,  30, '#8aafc8'],
-    [30, 35, '#9abbd4'],
-    [65, 35, '#b0cce0'],
-  ]
-  sky.forEach(([y, h, c]) => { ctx.fillStyle = c; ctx.fillRect(0, y, CW, h) })
+  // Sky — pale blue gradient
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, 80)
+  skyGrad.addColorStop(0, '#a8d0f0')
+  skyGrad.addColorStop(1, '#d8eef8')
+  ctx.fillStyle = skyGrad
+  ctx.fillRect(0, 0, CW, 80)
 
-  ctx.fillStyle = '#b8d0e0'
+  // Far mountains (lighter, misty)
+  ctx.fillStyle = '#b8d8ee'
   ctx.beginPath()
-  const pts = [0,100, 60,22, 80,50, 150,10, 220,40, 290,8, 360,35, 420,14, 480,30, 480,100]
-  pts.forEach((v, i) => i % 2 === 0
-    ? (i === 0 ? ctx.moveTo(v, pts[i+1]) : ctx.lineTo(v, pts[i+1]))
-    : null
-  )
+  ctx.moveTo(0, 80)
+  ctx.lineTo(30, 44); ctx.lineTo(60, 58); ctx.lineTo(100, 28); ctx.lineTo(140, 50)
+  ctx.lineTo(180, 20); ctx.lineTo(220, 42); ctx.lineTo(260, 14); ctx.lineTo(300, 36)
+  ctx.lineTo(340, 10); ctx.lineTo(380, 30); ctx.lineTo(420, 16); ctx.lineTo(460, 32)
+  ctx.lineTo(480, 22); ctx.lineTo(480, 80)
   ctx.closePath(); ctx.fill()
 
-  const slope: [number, number, string][] = [
-    [100, 45, '#eef4fc'],
-    [145, 65, '#e4eef8'],
-    [210, 70, '#d8e8f4'],
-    [280, 70, '#ccdff0'],
-    [350, 50, '#c4d8ec'],
-  ]
-  slope.forEach(([y, h, c]) => { ctx.fillStyle = c; ctx.fillRect(0, y, CW, h) })
+  // Near mountains (darker, closer)
+  ctx.fillStyle = '#90bcd8'
+  ctx.beginPath()
+  ctx.moveTo(0, 80)
+  ctx.lineTo(50, 56); ctx.lineTo(90, 68); ctx.lineTo(130, 42); ctx.lineTo(170, 62)
+  ctx.lineTo(210, 36); ctx.lineTo(250, 54); ctx.lineTo(290, 30); ctx.lineTo(330, 50)
+  ctx.lineTo(370, 24); ctx.lineTo(410, 46); ctx.lineTo(450, 34); ctx.lineTo(480, 50)
+  ctx.lineTo(480, 80)
+  ctx.closePath(); ctx.fill()
 
-  // Ski tracks scroll upward (world moving up as player descends)
-  ctx.strokeStyle = 'rgba(175,210,235,0.35)'
-  ctx.lineWidth = 1
+  // Snow caps on near mountains
+  ctx.fillStyle = '#f0f8ff'
+  const caps = [[50,56],[90,68],[130,42],[170,62],[210,36],[250,54],[290,30],[330,50],[370,24],[410,46]]
+  caps.forEach(([px, py]) => {
+    ctx.beginPath()
+    ctx.arc(px, py, 10, 0, Math.PI * 2)
+    ctx.fill()
+  })
+
+  // White snow slope — main canvas area
+  const snowGrad = ctx.createLinearGradient(0, 80, 0, CH)
+  snowGrad.addColorStop(0, '#eef6ff')
+  snowGrad.addColorStop(0.4, '#f4f9ff')
+  snowGrad.addColorStop(1, '#f8fbff')
+  ctx.fillStyle = snowGrad
+  ctx.fillRect(0, 80, CW, CH - 80)
+
+  // Very subtle snow depth stripes (perspective)
+  for (let i = 0; i < 6; i++) {
+    const y = 90 + i * 52
+    const alpha = 0.02 + i * 0.012
+    ctx.fillStyle = `rgba(180,210,240,${alpha})`
+    ctx.fillRect(0, y, CW, 18)
+  }
+
+  // Previous ski track lines scrolling upward
+  ctx.strokeStyle = 'rgba(120,170,220,0.18)'
+  ctx.lineWidth = 1.5
   for (let i = 0; i < 5; i++) {
     const ty = ((i * 90 + scroll * 0.18) % (CH - 100 + 30)) + 100
-    const tx = 60 + i * 84
-    ctx.beginPath(); ctx.moveTo(tx - 8, ty); ctx.lineTo(tx - 8, Math.min(ty + 60, CH)); ctx.stroke()
+    const tx = 55 + i * 80
+    ctx.beginPath(); ctx.moveTo(tx - 5, ty); ctx.lineTo(tx - 5, Math.min(ty + 60, CH)); ctx.stroke()
     ctx.beginPath(); ctx.moveTo(tx,     ty); ctx.lineTo(tx,     Math.min(ty + 60, CH)); ctx.stroke()
   }
 }
 
-// ─── Trail (ski tracks left by player) ───────────────────────────────────────
+// ─── Trail — dark blue ski tracks visible on white snow ──────────────────────
 function drawTrail(ctx: CanvasRenderingContext2D, playerX: number, speed: number) {
-  const maxLen = Math.min(120, Math.floor(speed * 14))
+  const maxLen = Math.min(130, Math.floor(speed * 16))
   const step = 3
   for (let i = step; i <= maxLen; i += step) {
     const alpha = (1 - i / maxLen) * 0.55
-    ctx.fillStyle = `rgba(220,240,255,${alpha})`
-    ctx.fillRect(Math.round(playerX) - 3, Math.round(PLAYER_Y) + 14 + i, 2, step)
-    ctx.fillRect(Math.round(playerX) + 2, Math.round(PLAYER_Y) + 14 + i, 2, step)
+    // Left ski track
+    ctx.fillStyle = `rgba(40,100,180,${alpha})`
+    ctx.fillRect(Math.round(playerX) - 4, Math.round(PLAYER_Y) + 16 + i, 2, step)
+    // Right ski track
+    ctx.fillStyle = `rgba(40,100,180,${alpha})`
+    ctx.fillRect(Math.round(playerX) + 3, Math.round(PLAYER_Y) + 16 + i, 2, step)
   }
 }
 
 // ─── HUD ─────────────────────────────────────────────────────────────────────
 function drawHUD(ctx: CanvasRenderingContext2D, dist: number, best: number, speed: number) {
-  ctx.fillStyle = 'rgba(0,8,24,0.82)'
+  ctx.fillStyle = 'rgba(0,8,24,0.78)'
   ctx.fillRect(6, 6, 210, 46)
   ctx.fillStyle = '#00ffff'
   ctx.fillRect(6, 6, 210, 2); ctx.fillRect(6, 50, 210, 2)
@@ -225,6 +265,7 @@ function drawHUD(ctx: CanvasRenderingContext2D, dist: number, best: number, spee
 // ─── Component ───────────────────────────────────────────────────────────────
 export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; isMobile?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const stateRef = useRef({
     playerX: CW / 2,
     playerVX: 0,
@@ -251,6 +292,24 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
     s.obstacles = []; s.distance = 0; s.speed = 2.8
     s.started = true; s.dead = false; s.scroll = 0; s.lastSpawn = 0; s.tick = 0
     setDistance(0); setPhase('playing')
+  }, [])
+
+  // Scale canvas to fill container (responsive)
+  useEffect(() => {
+    const scaleCanvas = () => {
+      const container = containerRef.current
+      const canvas = canvasRef.current
+      if (!container || !canvas) return
+      const scaleX = container.clientWidth / CW
+      const scaleY = (container.clientHeight - 28) / CH
+      const scale = Math.min(scaleX, scaleY, 2.0)
+      canvas.style.width = `${Math.round(CW * scale)}px`
+      canvas.style.height = `${Math.round(CH * scale)}px`
+    }
+    scaleCanvas()
+    const observer = new ResizeObserver(scaleCanvas)
+    if (containerRef.current) observer.observe(containerRef.current)
+    return () => observer.disconnect()
   }, [])
 
   useEffect(() => {
@@ -285,7 +344,7 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
       if (!s.started) {
         drawBg(ctx, 0)
         drawPixelPlayer(ctx, CW / 2, 'straight')
-        ctx.fillStyle = 'rgba(0,8,24,0.68)'
+        ctx.fillStyle = 'rgba(0,8,24,0.65)'
         ctx.fillRect(0, 0, CW, CH)
         ctx.textAlign = 'center'
         ctx.font = 'bold 11px "Press Start 2P", monospace'
@@ -305,6 +364,7 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
       if (!s.dead) {
         s.tick++
 
+        // Direction: lean while key held, return to straight on release
         if      (s.keys.left  && !s.keys.right) s.direction = 'left'
         else if (s.keys.right && !s.keys.left)  s.direction = 'right'
         else                                      s.direction = 'straight'
@@ -320,7 +380,8 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
         // Obstacles move UPWARD — player descends into them
         s.obstacles.forEach(o => {
           o.y -= s.speed
-          if (o.type === 'bear') o.frame = Math.floor(s.tick / 10)
+          // Bear animation: alternate frames every 18 ticks
+          if (o.type === 'bear') o.frame = Math.floor(s.tick / 18)
         })
         s.obstacles = s.obstacles.filter(o => o.y > -100)
 
@@ -362,7 +423,7 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
       // ── Draw ──────────────────────────────────────────────────────────────
       drawBg(ctx, s.scroll)
 
-      // Trail behind player (below = higher y = further down the slope)
+      // Trail behind player (dark blue on white snow — visible!)
       if (!s.dead) drawTrail(ctx, s.playerX, s.speed)
 
       // Obstacles (sorted front-to-back relative to player at top)
@@ -408,15 +469,32 @@ export function SnowboardWindow({ win, isMobile = false }: { win: WindowState; i
       status={`PIXEL SNOWBOARD | ${distance}m | BEST: ${best}m${phase === 'dead' ? ' | WIPEOUT!' : ''}`}
       isMobile={isMobile}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', background: '#c0d4e8' }}>
+      <div
+        ref={containerRef}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+          background: '#c0d8ee',
+          overflow: 'hidden',
+        }}
+      >
         <canvas
           ref={canvasRef}
           width={CW}
           height={CH}
           style={{ display: 'block', imageRendering: 'pixelated' }}
         />
-        <div style={{ fontFamily: 'var(--font-h)', fontSize: '8px', color: '#446', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '3px 0', background: '#c0d4e8', width: CW, textAlign: 'center' }}>
-          ← → / A/D STEER — TREES · BEARS · ROCKS — SPACE TO START
+        <div style={{
+          fontFamily: 'var(--font-h)', fontSize: '8px', color: '#335566',
+          letterSpacing: '0.12em', textTransform: 'uppercase',
+          padding: '3px 0', width: '100%', textAlign: 'center',
+          flexShrink: 0,
+        }}>
+          ← → / A/D STEER · TREES · BEARS · ROCKS · SPACE TO START
         </div>
       </div>
     </Window>

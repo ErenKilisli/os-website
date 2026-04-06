@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef, CSSProperties } from 'react'
 import { motion } from 'framer-motion'
-import { useSystemStore, Wallpaper, WALLPAPER_LABELS } from '@/store/systemStore'
+import { useSystemStore, Wallpaper, WALLPAPER_LABELS, ANIMATED_WALLPAPERS } from '@/store/systemStore'
 import { useWindowStore, WindowType } from '@/store/windowStore'
 
 interface Props {
@@ -9,8 +9,6 @@ interface Props {
   y: number
   onClose: () => void
 }
-
-const WALLPAPERS: Wallpaper[] = ['synthwave', 'grid', 'stars', 'scanlines']
 
 const APPS: { label: string; type: WindowType; icon: string }[] = [
   { label: 'TERMINAL',   type: 'terminal', icon: 'terminal'       },
@@ -93,8 +91,14 @@ function Item({
 }
 
 export function DesktopContextMenu({ x, y, onClose }: Props) {
-  const { wallpaper, setWallpaper } = useSystemStore()
+  const { wallpaper, setWallpaper, setSettingsInitTab } = useSystemStore()
   const { openWindow, resetIconPositions } = useWindowStore()
+
+  const openWallpaperSettings = () => {
+    setSettingsInitTab('Wallpaper')
+    openWindow('settings')
+    onClose()
+  }
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -135,7 +139,10 @@ export function DesktopContextMenu({ x, y, onClose }: Props) {
     >
       {/* Wallpaper section */}
       <div style={sectionLabel}>WALLPAPER</div>
-      {WALLPAPERS.map(wp => (
+      <Item icon="wallpaper" onClick={openWallpaperSettings}>
+        CHANGE WALLPAPER...
+      </Item>
+      {ANIMATED_WALLPAPERS.map(wp => (
         <Item
           key={wp}
           active={wallpaper === wp}

@@ -57,7 +57,6 @@ function runGrid(canvas: HTMLCanvasElement, theme: Theme): () => void {
       }
     }
 
-    // Subtle diagonal scan line
     ctx.globalAlpha = 0.04
     ctx.fillStyle = dot
     const scanY = ((frame * 1.5) % (H + 40)) - 20
@@ -86,7 +85,6 @@ function runStars(canvas: HTMLCanvasElement): () => void {
     col: COLORS[i % COLORS.length],
   }))
 
-  // Shooting stars
   interface Shoot { x: number; y: number; vx: number; vy: number; life: number; maxLife: number }
   let shoots: Shoot[] = []
   let nextShoot = Date.now() + 2000 + Math.random() * 4000
@@ -98,7 +96,6 @@ function runStars(canvas: HTMLCanvasElement): () => void {
     const W2 = canvas.width
     const H2 = canvas.height
 
-    // Background
     const grad = ctx.createLinearGradient(0, 0, 0, H2)
     grad.addColorStop(0, '#000408')
     grad.addColorStop(0.6, '#020610')
@@ -106,7 +103,6 @@ function runStars(canvas: HTMLCanvasElement): () => void {
     ctx.fillStyle = grad
     ctx.fillRect(0, 0, W2, H2)
 
-    // Stars
     stars.forEach(s => {
       const twinkle = (Math.sin(frame * s.spd + s.phase) + 1) / 2
       ctx.globalAlpha = 0.25 + twinkle * 0.75
@@ -117,7 +113,6 @@ function runStars(canvas: HTMLCanvasElement): () => void {
       ctx.fill()
     })
 
-    // Shooting stars
     const now = Date.now()
     if (now > nextShoot) {
       const angle = -(Math.PI / 6 + Math.random() * Math.PI / 6)
@@ -160,7 +155,6 @@ function runSynthwave(canvas: HTMLCanvasElement): () => void {
 
     ctx.clearRect(0, 0, W, H)
 
-    // Sky
     const sky = ctx.createLinearGradient(0, 0, 0, horizon)
     sky.addColorStop(0, '#04000e')
     sky.addColorStop(0.55, '#1a0038')
@@ -168,7 +162,6 @@ function runSynthwave(canvas: HTMLCanvasElement): () => void {
     ctx.fillStyle = sky
     ctx.fillRect(0, 0, W, horizon)
 
-    // Stars
     ctx.fillStyle = '#fff'
     for (let i = 0; i < 120; i++) {
       const sx = ((i * 139 + 20) % W)
@@ -179,7 +172,6 @@ function runSynthwave(canvas: HTMLCanvasElement): () => void {
     }
     ctx.globalAlpha = 1
 
-    // Retro sun
     const sunX = W / 2
     const sunY = horizon - 2
     const sunR = Math.min(W, H) * 0.12
@@ -191,7 +183,6 @@ function runSynthwave(canvas: HTMLCanvasElement): () => void {
     ctx.fillStyle = sunGrad
     ctx.beginPath(); ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2); ctx.fill()
 
-    // Sun scanlines (static stripes)
     ctx.fillStyle = 'rgba(10,0,24,0.72)'
     const stripeH = 5
     for (let sy2 = sunY - sunR; sy2 < sunY + 4; sy2 += stripeH * 2) {
@@ -199,7 +190,6 @@ function runSynthwave(canvas: HTMLCanvasElement): () => void {
       ctx.fillRect(sunX - halfW, sy2, halfW * 2, stripeH)
     }
 
-    // Horizon glow
     ctx.save()
     ctx.shadowColor = '#ff0080'
     ctx.shadowBlur = 18
@@ -207,14 +197,12 @@ function runSynthwave(canvas: HTMLCanvasElement): () => void {
     ctx.fillRect(0, horizon - 1, W, 3)
     ctx.restore()
 
-    // Ground
     const ground = ctx.createLinearGradient(0, horizon, 0, H)
     ground.addColorStop(0, '#0d0025')
     ground.addColorStop(1, '#02000a')
     ctx.fillStyle = ground
     ctx.fillRect(0, horizon, W, H - horizon)
 
-    // Perspective grid — vertical lines
     ctx.lineWidth = 0.6
     ctx.globalAlpha = 0.65
     const lineCount = 24
@@ -228,7 +216,6 @@ function runSynthwave(canvas: HTMLCanvasElement): () => void {
       ctx.stroke()
     }
 
-    // Perspective grid — horizontal lines
     const hCount = 14
     for (let i = 0; i < hCount; i++) {
       const t = ((i / hCount + offset * 0.007) % 1)
@@ -270,13 +257,11 @@ function runScanlines(canvas: HTMLCanvasElement, theme: Theme): () => void {
     ctx.fillStyle = grad
     ctx.fillRect(0, 0, W, H)
 
-    // Horizontal scanlines
     ctx.fillStyle = 'rgba(0,0,0,0.28)'
     for (let y = Math.round(offset) % 8; y < H; y += 8) {
       ctx.fillRect(0, y, W, 3)
     }
 
-    // Vignette
     const vig = ctx.createRadialGradient(W / 2, H / 2, H * 0.25, W / 2, H / 2, H * 0.88)
     vig.addColorStop(0, 'rgba(0,0,0,0)')
     vig.addColorStop(1, 'rgba(0,0,0,0.6)')
@@ -289,13 +274,257 @@ function runScanlines(canvas: HTMLCanvasElement, theme: Theme): () => void {
   return () => cancelAnimationFrame(raf)
 }
 
+function runSolid(canvas: HTMLCanvasElement, color: string): () => void {
+  const ctx = canvas.getContext('2d')!
+  const draw = () => {
+    ctx.fillStyle = color
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+  }
+  draw()
+  // Re-draw on resize
+  const observer = new ResizeObserver(draw)
+  observer.observe(canvas)
+  return () => observer.disconnect()
+}
+
+function runAurora(canvas: HTMLCanvasElement): () => void {
+  const ctx = canvas.getContext('2d')!
+  let t = 0
+  let raf = 0
+
+  const tick = () => {
+    t += 0.005
+    const W = canvas.width
+    const H = canvas.height
+
+    // Dark night sky
+    const sky = ctx.createLinearGradient(0, 0, 0, H)
+    sky.addColorStop(0, '#010810')
+    sky.addColorStop(1, '#020c18')
+    ctx.fillStyle = sky
+    ctx.fillRect(0, 0, W, H)
+
+    // Stars
+    for (let i = 0; i < 200; i++) {
+      const sx = ((i * 137 + 47) % W)
+      const sy = ((i * 97 + 13) % (H * 0.8))
+      const br = (Math.sin(i * 1.3 + t * 2) + 1) / 2
+      ctx.globalAlpha = 0.1 + br * 0.6
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(sx, sy, 1, 1)
+    }
+    ctx.globalAlpha = 1
+
+    // Aurora curtains — multiple translucent sine waves
+    const BANDS = [
+      { color1: 'rgba(0,255,180,', color2: 'rgba(0,200,120,', phase: 0,    amp: 0.12, yBase: 0.25 },
+      { color1: 'rgba(100,80,255,', color2: 'rgba(60,40,200,', phase: 1.2,  amp: 0.10, yBase: 0.30 },
+      { color1: 'rgba(0,220,255,', color2: 'rgba(0,160,200,', phase: 2.4,  amp: 0.14, yBase: 0.20 },
+    ]
+
+    for (const band of BANDS) {
+      for (let x = 0; x < W; x += 2) {
+        const wave = Math.sin(x * 0.008 + t + band.phase) * band.amp
+        const baseY = (band.yBase + wave) * H
+        const height = 0.25 * H * (0.5 + 0.5 * Math.sin(x * 0.012 + t * 0.7 + band.phase))
+
+        const g = ctx.createLinearGradient(x, baseY, x, baseY + height)
+        g.addColorStop(0, band.color1 + '0)')
+        g.addColorStop(0.3, band.color1 + '0.18)')
+        g.addColorStop(0.7, band.color2 + '0.12)')
+        g.addColorStop(1, band.color1 + '0)')
+
+        ctx.fillStyle = g
+        ctx.fillRect(x, baseY, 2, height)
+      }
+    }
+
+    raf = requestAnimationFrame(tick)
+  }
+  tick()
+  return () => cancelAnimationFrame(raf)
+}
+
+function runSunset(canvas: HTMLCanvasElement): () => void {
+  const ctx = canvas.getContext('2d')!
+  let t = 0
+  let raf = 0
+
+  const tick = () => {
+    t += 0.004
+    const W = canvas.width
+    const H = canvas.height
+
+    // Sky gradient
+    const sky = ctx.createLinearGradient(0, 0, 0, H * 0.7)
+    sky.addColorStop(0, '#0a0525')
+    sky.addColorStop(0.35, '#2d0a40')
+    sky.addColorStop(0.65, '#8b1a4a')
+    sky.addColorStop(1, '#d4502a')
+    ctx.fillStyle = sky
+    ctx.fillRect(0, 0, W, H)
+
+    // Horizon glow
+    const glow = ctx.createLinearGradient(0, H * 0.6, 0, H * 0.8)
+    glow.addColorStop(0, 'rgba(255,140,50,0.8)')
+    glow.addColorStop(1, 'rgba(255,80,20,0)')
+    ctx.fillStyle = glow
+    ctx.fillRect(0, H * 0.6, W, H * 0.2)
+
+    // Sun
+    const sunX = W * 0.5
+    const sunY = H * 0.68
+    const sunR = Math.min(W, H) * 0.10
+    const sunG = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, sunR)
+    sunG.addColorStop(0, '#fffde0')
+    sunG.addColorStop(0.4, '#ffcc44')
+    sunG.addColorStop(0.8, '#ff6600')
+    sunG.addColorStop(1, 'rgba(255,80,0,0)')
+    ctx.fillStyle = sunG
+    ctx.beginPath(); ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2); ctx.fill()
+
+    // Water reflection
+    const water = ctx.createLinearGradient(0, H * 0.7, 0, H)
+    water.addColorStop(0, '#1a0820')
+    water.addColorStop(0.3, '#0d0516')
+    water.addColorStop(1, '#060310')
+    ctx.fillStyle = water
+    ctx.fillRect(0, H * 0.7, W, H * 0.3)
+
+    // Shimmer on water
+    ctx.globalAlpha = 0.3
+    for (let i = 0; i < 12; i++) {
+      const shimX = W * (0.3 + 0.4 * ((Math.sin(t * 1.2 + i * 0.8) + 1) / 2))
+      const shimY = H * (0.72 + i * 0.024)
+      const shimW = (60 + 40 * Math.sin(t + i)) * (1 - i * 0.06)
+      ctx.fillStyle = '#ffcc66'
+      ctx.fillRect(shimX - shimW / 2, shimY, shimW, 2)
+    }
+    ctx.globalAlpha = 1
+
+    // City silhouette
+    ctx.fillStyle = '#0a0410'
+    const buildings = [
+      [0, 0.12], [0.06, 0.09], [0.10, 0.14], [0.16, 0.08], [0.20, 0.11],
+      [0.25, 0.07], [0.30, 0.13], [0.36, 0.06], [0.42, 0.10], [0.48, 0.08],
+      [0.52, 0.12], [0.57, 0.09], [0.63, 0.15], [0.70, 0.07], [0.76, 0.11],
+      [0.82, 0.08], [0.88, 0.13], [0.93, 0.10], [0.97, 0.06], [1.0, 0],
+    ]
+    ctx.beginPath()
+    ctx.moveTo(0, H)
+    for (let i = 0; i < buildings.length - 1; i++) {
+      const bx = buildings[i][0] * W
+      const bh = buildings[i][1] * H * 0.4
+      const by = H * 0.7 - bh
+      const nx = buildings[i + 1][0] * W
+      ctx.lineTo(bx, H * 0.7)
+      ctx.lineTo(bx, by)
+      ctx.lineTo(nx, by)
+    }
+    ctx.lineTo(W, H * 0.7)
+    ctx.lineTo(W, H)
+    ctx.closePath()
+    ctx.fill()
+
+    raf = requestAnimationFrame(tick)
+  }
+  tick()
+  return () => cancelAnimationFrame(raf)
+}
+
+function runOcean(canvas: HTMLCanvasElement): () => void {
+  const ctx = canvas.getContext('2d')!
+  let t = 0
+  let raf = 0
+
+  const tick = () => {
+    t += 0.012
+    const W = canvas.width
+    const H = canvas.height
+
+    // Deep ocean gradient
+    const ocean = ctx.createLinearGradient(0, 0, 0, H)
+    ocean.addColorStop(0, '#000a14')
+    ocean.addColorStop(0.4, '#001824')
+    ocean.addColorStop(0.7, '#002030')
+    ocean.addColorStop(1, '#001018')
+    ctx.fillStyle = ocean
+    ctx.fillRect(0, 0, W, H)
+
+    // Bioluminescent particles
+    for (let i = 0; i < 80; i++) {
+      const px = ((i * 137.5 + t * 20) % W)
+      const py = ((i * 97.3 + t * 8 + Math.sin(t * 0.5 + i) * 30) % H)
+      const bright = (Math.sin(t * 2.1 + i * 0.7) + 1) / 2
+      ctx.globalAlpha = bright * 0.7
+      ctx.fillStyle = i % 3 === 0 ? '#00ffcc' : i % 3 === 1 ? '#0088ff' : '#44ffaa'
+      const r = 1 + bright * 1.5
+      ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill()
+    }
+    ctx.globalAlpha = 1
+
+    // Caustic light patterns
+    for (let i = 0; i < 20; i++) {
+      const cx2 = (i * 71 + t * 15) % W
+      const cy2 = H * (0.1 + 0.3 * ((i * 43) % 100) / 100) + Math.sin(t * 0.8 + i) * 20
+      const cr = 15 + Math.sin(t + i * 0.5) * 10
+      const cg = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, cr)
+      cg.addColorStop(0, 'rgba(0,200,180,0.12)')
+      cg.addColorStop(1, 'rgba(0,100,120,0)')
+      ctx.fillStyle = cg
+      ctx.beginPath(); ctx.arc(cx2, cy2, cr, 0, Math.PI * 2); ctx.fill()
+    }
+
+    // Wave layers
+    for (let layer = 0; layer < 4; layer++) {
+      const baseY = H * (0.5 + layer * 0.12)
+      const alpha = 0.06 + layer * 0.03
+      ctx.beginPath()
+      ctx.moveTo(0, H)
+      for (let x = 0; x <= W; x += 4) {
+        const y = baseY + Math.sin(x * 0.015 + t * (1 + layer * 0.3)) * 18
+          + Math.sin(x * 0.028 - t * 0.7) * 10
+        ctx.lineTo(x, y)
+      }
+      ctx.lineTo(W, H)
+      ctx.closePath()
+      ctx.fillStyle = `rgba(0,${80 + layer * 20},${120 + layer * 15},${alpha})`
+      ctx.fill()
+    }
+
+    raf = requestAnimationFrame(tick)
+  }
+  tick()
+  return () => cancelAnimationFrame(raf)
+}
+
+function runPhoto(canvas: HTMLCanvasElement, photoUrl: string): () => void {
+  const ctx = canvas.getContext('2d')!
+  const img = new Image()
+  img.onload = () => {
+    const draw = () => {
+      const W = canvas.width
+      const H = canvas.height
+      const scale = Math.max(W / img.width, H / img.height)
+      const dw = img.width * scale
+      const dh = img.height * scale
+      ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh)
+    }
+    draw()
+  }
+  img.src = photoUrl
+  return () => {}
+}
+
 /* ════════════════════════════════════════════════════════════
    COMPONENT
 ════════════════════════════════════════════════════════════ */
 export function DesktopWallpaper() {
-  const wallpaper = useSystemStore((s) => s.wallpaper)
-  const theme     = useSystemStore((s) => s.theme)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const wallpaper     = useSystemStore((s) => s.wallpaper)
+  const theme         = useSystemStore((s) => s.theme)
+  const wallpaperColor = useSystemStore((s) => s.wallpaperColor)
+  const wallpaperPhoto = useSystemStore((s) => s.wallpaperPhoto)
+  const canvasRef     = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -308,11 +537,17 @@ export function DesktopWallpaper() {
     resize()
     window.addEventListener('resize', resize)
 
-    const RUNNERS: Record<string, () => () => void> = {
-      synthwave: () => runSynthwave(canvas),
-      grid:      () => runGrid(canvas, theme),
-      stars:     () => runStars(canvas),
-      scanlines: () => runScanlines(canvas, theme),
+    type Runner = () => () => void
+    const RUNNERS: Record<Wallpaper, Runner> = {
+      synthwave:      () => runSynthwave(canvas),
+      grid:           () => runGrid(canvas, theme),
+      stars:          () => runStars(canvas),
+      scanlines:      () => runScanlines(canvas, theme),
+      solid:          () => runSolid(canvas, wallpaperColor),
+      photo:          () => runPhoto(canvas, wallpaperPhoto || '#020812'),
+      'preset-aurora':  () => runAurora(canvas),
+      'preset-sunset':  () => runSunset(canvas),
+      'preset-ocean':   () => runOcean(canvas),
     }
 
     const stop = (RUNNERS[wallpaper] ?? RUNNERS['synthwave'])()
@@ -321,7 +556,7 @@ export function DesktopWallpaper() {
       stop()
       window.removeEventListener('resize', resize)
     }
-  }, [wallpaper, theme])
+  }, [wallpaper, theme, wallpaperColor, wallpaperPhoto])
 
   return (
     <canvas
