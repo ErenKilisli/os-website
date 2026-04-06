@@ -26,16 +26,17 @@ const MENU_W = 196
 const sectionLabel: CSSProperties = {
   fontFamily: 'var(--font-h)',
   fontSize: 8,
-  color: '#354060',
+  color: '#606060',
   padding: '6px 10px 3px',
   letterSpacing: '0.12em',
   userSelect: 'none',
 }
 
 const divider: CSSProperties = {
-  height: 1,
-  background: '#0d1828',
-  margin: '3px 0',
+  height: 0,
+  borderTop: '1px solid #808080',
+  borderBottom: '1px solid #ffffff',
+  margin: '3px 4px',
 }
 
 function Item({
@@ -51,6 +52,8 @@ function Item({
   danger?: boolean
   onClick: () => void
 }) {
+  const baseColor = danger ? '#cc0000' : active ? '#484fb9' : '#000000'
+
   const itemStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
@@ -58,23 +61,31 @@ function Item({
     width: '100%',
     background: 'none',
     border: 'none',
-    color: danger ? '#ff5555' : active ? '#00ffff' : '#b0b0c8',
+    color: baseColor,
     fontFamily: 'var(--font-h)',
     fontSize: 9,
-    letterSpacing: '0.07em',
-    padding: '7px 12px',
+    letterSpacing: '0.06em',
+    padding: '5px 12px',
     cursor: 'pointer',
     textAlign: 'left',
   }
 
   return (
-    <button style={itemStyle} onClick={onClick}
-      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,255,255,0.07)')}
-      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+    <button
+      style={itemStyle}
+      onClick={onClick}
+      onMouseEnter={e => {
+        e.currentTarget.style.background = '#484fb9'
+        e.currentTarget.style.color = '#ffffff'
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.background = 'none'
+        e.currentTarget.style.color = baseColor
+      }}
     >
-      {active && <span style={{ color: '#00ffff', fontSize: 8, flexShrink: 0 }}>▶</span>}
+      {active && <span style={{ fontSize: 9, flexShrink: 0 }}>✓</span>}
       {icon && !active && (
-        <span className="material-symbols-outlined" style={{ fontSize: 14, flexShrink: 0 }}>{icon}</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 14, flexShrink: 0, color: 'inherit' }}>{icon}</span>
       )}
       {children}
     </button>
@@ -115,10 +126,11 @@ export function DesktopContextMenu({ x, y, onClose }: Props) {
         top: adjY,
         left: adjX,
         width: MENU_W,
-        background: '#05070e',
-        border: '2px solid #00ffff',
-        boxShadow: '0 0 32px rgba(0,255,255,0.18), 0 8px 32px rgba(0,0,0,0.6)',
+        background: '#d3d4d5',
+        border: 'none',
+        boxShadow: 'inset 1.5px 1.5px 0px #ffffff, inset -1.5px -1.5px 0px #808080, 2px 2px 0px #000000',
         zIndex: 90000,
+        paddingBottom: 4,
       }}
     >
       {/* Wallpaper section */}
