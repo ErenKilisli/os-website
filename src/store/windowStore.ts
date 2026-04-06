@@ -62,7 +62,7 @@ const WINDOW_CONFIGS: Record<WindowType, { title: string; icon: string; width: n
   arcade:        { title: 'GAME_PROJECTS.EXE', icon: 'folder',      width: 500, height: 340 },
   projectdetail: { title: 'PROJECT.EXE',       icon: 'description', width: 580, height: 460 },
   snake:         { title: 'SNAKE.EXE',          icon: '🐍',             width: 444, height: 450 },
-  snowboard:     { title: 'SNOWBOARD.EXE',      icon: 'downhill_skiing', width: 510, height: 510 },
+  snowboard:     { title: 'PIXEL SNOWBOARD',     icon: 'downhill_skiing', width: 510, height: 510 },
   paint:         { title: 'PAINT',              icon: 'brush',           width: 620, height: 520 },
   music:         { title: 'MUSIC',              icon: 'music_note',      width: 380, height: 440 },
   notepad:       { title: 'NOTEPAD',            icon: 'edit_note',       width: 520, height: 420 },
