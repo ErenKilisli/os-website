@@ -1,13 +1,15 @@
 import { create } from 'zustand'
 import { Project } from '@/data/projects'
+import { APP_META, type AppMeta } from '@/config/appMeta'
 
-export type WindowType = 'game' | 'film' | 'swr' | 'about' | 'mail' | 'terminal' | 'settings' | 'devfiles' | 'cinema' | 'arcade' | 'projectdetail' | 'snake' | 'snowboard' | 'paint' | 'music' | 'notepad' | 'calc' | 'sysinfo' | 'browser'
+// Re-export WindowType so existing imports from this file still work
+export type { WindowType } from '@/config/appMeta'
 
 export interface WindowState {
   id: string
-  type: WindowType
+  type: import('@/config/appMeta').WindowType
   title: string
-  icon: string        // Material symbol name
+  icon: string        // Material symbol name (or emoji)
   x: number
   y: number
   width: number
@@ -21,12 +23,11 @@ export interface WindowState {
 export interface IconState {
   id: string
   label: string
-  iconName: string    // Material symbol name
-  iconColor: string   // hex color
-  badgeIcon?: string  // optional smaller icon overlaid on top
+  iconName: string    // Material symbol name (or emoji)
+  iconColor: string
   x: number
   y: number
-  windowType: WindowType
+  windowType: import('@/config/appMeta').WindowType
 }
 
 interface Store {
@@ -36,7 +37,7 @@ interface Store {
   focusedId: string | null
   selectedIconId: string | null
   currentProject: Project | null
-  openWindow: (type: WindowType) => void
+  openWindow: (type: import('@/config/appMeta').WindowType) => void
   closeWindow: (id: string) => void
   focusWindow: (id: string) => void
   minimizeWindow: (id: string) => void
@@ -49,63 +50,34 @@ interface Store {
   selectIcon: (id: string | null) => void
 }
 
-const WINDOW_CONFIGS: Record<WindowType, { title: string; icon: string; width: number; height: number }> = {
-  game:     { title: 'GAMES.EXE',      icon: 'sports_esports', width: 500, height: 340 },
-  film:     { title: 'FILMS.EXE',      icon: 'movie',          width: 600, height: 440 },
-  swr:      { title: 'SOFTWARE.EXE',   icon: 'folder',         width: 520, height: 360 },
-  about:    { title: 'ABOUTME.DOC',    icon: 'description',    width: 820, height: 640 },
-  mail:     { title: 'MAIL.EXE',       icon: 'mail',           width: 640, height: 460 },
-  terminal: { title: 'TERMINAL.EXE',   icon: 'terminal',       width: 560, height: 380 },
-  settings: { title: 'SETTINGS.EXE',   icon: 'settings',       width: 440, height: 360 },
-  devfiles:      { title: 'DEV_PROJECTS.EXE',  icon: 'folder',      width: 520, height: 360 },
-  cinema:        { title: 'FILM_PROJECTS.EXE', icon: 'folder',      width: 600, height: 440 },
-  arcade:        { title: 'GAME_PROJECTS.EXE', icon: 'folder',      width: 500, height: 340 },
-  projectdetail: { title: 'PROJECT.EXE',       icon: 'description', width: 580, height: 460 },
-  snake:         { title: 'SNAKE.EXE',          icon: '🐍',             width: 444, height: 450 },
-  snowboard:     { title: 'PIXEL SNOWBOARD',     icon: 'downhill_skiing', width: 510, height: 510 },
-  paint:         { title: 'PAINT',              icon: 'brush',           width: 620, height: 520 },
-  music:         { title: 'MUSIC',              icon: 'music_note',      width: 380, height: 440 },
-  notepad:       { title: 'NOTEPAD',            icon: 'edit_note',       width: 520, height: 420 },
-  calc:          { title: 'CALC',               icon: 'calculate',       width: 280, height: 420 },
-  sysinfo:       { title: 'SYSINFO',            icon: 'memory',          width: 500, height: 440 },
-  browser:       { title: 'BROWSER',            icon: 'public',          width: 860, height: 580 },
-}
+// Derived from APP_META — single source of truth
+const WINDOW_CONFIGS = Object.fromEntries(
+  APP_META.map((a: AppMeta) => [a.type, { title: a.title, icon: a.icon, width: a.width, height: a.height }])
+) as Record<string, { title: string; icon: string; width: number; height: number }>
 
 function makeIcons(): IconState[] {
   const sw = typeof window !== 'undefined' ? window.innerWidth : 1280
-  const r1 = sw - 100   // rightmost column (projects)
-  const r2 = sw - 220   // second-from-right (games)
-  const L1 = 16        // left col
-  const L2 = 110       // second col
-  const Y  = (n: number) => 16 + n * 100
-  return [
-    // Left col: about, contact, notepad, music, calc, terminal
-    { id: 'ico-about',    label: 'ABOUTME.DOC',   iconName: 'account_circle', iconColor: '#ffffff', x: L1, y: Y(0), windowType: 'about'    },
-    { id: 'ico-mail',     label: 'CONTACT',       iconName: 'mail',           iconColor: '#9097ff', x: L1, y: Y(1), windowType: 'mail'     },
-    { id: 'ico-notepad',  label: 'NOTEPAD',       iconName: 'edit_note',      iconColor: '#ffffff', x: L1, y: Y(2), windowType: 'notepad'  },
-    { id: 'ico-music',    label: 'MUSIC',         iconName: 'music_note',     iconColor: '#ff71ce', x: L1, y: Y(3), windowType: 'music'    },
-    { id: 'ico-calc',     label: 'CALC',          iconName: 'calculate',      iconColor: '#00ffff', x: L1, y: Y(4), windowType: 'calc'     },
-    { id: 'ico-terminal', label: 'TERMINAL',      iconName: 'terminal',       iconColor: '#00fd00', x: L1, y: Y(5), windowType: 'terminal' },
-    // Second col: settings, browser, paint
-    { id: 'ico-settings', label: 'SETTINGS',      iconName: 'settings',       iconColor: '#d3d4d5', x: L2, y: Y(0), windowType: 'settings' },
-    { id: 'ico-browser',  label: 'BROWSER',       iconName: 'public',         iconColor: '#00ffff', x: L2, y: Y(1), windowType: 'browser'  },
-    { id: 'ico-paint',    label: 'PAINT',         iconName: 'brush',          iconColor: '#ff71ce', x: L2, y: Y(2), windowType: 'paint'    },
-    // Right col: dev, film, game, snowboard, snake (trash is decoration below)
-    { id: 'ico-devfiles',  label: 'DEV PROJECTS',  iconName: 'folder_code',    iconColor: '#ff8c42', x: r1, y: Y(0), windowType: 'devfiles'  },
-    { id: 'ico-film',      label: 'FILM PROJECTS', iconName: 'movie',          iconColor: '#eaea00', x: r1, y: Y(1), windowType: 'film'      },
-    { id: 'ico-game',      label: 'GAME PROJECTS', iconName: 'sports_esports', iconColor: '#00fd00', x: r1, y: Y(2), windowType: 'game'      },
-    { id: 'ico-snowboard', label: 'SNOWBOARD.EXE', iconName: 'downhill_skiing',iconColor: '#00ffff', x: r1, y: Y(3), windowType: 'snowboard' },
-    { id: 'ico-snake',     label: 'SNAKE.EXE',     iconName: '🐍',             iconColor: '#00fd00', x: r1, y: Y(4), windowType: 'snake'     },
-  ]
-}
+  const COL = { L1: 16, L2: 110, R: sw - 100 }
+  const Y   = (row: number) => 16 + row * 100
 
-const INITIAL_ICONS = makeIcons()
+  return APP_META
+    .filter((a: AppMeta) => a.showOnDesktop && a.desktopCol != null)
+    .map((a: AppMeta) => ({
+      id: `ico-${a.type}`,
+      label: a.label,
+      iconName: a.icon,
+      iconColor: a.iconColor,
+      x: COL[a.desktopCol!],
+      y: Y(a.desktopRow ?? 0),
+      windowType: a.type,
+    }))
+}
 
 let zCounter = 100
 
 export const useWindowStore = create<Store>((set, get) => ({
   windows: [],
-  icons: INITIAL_ICONS,
+  icons: makeIcons(),
   maxZ: 100,
   focusedId: null,
   selectedIconId: null,
@@ -120,7 +92,11 @@ export const useWindowStore = create<Store>((set, get) => ({
         maxZ: zCounter,
         focusedId: existing.id,
         currentProject: project,
-        windows: s.windows.map(w => w.id === existing.id ? { ...w, zIndex: zCounter, title: project.name + '.EXE', isMinimized: false } : w),
+        windows: s.windows.map(w =>
+          w.id === existing.id
+            ? { ...w, zIndex: zCounter, title: project.name + '.EXE', isMinimized: false }
+            : w
+        ),
       }))
       return
     }
@@ -145,6 +121,7 @@ export const useWindowStore = create<Store>((set, get) => ({
     const existing = get().windows.find(w => w.type === type)
     if (existing) { get().focusWindow(existing.id); return }
     const cfg = WINDOW_CONFIGS[type]
+    if (!cfg) return
     const offset = get().windows.length
     const id = `win-${type}-${Date.now()}`
     zCounter++

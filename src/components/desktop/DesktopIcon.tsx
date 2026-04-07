@@ -2,24 +2,11 @@
 import { motion, useMotionValue } from 'framer-motion'
 import { useWindowStore, IconState } from '@/store/windowStore'
 import { useRef } from 'react'
-import { FolderFilmIcon, FolderGameIcon, FolderEmptyIcon, SnowboarderPixelIcon, PaintBrushIcon } from './FolderIcons'
+import { APP_REGISTRY } from '@/config/appRegistry'
 
 function IconGraphic({ icon }: { icon: IconState }) {
-  if (icon.windowType === 'cinema')   return <FolderFilmIcon color={icon.iconColor} size={48} />
-  if (icon.windowType === 'arcade')   return <FolderGameIcon color={icon.iconColor} size={48} />
-  if (icon.windowType === 'snowboard') return (
-    <div style={{
-      width: 52, height: 52,
-      background: 'linear-gradient(145deg,#0a5020,#1a8040)',
-      borderRadius: 10,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      boxShadow: '0 0 10px rgba(26,128,64,0.4)',
-    }}>
-      <SnowboarderPixelIcon size={38} />
-    </div>
-  )
-  if (icon.windowType === 'paint') return <PaintBrushIcon size={48} />
-  if (icon.id === 'ico-devfiles2' || icon.id === 'ico-devfiles3') return <FolderEmptyIcon color={icon.iconColor} size={48} />
+  const app = APP_REGISTRY.find(a => a.type === icon.windowType)
+  if (app?.desktopIconNode) return <>{app.desktopIconNode}</>
   return (
     <span
       className="material-symbols-filled"

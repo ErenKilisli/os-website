@@ -1,32 +1,15 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useWindowStore, WindowType } from '@/store/windowStore'
-
-interface SearchItem {
-  label: string
-  type: WindowType
-  icon: string
-  desc: string
-}
-
-const ITEMS: SearchItem[] = [
-  { label: 'ABOUTME.DOC',      type: 'about',     icon: 'account_circle',   desc: 'Bio, skills & info'      },
-  { label: 'CONTACT.MSG',      type: 'mail',      icon: 'mail',             desc: 'Send a message'          },
-  { label: 'TERMINAL.EXE',     type: 'terminal',  icon: 'terminal',         desc: 'Command line interface'  },
-  { label: 'SETTINGS.EXE',     type: 'settings',  icon: 'settings',         desc: 'System configuration'   },
-  { label: 'DEV PROJECTS',     type: 'devfiles',  icon: 'folder_code',      desc: 'Software projects'       },
-  { label: 'FILM PROJECTS',    type: 'film',      icon: 'movie',            desc: 'Film & video work'       },
-  { label: 'GAME PROJECTS',    type: 'game',      icon: 'sports_esports',   desc: 'Game development work'   },
-  { label: 'SNAKE.EXE',        type: 'snake',     icon: 'sports_esports',   desc: 'Classic snake game'      },
-  { label: 'SNOWBOARD.EXE',    type: 'snowboard', icon: 'downhill_skiing',  desc: 'Endless downhill run'    },
-  { label: 'PAINT.EXE',        type: 'paint',     icon: 'brush',            desc: 'MS Paint drawing app'    },
-]
+import { useWindowStore } from '@/store/windowStore'
+import { spotlightApps } from '@/config/appRegistry'
 
 interface Props {
   open: boolean
   onClose: () => void
 }
+
+const SPOTLIGHT_APPS = spotlightApps()
 
 export function Spotlight({ open, onClose }: Props) {
   const [query, setQuery] = useState('')
@@ -35,11 +18,12 @@ export function Spotlight({ open, onClose }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const results = query.trim()
-    ? ITEMS.filter((item) =>
-        item.label.toLowerCase().includes(query.toLowerCase()) ||
-        item.desc.toLowerCase().includes(query.toLowerCase())
+    ? SPOTLIGHT_APPS.filter(a =>
+        a.title.toLowerCase().includes(query.toLowerCase()) ||
+        a.label.toLowerCase().includes(query.toLowerCase()) ||
+        a.spotlightDesc.toLowerCase().includes(query.toLowerCase())
       )
-    : ITEMS
+    : SPOTLIGHT_APPS
 
   useEffect(() => {
     if (open) {
@@ -53,7 +37,7 @@ export function Spotlight({ open, onClose }: Props) {
     setSelected(0)
   }, [query])
 
-  const launch = (type: WindowType) => {
+  const launch = (type: import('@/config/appMeta').WindowType) => {
     openWindow(type)
     onClose()
   }
@@ -121,8 +105,8 @@ export function Spotlight({ open, onClose }: Props) {
                   >
                     <span className="material-symbols-outlined spotlight-item-ico">{item.icon}</span>
                     <div className="spotlight-item-text">
-                      <span className="spotlight-item-label">{item.label}</span>
-                      <span className="spotlight-item-desc">{item.desc}</span>
+                      <span className="spotlight-item-label">{item.title}</span>
+                      <span className="spotlight-item-desc">{item.spotlightDesc}</span>
                     </div>
                     {i === selected && <span className="spotlight-enter">↵ OPEN</span>}
                   </div>

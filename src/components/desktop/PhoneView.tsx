@@ -2,51 +2,20 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSystemStore } from '@/store/systemStore'
-import { useWindowStore, WindowType } from '@/store/windowStore'
+import { useWindowStore } from '@/store/windowStore'
+import type { WindowType } from '@/config/appMeta'
 import {
   DEVFILES_PROJECTS, FILM_PROJECTS, GAME_PROJECTS, Project,
 } from '@/data/projects'
-import { SnowboarderPixelIcon, PaintBrushIcon } from './FolderIcons'
+import { APP_REGISTRY, phoneApps, type AppDef } from '@/config/appRegistry'
 
-// ── App registry ──────────────────────────────────────────────────
-interface PhoneAppDef {
-  type: WindowType
-  icon: string
-  color: string
-  label: string
-  bg: string   // icon tile gradient background
-}
+// ── Derived from registry ─────────────────────────────────────────
+const PHONE_APPS = phoneApps()
 
-const PHONE_APPS: PhoneAppDef[] = [
-  { type: 'about',     icon: 'account_circle',  color: '#fff', label: 'PROFILE',  bg: 'linear-gradient(145deg,#3a42c4,#6a5acd)' },
-  { type: 'mail',      icon: 'mail',            color: '#fff', label: 'MESSAGE',  bg: 'linear-gradient(145deg,#4a40d0,#8b78ee)' },
-  { type: 'devfiles',  icon: 'folder_code',     color: '#fff', label: 'DEV',      bg: 'linear-gradient(145deg,#c05018,#e07030)' },
-  { type: 'film',      icon: 'movie',           color: '#fff', label: 'FILMS',    bg: 'linear-gradient(145deg,#907800,#c8a800)' },
-  { type: 'game',      icon: 'sports_esports',  color: '#fff', label: 'GAMES',    bg: 'linear-gradient(145deg,#186018,#28a028)' },
-  { type: 'terminal',  icon: 'terminal',        color: '#fff', label: 'TERMINAL', bg: 'linear-gradient(145deg,#082808,#105010)' },
-  { type: 'browser',   icon: 'public',          color: '#fff', label: 'BROWSER',  bg: 'linear-gradient(145deg,#006880,#00a8c0)' },
-  { type: 'settings',  icon: 'settings',        color: '#fff', label: 'SETTINGS', bg: 'linear-gradient(145deg,#303848,#505868)' },
-  { type: 'music',     icon: 'music_note',      color: '#fff', label: 'MUSIC',    bg: 'linear-gradient(145deg,#a03070,#d060a0)' },
-  { type: 'notepad',   icon: 'edit_note',       color: '#fff', label: 'NOTES',    bg: 'linear-gradient(145deg,#604800,#988000)' },
-  { type: 'calc',      icon: 'calculate',       color: '#fff', label: 'CALC',     bg: 'linear-gradient(145deg,#102060,#1840a0)' },
-  { type: 'paint',     icon: 'brush',           color: '#fff', label: 'PAINT',    bg: 'linear-gradient(145deg,#701890,#a040c0)' },
-  { type: 'snake',     icon: '🐍',               color: '#fff', label: 'SNAKE',    bg: 'linear-gradient(145deg,#0a4020,#188040)' },
-  { type: 'snowboard', icon: 'downhill_skiing', color: '#fff', label: 'SKI',      bg: 'linear-gradient(145deg,#0a5020,#1a8040)' },
-  { type: 'sysinfo',   icon: 'memory',          color: '#fff', label: 'SYSINFO',  bg: 'linear-gradient(145deg,#141c28,#202c3e)' },
-]
-
-// Dock: Profile, Message, Browser, Settings
-const DOCK_APPS: PhoneAppDef[] = [
-  PHONE_APPS[0], // about / profile
-  PHONE_APPS[1], // mail / message
-  PHONE_APPS[6], // browser
-  PHONE_APPS[7], // settings
-]
-
-// Apps that render inline in the phone (not desktop fallback)
-const INLINE: Set<WindowType> = new Set([
-  'about', 'mail', 'devfiles', 'film', 'game', 'terminal', 'settings',
-])
+// Dock: about, mail, browser, settings
+const DOCK_APPS: AppDef[] = (['about', 'mail', 'browser', 'settings'] as const)
+  .map(t => APP_REGISTRY.find(a => a.type === t)!)
+  .filter(Boolean)
 
 // ── Status bar ────────────────────────────────────────────────────
 function PhoneStatusBar() {
@@ -94,8 +63,18 @@ function PhoneStatusBar() {
   )
 }
 
+// ── App icon tile content ─────────────────────────────────────────
+function PhoneIconContent({ app, size = 26 }: { app: AppDef; size?: number }) {
+  if (app.phoneIconNode) return <>{app.phoneIconNode}</>
+  return (
+    <span className="material-symbols-outlined" style={{ fontSize: size, color: '#fff' }}>
+      {app.icon}
+    </span>
+  )
+}
+
 // ── Home screen ───────────────────────────────────────────────────
-function HomeScreen({ onOpen }: { onOpen: (app: PhoneAppDef) => void }) {
+function HomeScreen({ onOpen }: { onOpen: (app: AppDef) => void }) {
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: '16px 8px 8px' }}>
       <div style={{
@@ -115,27 +94,18 @@ function HomeScreen({ onOpen }: { onOpen: (app: PhoneAppDef) => void }) {
           >
             <div style={{
               width: 54, height: 54,
-              background: app.bg,
+              background: app.phoneBg,
               borderRadius: 14,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 3px 10px rgba(0,0,0,0.45)',
             }}>
-              {app.type === 'snowboard' ? (
-                <SnowboarderPixelIcon size={34} />
-              ) : app.type === 'paint' ? (
-                <PaintBrushIcon size={34} />
-              ) : (
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: 26, color: '#fff' }}
-                >{app.icon}</span>
-              )}
+              <PhoneIconContent app={app} size={26} />
             </div>
             <span style={{
               fontFamily: 'var(--font-h)', fontSize: 6, color: '#ccd',
               letterSpacing: '0.02em', textAlign: 'center',
               maxWidth: 58, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}>{app.label}</span>
+            }}>{app.phoneLabel ?? app.label}</span>
           </button>
         ))}
       </div>
@@ -683,19 +653,18 @@ function PhoneBootScreen({ onComplete }: { onComplete: () => void }) {
 }
 
 // ── "Open on Desktop" fallback screen ────────────────────────────
-function OpenOnDesktopScreen({ app, onOpen }: { app: PhoneAppDef; onOpen: () => void }) {
+function OpenOnDesktopScreen({ app, onOpen }: { app: AppDef; onOpen: () => void }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 14, padding: 16 }}>
       <div style={{
         width: 64, height: 64, borderRadius: 18,
-        background: 'rgba(255,255,255,0.05)',
-        border: `1px solid ${app.color}44`,
+        background: app.phoneBg || 'rgba(255,255,255,0.05)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: `0 0 28px ${app.color}20`,
+        boxShadow: '0 0 28px rgba(72,79,185,0.25)',
       }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 30, color: app.color }}>{app.icon}</span>
+        <PhoneIconContent app={app} size={30} />
       </div>
-      <div style={{ fontFamily: 'var(--font-h)', fontSize: 9, color: '#fff', letterSpacing: '0.1em' }}>{app.label}</div>
+      <div style={{ fontFamily: 'var(--font-h)', fontSize: 9, color: '#fff', letterSpacing: '0.1em' }}>{app.phoneLabel ?? app.label}</div>
       <div style={{ fontFamily: 'var(--font-b)', fontSize: 13, color: '#4a6080', textAlign: 'center', lineHeight: 1.6 }}>
         This app runs on the desktop.
       </div>
@@ -752,19 +721,22 @@ function PhoneAppBar({ title, icon, color, onBack }: {
 export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
   const { setViewMode } = useSystemStore()
   const { openWindow } = useWindowStore()
-  const [activeApp, setActiveApp] = useState<PhoneAppDef | null>(null)
+  const [activeApp, setActiveApp] = useState<AppDef | null>(null)
   const [booted, setBooted] = useState(false)
 
-  const handleOpenApp = (app: PhoneAppDef) => setActiveApp(app)
+  const handleOpenApp = (app: AppDef) => setActiveApp(app)
 
-  const handleOpenDesktop = (app: PhoneAppDef) => {
+  const handleOpenDesktop = (app: AppDef) => {
     openWindow(app.type)
     setViewMode('desktop')
   }
 
   const handleBack = () => setActiveApp(null)
 
-  const renderAppContent = (app: PhoneAppDef) => {
+  const renderAppContent = (app: AppDef) => {
+    if (!app.phoneInline) {
+      return <OpenOnDesktopScreen app={app} onOpen={() => handleOpenDesktop(app)} />
+    }
     switch (app.type) {
       case 'about':    return <AboutScreen />
       case 'mail':     return <MailScreen />
@@ -773,7 +745,7 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
       case 'game':     return <ProjectsScreen category="game" />
       case 'terminal': return <PhoneTerminalScreen />
       case 'settings': return <PhoneSettingsScreen />
-      default:         return <OpenOnDesktopScreen app={app} onOpen={() => handleOpenDesktop(app)} />
+      default:         return null
     }
   }
 
@@ -816,9 +788,9 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
                     style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}
                   >
                     <PhoneAppBar
-                      title={activeApp.label}
+                      title={activeApp.phoneLabel ?? activeApp.label}
                       icon={activeApp.icon}
-                      color={activeApp.color}
+                      color="#00ffff"
                       onBack={handleBack}
                     />
                     <div style={{ flex: 1, overflow: 'hidden' }}>
@@ -849,7 +821,7 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
                     key={app.type}
                     onClick={() => handleOpenApp(app)}
                     style={{
-                      background: app.bg,
+                      background: app.phoneBg,
                       border: 'none',
                       borderRadius: 14,
                       width: 52, height: 52,
@@ -857,11 +829,7 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
                       boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
                     }}
                   >
-                    {app.type === 'snowboard' ? (
-                      <SnowboarderPixelIcon size={32} />
-                    ) : (
-                      <span className="material-symbols-outlined" style={{ fontSize: 24, color: '#fff' }}>{app.icon}</span>
-                    )}
+                    <PhoneIconContent app={app} size={24} />
                   </button>
                 ))}
               </div>

@@ -17,24 +17,6 @@ interface Props {
   bodyClass?: string
 }
 
-const WIN_FILENAMES: Record<string, string> = {
-  game:     'GAMES.EXE',
-  film:     'FILMS.EXE',
-  swr:      'SOFTWARE.EXE',
-  about:    'ABOUTME.DOC',
-  mail:     'CONTACT.MSG',
-  terminal: 'TERMINAL.EXE',
-  settings: 'SETTINGS.EXE',
-  devfiles: 'DEV_PROJECTS.EXE',
-  cinema:   'FILM_PROJECTS.EXE',
-  arcade:   'GAME_PROJECTS.EXE',
-  music:    'MUSIC',
-  notepad:  'NOTEPAD',
-  calc:     'CALC',
-  sysinfo:  'SYSINFO',
-  browser:  'BROWSER',
-}
-
 const SNAP_THRESHOLD = 48
 
 export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status, isMobile = false, bodyClass }: Props) {
@@ -125,7 +107,7 @@ export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status,
   if (win.isMinimized) return null
 
   const isActive = win.id === focusedId
-  const filename = WIN_FILENAMES[win.type] ?? win.title
+  const filename = win.title
 
   // ── Mobile layout ────────────────────────────────────────────
   if (isMobile) {

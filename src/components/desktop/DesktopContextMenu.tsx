@@ -2,7 +2,8 @@
 import { useEffect, useRef, CSSProperties } from 'react'
 import { motion } from 'framer-motion'
 import { useSystemStore, Wallpaper, WALLPAPER_LABELS, ANIMATED_WALLPAPERS } from '@/store/systemStore'
-import { useWindowStore, WindowType } from '@/store/windowStore'
+import { useWindowStore } from '@/store/windowStore'
+import { contextMenuApps } from '@/config/appRegistry'
 
 interface Props {
   x: number
@@ -10,14 +11,7 @@ interface Props {
   onClose: () => void
 }
 
-const APPS: { label: string; type: WindowType; icon: string }[] = [
-  { label: 'TERMINAL',   type: 'terminal', icon: 'terminal'       },
-  { label: 'ABOUT ME',   type: 'about',    icon: 'account_circle' },
-  { label: 'CONTACT',    type: 'mail',     icon: 'mail'           },
-  { label: 'SETTINGS',   type: 'settings', icon: 'settings'       },
-  { label: 'PAINT.EXE',  type: 'paint',    icon: 'brush'          },
-  { label: 'SNAKE.EXE',  type: 'snake',    icon: 'sports_esports' },
-]
+const CONTEXT_APPS = contextMenuApps()
 
 const MENU_W = 196
 
@@ -156,7 +150,7 @@ export function DesktopContextMenu({ x, y, onClose }: Props) {
 
       {/* Open app section */}
       <div style={sectionLabel}>OPEN APP</div>
-      {APPS.map(app => (
+      {CONTEXT_APPS.map(app => (
         <Item
           key={app.type}
           icon={app.icon}

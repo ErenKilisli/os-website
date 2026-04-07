@@ -11,20 +11,7 @@ import { ShutdownScreen } from './ShutdownScreen'
 import { Spotlight } from './Spotlight'
 import { SoundManager } from './SoundManager'
 import { DesktopWallpaper } from './DesktopWallpaper'
-import { FileBrowserWindow } from '../windows/FileBrowserWindow'
-import { AboutWindow } from '../windows/AboutWindow'
-import { MailWindow } from '../windows/MailWindow'
-import { TerminalWindow } from '../windows/TerminalWindow'
-import { SettingsWindow } from '../windows/SettingsWindow'
-import { ProjectDetailWindow } from '../windows/ProjectDetailWindow'
-import { SnakeWindow } from '../windows/SnakeWindow'
-import { SnowboardWindow } from '../windows/SnowboardWindow'
-import { PaintWindow } from '../windows/PaintWindow'
-import { MusicWindow } from '../windows/MusicWindow'
-import { NotePadWindow } from '../windows/NotePadWindow'
-import { CalcWindow } from '../windows/CalcWindow'
-import { SysInfoWindow } from '../windows/SysInfoWindow'
-import { BrowserWindow } from '../windows/BrowserWindow'
+import { APP_REGISTRY } from '@/config/appRegistry'
 import { DesktopContextMenu } from './DesktopContextMenu'
 import { CustomCursor } from './CustomCursor'
 import { PhoneView } from './PhoneView'
@@ -153,23 +140,13 @@ export function Desktop() {
           <DesktopIcon key={icon.id} icon={icon} />
         ))}
 
-        {/* Windows */}
+        {/* Windows — driven by APP_REGISTRY */}
         <AnimatePresence>
           {windows.map((win) => {
-            if (win.type === 'about')         return <AboutWindow         key={win.id} win={win} isMobile={isMobile} />
-            if (win.type === 'mail')          return <MailWindow          key={win.id} win={win} isMobile={isMobile} />
-            if (win.type === 'terminal')      return <TerminalWindow      key={win.id} win={win} isMobile={isMobile} />
-            if (win.type === 'settings')      return <SettingsWindow      key={win.id} win={win} isMobile={isMobile} />
-            if (win.type === 'projectdetail') return <ProjectDetailWindow key={win.id} win={win} isMobile={isMobile} />
-            if (win.type === 'snake')         return <SnakeWindow         key={win.id} win={win} isMobile={isMobile} />
-            if (win.type === 'snowboard')     return <SnowboardWindow     key={win.id} win={win} isMobile={isMobile} />
-            if (win.type === 'paint')         return <PaintWindow         key={win.id} win={win} isMobile={isMobile} />
-            if (win.type === 'music')         return <MusicWindow         key={win.id} win={win} isMobile={isMobile} />
-            if (win.type === 'notepad')       return <NotePadWindow       key={win.id} win={win} isMobile={isMobile} />
-            if (win.type === 'calc')          return <CalcWindow          key={win.id} win={win} isMobile={isMobile} />
-            if (win.type === 'sysinfo')       return <SysInfoWindow       key={win.id} win={win} isMobile={isMobile} />
-            if (win.type === 'browser')       return <BrowserWindow       key={win.id} win={win} isMobile={isMobile} />
-            return <FileBrowserWindow key={win.id} win={win} category={win.type} isMobile={isMobile} />
+            const app = APP_REGISTRY.find(a => a.type === win.type)
+            if (!app) return null
+            const { Component } = app
+            return <Component key={win.id} win={win} isMobile={isMobile} />
           })}
         </AnimatePresence>
 
