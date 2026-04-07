@@ -76,6 +76,49 @@ export function SnowboarderPixelIcon({ size = 48 }: { size?: number }) {
   )
 }
 
+/* ─── PAINT BRUSH ─── classic diagonal brush, rainbow bristles ─── */
+export function PaintBrushIcon({ size = 48 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 48 48" width={size} height={size} style={{ imageRendering: 'pixelated', display: 'block' }}>
+      <defs>
+        <linearGradient id="pbi-wood" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stopColor="#f0c878" />
+          <stop offset="40%"  stopColor="#c88840" />
+          <stop offset="100%" stopColor="#9a6020" />
+        </linearGradient>
+        <linearGradient id="pbi-rbow" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"    stopColor="#ff0040" />
+          <stop offset="16.7%" stopColor="#ff8800" />
+          <stop offset="33.3%" stopColor="#ffee00" />
+          <stop offset="50%"   stopColor="#44dd00" />
+          <stop offset="66.7%" stopColor="#00aaff" />
+          <stop offset="83.3%" stopColor="#8844ff" />
+          <stop offset="100%"  stopColor="#ff00cc" />
+        </linearGradient>
+      </defs>
+      {/* Brush rotated -45°: handle → top-right, bristle tip → bottom-left */}
+      <g transform="rotate(-45, 24, 24)">
+        {/* Wooden handle */}
+        <rect x="21" y="1" width="6" height="24" rx="3" fill="url(#pbi-wood)" />
+        {/* Handle highlight */}
+        <rect x="22" y="2" width="1.5" height="21" rx="0.75" fill="rgba(255,255,255,0.32)" />
+        {/* Ferrule — silver band */}
+        <rect x="19.5" y="24.5" width="9" height="4.5" fill="#b8b8c8" />
+        <rect x="19.5" y="24.5" width="9" height="1.5"  fill="#e8e8f0" />
+        <rect x="19.5" y="27.5" width="9" height="1.5"  fill="#808090" />
+        {/* Bristles — tapered, rainbow gradient */}
+        <path d="M19.5,29 L28.5,29 L26,43 L22,43 Z" fill="url(#pbi-rbow)" />
+        {/* Tip — pointed */}
+        <path d="M22,43 L26,43 L24,47 Z" fill="#ff00cc" />
+        {/* Subtle bristle lines */}
+        <line x1="22.5" y1="29.5" x2="21.5" y2="43" stroke="rgba(0,0,0,0.10)" strokeWidth="0.6" />
+        <line x1="24"   y1="29"   x2="24"   y2="43" stroke="rgba(0,0,0,0.10)" strokeWidth="0.6" />
+        <line x1="25.5" y1="29.5" x2="26.5" y2="43" stroke="rgba(0,0,0,0.10)" strokeWidth="0.6" />
+      </g>
+    </svg>
+  )
+}
+
 /* ─── GAME PROJECTS ─── same folder, joystick in bottom-right corner only */
 export function FolderGameIcon({ color, size = 48 }: Props) {
   const R = '#cc2222'

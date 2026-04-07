@@ -6,7 +6,7 @@ import { useWindowStore, WindowType } from '@/store/windowStore'
 import {
   DEVFILES_PROJECTS, FILM_PROJECTS, GAME_PROJECTS, Project,
 } from '@/data/projects'
-import { SnowboarderPixelIcon } from './FolderIcons'
+import { SnowboarderPixelIcon, PaintBrushIcon } from './FolderIcons'
 
 // ── App registry ──────────────────────────────────────────────────
 interface PhoneAppDef {
@@ -122,6 +122,8 @@ function HomeScreen({ onOpen }: { onOpen: (app: PhoneAppDef) => void }) {
             }}>
               {app.type === 'snowboard' ? (
                 <SnowboarderPixelIcon size={34} />
+              ) : app.type === 'paint' ? (
+                <PaintBrushIcon size={34} />
               ) : (
                 <span
                   className="material-symbols-outlined"
