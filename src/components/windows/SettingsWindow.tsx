@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Window } from './Window'
 import { WindowState } from '@/store/windowStore'
 import {
@@ -13,6 +13,11 @@ const TABS: Tab[] = ['Display', 'Wallpaper', 'Appearance', 'Sound', 'Network', '
 
 const THEMES: Theme[] = ['cybercore', 'vaporwave', 'matrix', 'amber']
 const CURSORS: CursorStyle[] = ['cyberwave', 'pixel', 'box']
+
+const SECTION_LABEL: React.CSSProperties = {
+  fontFamily: 'var(--font-h)', fontSize: 8, color: 'var(--primary)',
+  letterSpacing: '0.15em', marginBottom: 8,
+}
 
 const PRESET_WALLPAPERS: { id: Wallpaper; label: string; preview: string }[] = [
   { id: 'preset-aurora',  label: 'AURORA',     preview: 'linear-gradient(135deg,#010810 0%,#00b4a0 40%,#6644ff 70%,#010810 100%)' },
@@ -40,7 +45,7 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
   useEffect(() => {
     if (settingsInitTab && TABS.includes(settingsInitTab as Tab)) {
       setActiveTab(settingsInitTab as Tab)
-      setSettingsInitTab('Display') // reset after consuming
+      setSettingsInitTab('')
     }
   }, [settingsInitTab, setSettingsInitTab])
 
@@ -156,9 +161,7 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
           {activeTab === 'Wallpaper' && (
             <>
               {/* Animated wallpapers */}
-              <div style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: 'var(--primary)', letterSpacing: '0.15em', marginBottom: 8 }}>
-                ANIMATED
-              </div>
+              <div style={SECTION_LABEL}>ANIMATED</div>
               <div className="swallpaper-grid" style={{ marginBottom: 14 }}>
                 {ANIMATED_WALLPAPERS.map((w) => (
                   <button key={w} className={`swp-btn${wallpaper === w ? ' active' : ''}`}
@@ -169,9 +172,7 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
               </div>
 
               {/* Solid colors */}
-              <div style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: 'var(--primary)', letterSpacing: '0.15em', marginBottom: 8 }}>
-                SOLID COLOR
-              </div>
+              <div style={SECTION_LABEL}>SOLID COLOR</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
                 {SOLID_COLORS.map((sc) => (
                   <button
@@ -209,9 +210,7 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
               </div>
 
               {/* Preset photos */}
-              <div style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: 'var(--primary)', letterSpacing: '0.15em', marginBottom: 8 }}>
-                PRESET PHOTOS
-              </div>
+              <div style={SECTION_LABEL}>PRESET PHOTOS</div>
               <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
                 {PRESET_WALLPAPERS.map((pw) => (
                   <button
@@ -240,9 +239,7 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
               </div>
 
               {/* Custom photo upload */}
-              <div style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: 'var(--primary)', letterSpacing: '0.15em', marginBottom: 8 }}>
-                CUSTOM PHOTO
-              </div>
+              <div style={SECTION_LABEL}>CUSTOM PHOTO</div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <input
                   ref={fileInputRef}
@@ -291,9 +288,7 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
           {/* ── Appearance (Light/Dark mode) ── */}
           {activeTab === 'Appearance' && (
             <>
-              <div style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: 'var(--primary)', letterSpacing: '0.15em', marginBottom: 12 }}>
-                WINDOW CHROME MODE
-              </div>
+              <div style={{ ...SECTION_LABEL, marginBottom: 12 }}>WINDOW CHROME MODE</div>
               <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
                 {([
                   {
@@ -337,7 +332,7 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
                     }}>{opt.label}</span>
                     <span style={{
                       fontFamily: 'var(--font-h)', fontSize: 7,
-                      color: opt.textColor === '#ffffff' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
+                      color: opt.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
                     }}>{opt.desc}</span>
                     {uiMode === opt.mode && (
                       <span style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: 'var(--primary)' }}>✓ ACTIVE</span>
@@ -346,9 +341,7 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
                 ))}
               </div>
 
-              <div style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: 'var(--primary)', letterSpacing: '0.15em', marginBottom: 8 }}>
-                PREVIEW
-              </div>
+              <div style={SECTION_LABEL}>PREVIEW</div>
               <div style={{
                 background: uiMode === 'dark' ? '#2a2a2a' : '#f0f0f0',
                 border: '2px solid rgba(128,128,128,0.4)',

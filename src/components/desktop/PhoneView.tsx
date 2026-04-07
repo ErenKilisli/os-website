@@ -599,6 +599,87 @@ function PhoneSettingsScreen() {
   )
 }
 
+// ── Phone boot screen ────────────────────────────────────────────
+const PHONE_BOOT_LINES = [
+  'INIT KERNEL v2.0.26...',
+  'LOADING HARDWARE...',
+  'MOUNTING /data...',
+  'LAUNCHING EREN.OS MOBILE...',
+]
+
+function PhoneBootScreen({ onComplete }: { onComplete: () => void }) {
+  const [progress, setProgress] = useState(0)
+  const [lines, setLines] = useState<string[]>([])
+
+  useEffect(() => {
+    let p = 0
+    const interval = setInterval(() => {
+      p = Math.min(p + 2, 100)
+      setProgress(p)
+      if (p >= 100) {
+        clearInterval(interval)
+        setTimeout(onComplete, 350)
+      }
+    }, 36)
+    const timeouts = PHONE_BOOT_LINES.map((line, i) =>
+      setTimeout(() => setLines(prev => [...prev, line]), 200 + i * 380)
+    )
+    return () => {
+      clearInterval(interval)
+      timeouts.forEach(clearTimeout)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{
+        flex: 1, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        background: '#000', gap: 22, padding: '24px 28px',
+      }}
+    >
+      {/* Logo */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+        <div style={{
+          width: 60, height: 60,
+          border: '2px solid #00ffff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 0 28px rgba(0,255,255,0.45)',
+        }}>
+          <span style={{ fontFamily: 'var(--font-h)', fontSize: 13, color: '#00ffff' }}>OS</span>
+        </div>
+        <span style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: '#fff', letterSpacing: '0.3em' }}>EREN.OS</span>
+        <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#9097ff', letterSpacing: '0.12em' }}>MOBILE</span>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{ width: '75%', height: 2, background: '#1a2030', borderRadius: 1, overflow: 'hidden' }}>
+        <motion.div
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.04 }}
+          style={{ height: '100%', background: '#00ffff', borderRadius: 1 }}
+        />
+      </div>
+
+      {/* Boot lines */}
+      <div style={{ width: '100%', minHeight: 72 }}>
+        {lines.map((line, i) => (
+          <div key={i} style={{
+            fontFamily: 'var(--font-h)', fontSize: 6, color: '#3a5070',
+            letterSpacing: '0.05em', marginBottom: 5,
+          }}>
+            {'>'} {line}
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
 // ── "Open on Desktop" fallback screen ────────────────────────────
 function OpenOnDesktopScreen({ app, onOpen }: { app: PhoneAppDef; onOpen: () => void }) {
   return (
@@ -666,18 +747,13 @@ function PhoneAppBar({ title, icon, color, onBack }: {
 }
 
 // ── Main PhoneView ────────────────────────────────────────────────
-export function PhoneView() {
+export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
   const { setViewMode } = useSystemStore()
   const { openWindow } = useWindowStore()
   const [activeApp, setActiveApp] = useState<PhoneAppDef | null>(null)
+  const [booted, setBooted] = useState(false)
 
-  const handleOpenApp = (app: PhoneAppDef) => {
-    if (INLINE.has(app.type)) {
-      setActiveApp(app)
-    } else {
-      setActiveApp(app) // show "open on desktop" screen
-    }
-  }
+  const handleOpenApp = (app: PhoneAppDef) => setActiveApp(app)
 
   const handleOpenDesktop = (app: PhoneAppDef) => {
     openWindow(app.type)
@@ -699,6 +775,117 @@ export function PhoneView() {
     }
   }
 
+  // Shared screen content (inside phone frame or fullscreen)
+  const screenContent = (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#020812' }}>
+      <AnimatePresence mode="wait">
+        {!booted ? (
+          <PhoneBootScreen key="boot" onComplete={() => setBooted(true)} />
+        ) : (
+          <motion.div
+            key="ui"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+          >
+            <PhoneStatusBar />
+
+            {/* Content area */}
+            <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+              <AnimatePresence mode="wait">
+                {!activeApp ? (
+                  <motion.div
+                    key="home"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.18 }}
+                    style={{ position: 'absolute', inset: 0 }}
+                  >
+                    <HomeScreen onOpen={handleOpenApp} />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key={activeApp.type}
+                    initial={{ opacity: 0, x: 40 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 40 }}
+                    transition={{ duration: 0.18 }}
+                    style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}
+                  >
+                    <PhoneAppBar
+                      title={activeApp.label}
+                      icon={activeApp.icon}
+                      color={activeApp.color}
+                      onBack={handleBack}
+                    />
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                      {renderAppContent(activeApp)}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Dock */}
+            <div style={{
+              flexShrink: 0,
+              padding: '8px 16px 6px',
+              background: 'rgba(255,255,255,0.04)',
+              backdropFilter: 'blur(12px)',
+              borderTop: '1px solid rgba(255,255,255,0.08)',
+            }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-around',
+                background: 'rgba(255,255,255,0.06)',
+                borderRadius: 20,
+                padding: '8px 12px',
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}>
+                {DOCK_APPS.map(app => (
+                  <button
+                    key={app.type}
+                    onClick={() => handleOpenApp(app)}
+                    style={{
+                      background: app.bg,
+                      border: 'none',
+                      borderRadius: 14,
+                      width: 52, height: 52,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+                    }}
+                  >
+                    {app.type === 'snowboard' ? (
+                      <SnowboarderPixelIcon size={32} />
+                    ) : (
+                      <span className="material-symbols-outlined" style={{ fontSize: 24, color: '#fff' }}>{app.icon}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+
+  // ── Fullscreen mode: fills the real device screen ──
+  if (fullscreen) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
+        style={{ position: 'fixed', inset: 0, zIndex: 99980, display: 'flex', flexDirection: 'column' }}
+      >
+        {screenContent}
+      </motion.div>
+    )
+  }
+
+  // ── Overlay mode: phone frame on top of desktop ──
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -736,106 +923,24 @@ export function PhoneView() {
         <div style={{ position: 'absolute', left: -5, top: 128, width: 5, height: 28, background: '#1a2030', borderRadius: '2px 0 0 2px' }} />
         <div style={{ position: 'absolute', right: -5, top: 110, width: 5, height: 44, background: '#1a2030', borderRadius: '0 2px 2px 0' }} />
 
-        {/* Top bezel (notch area) */}
+        {/* Top bezel — notch */}
         <div style={{
           height: 22, flexShrink: 0, background: '#030408',
           display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 3,
         }}>
-          {/* Notch pill */}
           <div style={{ width: 100, height: 14, background: '#000', borderRadius: 7, border: '1px solid #1a2030' }} />
         </div>
 
-        {/* Screen area */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#020812' }}>
-          <PhoneStatusBar />
+        {screenContent}
 
-          {/* Content area with transitions */}
-          <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-            <AnimatePresence mode="wait">
-              {!activeApp ? (
-                <motion.div
-                  key="home"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ position: 'absolute', inset: 0 }}
-                >
-                  <HomeScreen onOpen={handleOpenApp} />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key={activeApp.type}
-                  initial={{ opacity: 0, x: 40 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 40 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}
-                >
-                  <PhoneAppBar
-                    title={activeApp.label}
-                    icon={activeApp.icon}
-                    color={activeApp.color}
-                    onBack={handleBack}
-                  />
-                  <div style={{ flex: 1, overflow: 'hidden' }}>
-                    {renderAppContent(activeApp)}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Dock */}
-          <div style={{
-            flexShrink: 0,
-            padding: '8px 16px 6px',
-            background: 'rgba(255,255,255,0.04)',
-            backdropFilter: 'blur(12px)',
-            borderTop: '1px solid rgba(255,255,255,0.08)',
-          }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-around',
-              background: 'rgba(255,255,255,0.06)',
-              borderRadius: 20,
-              padding: '8px 12px',
-              border: '1px solid rgba(255,255,255,0.08)',
-            }}>
-              {DOCK_APPS.map(app => (
-                <button
-                  key={app.type}
-                  onClick={() => handleOpenApp(app)}
-                  style={{
-                    background: app.bg,
-                    border: 'none',
-                    borderRadius: 14,
-                    width: 52, height: 52,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
-                  }}
-                >
-                  {app.type === 'snowboard' ? (
-                    <SnowboarderPixelIcon size={32} />
-                  ) : (
-                    <span className="material-symbols-outlined" style={{ fontSize: 24, color: '#fff' }}>{app.icon}</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom bezel — home indicator only */}
+        {/* Bottom bezel — home indicator */}
         <div style={{
           height: 22, flexShrink: 0, background: '#030408',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <div
             onClick={() => setActiveApp(null)}
-            style={{
-              width: 120, height: 5, background: '#fff',
-              borderRadius: 3, opacity: 0.25,
-            }}
+            style={{ width: 120, height: 5, background: '#fff', borderRadius: 3, opacity: 0.25 }}
           />
         </div>
       </motion.div>

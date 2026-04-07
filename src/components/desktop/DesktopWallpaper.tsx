@@ -287,6 +287,12 @@ function runSolid(canvas: HTMLCanvasElement, color: string): () => void {
   return () => observer.disconnect()
 }
 
+const AURORA_BANDS = [
+  { r: 0,   g: 255, b: 180, phase: 0,   amp: 0.12, yBase: 0.25 },
+  { r: 100, g: 80,  b: 255, phase: 1.2, amp: 0.10, yBase: 0.30 },
+  { r: 0,   g: 220, b: 255, phase: 2.4, amp: 0.14, yBase: 0.20 },
+]
+
 function runAurora(canvas: HTMLCanvasElement): () => void {
   const ctx = canvas.getContext('2d')!
   let t = 0
@@ -315,35 +321,39 @@ function runAurora(canvas: HTMLCanvasElement): () => void {
     }
     ctx.globalAlpha = 1
 
-    // Aurora curtains — multiple translucent sine waves
-    const BANDS = [
-      { color1: 'rgba(0,255,180,', color2: 'rgba(0,200,120,', phase: 0,    amp: 0.12, yBase: 0.25 },
-      { color1: 'rgba(100,80,255,', color2: 'rgba(60,40,200,', phase: 1.2,  amp: 0.10, yBase: 0.30 },
-      { color1: 'rgba(0,220,255,', color2: 'rgba(0,160,200,', phase: 2.4,  amp: 0.14, yBase: 0.20 },
-    ]
-
-    for (const band of BANDS) {
+    // Aurora curtains — draw vertical slabs with globalAlpha instead of per-column gradients
+    for (const band of AURORA_BANDS) {
       for (let x = 0; x < W; x += 2) {
-        const wave = Math.sin(x * 0.008 + t + band.phase) * band.amp
-        const baseY = (band.yBase + wave) * H
+        const wave   = Math.sin(x * 0.008 + t + band.phase) * band.amp
+        const baseY  = (band.yBase + wave) * H
         const height = 0.25 * H * (0.5 + 0.5 * Math.sin(x * 0.012 + t * 0.7 + band.phase))
-
-        const g = ctx.createLinearGradient(x, baseY, x, baseY + height)
-        g.addColorStop(0, band.color1 + '0)')
-        g.addColorStop(0.3, band.color1 + '0.18)')
-        g.addColorStop(0.7, band.color2 + '0.12)')
-        g.addColorStop(1, band.color1 + '0)')
-
-        ctx.fillStyle = g
-        ctx.fillRect(x, baseY, 2, height)
+        const third  = height / 3
+        ctx.fillStyle = `rgb(${band.r},${band.g},${band.b})`
+        // top fade
+        ctx.globalAlpha = 0.04
+        ctx.fillRect(x, baseY, 2, third)
+        // core
+        ctx.globalAlpha = 0.18
+        ctx.fillRect(x, baseY + third, 2, third)
+        // bottom fade
+        ctx.globalAlpha = 0.08
+        ctx.fillRect(x, baseY + third * 2, 2, third)
       }
     }
+    ctx.globalAlpha = 1
 
     raf = requestAnimationFrame(tick)
   }
   tick()
   return () => cancelAnimationFrame(raf)
 }
+
+const SUNSET_BUILDINGS = [
+  [0, 0.12], [0.06, 0.09], [0.10, 0.14], [0.16, 0.08], [0.20, 0.11],
+  [0.25, 0.07], [0.30, 0.13], [0.36, 0.06], [0.42, 0.10], [0.48, 0.08],
+  [0.52, 0.12], [0.57, 0.09], [0.63, 0.15], [0.70, 0.07], [0.76, 0.11],
+  [0.82, 0.08], [0.88, 0.13], [0.93, 0.10], [0.97, 0.06], [1.0, 0],
+]
 
 function runSunset(canvas: HTMLCanvasElement): () => void {
   const ctx = canvas.getContext('2d')!
@@ -404,19 +414,13 @@ function runSunset(canvas: HTMLCanvasElement): () => void {
 
     // City silhouette
     ctx.fillStyle = '#0a0410'
-    const buildings = [
-      [0, 0.12], [0.06, 0.09], [0.10, 0.14], [0.16, 0.08], [0.20, 0.11],
-      [0.25, 0.07], [0.30, 0.13], [0.36, 0.06], [0.42, 0.10], [0.48, 0.08],
-      [0.52, 0.12], [0.57, 0.09], [0.63, 0.15], [0.70, 0.07], [0.76, 0.11],
-      [0.82, 0.08], [0.88, 0.13], [0.93, 0.10], [0.97, 0.06], [1.0, 0],
-    ]
     ctx.beginPath()
     ctx.moveTo(0, H)
-    for (let i = 0; i < buildings.length - 1; i++) {
-      const bx = buildings[i][0] * W
-      const bh = buildings[i][1] * H * 0.4
+    for (let i = 0; i < SUNSET_BUILDINGS.length - 1; i++) {
+      const bx = SUNSET_BUILDINGS[i][0] * W
+      const bh = SUNSET_BUILDINGS[i][1] * H * 0.4
       const by = H * 0.7 - bh
-      const nx = buildings[i + 1][0] * W
+      const nx = SUNSET_BUILDINGS[i + 1][0] * W
       ctx.lineTo(bx, H * 0.7)
       ctx.lineTo(bx, by)
       ctx.lineTo(nx, by)
@@ -550,7 +554,7 @@ export function DesktopWallpaper() {
       'preset-ocean':   () => runOcean(canvas),
     }
 
-    const stop = (RUNNERS[wallpaper] ?? RUNNERS['synthwave'])()
+    const stop = RUNNERS[wallpaper]()
 
     return () => {
       stop()

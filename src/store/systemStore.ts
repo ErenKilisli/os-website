@@ -56,7 +56,7 @@ interface SystemStore {
   cursorStyle: CursorStyle
   viewMode: ViewMode
   uiMode: UiMode
-  settingsInitTab: string    // which tab settings opens to by default
+  settingsInitTab: string    // non-empty string → navigate settings to that tab on next open
   setVolume: (v: number) => void
   setBrightness: (v: number) => void
   setTheme: (t: Theme) => void
@@ -81,7 +81,7 @@ export const useSystemStore = create<SystemStore>()(
       cursorStyle: 'cyberwave',
       viewMode: 'desktop',
       uiMode: 'dark',
-      settingsInitTab: 'Display',
+      settingsInitTab: '',
       setVolume: (volume) => set({ volume }),
       setBrightness: (brightness) => set({ brightness }),
       setTheme: (theme) => set({ theme }),

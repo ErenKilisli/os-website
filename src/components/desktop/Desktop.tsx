@@ -56,11 +56,15 @@ export function Desktop() {
   }, [uiMode])
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
+    const check = () => {
+      const mobile = window.innerWidth < 768
+      setIsMobile(mobile)
+      if (mobile) setViewMode('phone')
+    }
     check()
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
-  }, [])
+  }, [setViewMode])
 
   // Cmd+K or Ctrl+K opens spotlight
   useEffect(() => {
@@ -206,7 +210,7 @@ export function Desktop() {
 
       {/* ── Phone / Terminal overlays ── */}
       <AnimatePresence>
-        {viewMode === 'phone'    && phase === 'desktop' && <PhoneView    key="phone" />}
+        {viewMode === 'phone'    && phase === 'desktop' && <PhoneView    key="phone" fullscreen={isMobile} />}
         {viewMode === 'terminal' && phase === 'desktop' && <TerminalMode key="terminal" />}
       </AnimatePresence>
     </>

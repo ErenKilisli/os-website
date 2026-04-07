@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Window } from './Window'
 import { WindowState } from '@/store/windowStore'
+import { useCanvasScale } from './useCanvasScale'
 
 // Logical grid dimensions (pixel art resolution)
 const CELL = 16
@@ -53,23 +54,7 @@ export function SnakeWindow({ win, isMobile = false }: { win: WindowState; isMob
     setDead(false)
   }, [])
 
-  // Scale canvas to fill container (responsive)
-  useEffect(() => {
-    const scaleCanvas = () => {
-      const container = containerRef.current
-      const canvas = canvasRef.current
-      if (!container || !canvas) return
-      const scaleX = container.clientWidth / CW
-      const scaleY = (container.clientHeight - 28) / CH
-      const scale = Math.min(scaleX, scaleY, 2.5)
-      canvas.style.width  = `${Math.round(CW * scale)}px`
-      canvas.style.height = `${Math.round(CH * scale)}px`
-    }
-    scaleCanvas()
-    const observer = new ResizeObserver(scaleCanvas)
-    if (containerRef.current) observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [])
+  useCanvasScale(containerRef, canvasRef, CW, CH, 2.5)
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
