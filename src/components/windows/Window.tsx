@@ -3,6 +3,7 @@ import { motion, useDragControls, useMotionValue } from 'framer-motion'
 import { useWindowStore, WindowState } from '@/store/windowStore'
 import { ReactNode, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { TITLEBAR_ICONS } from '@/config/iconRegistry'
 
 type ResizeDir = 'e' | 's' | 'se' | 'sw' | 'w' | 'n' | 'ne' | 'nw'
 const MIN_W = 240
@@ -118,7 +119,10 @@ export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status,
         onMouseDown={() => focusWindow(win.id)}
       >
         <div className="tb">
-          <span className="tb-ico material-symbols-outlined">{win.icon}</span>
+          {TITLEBAR_ICONS[win.type]
+            ? <span className="tb-ico" style={{ display: 'inline-flex', alignItems: 'center' }}>{TITLEBAR_ICONS[win.type]}</span>
+            : <span className="tb-ico material-symbols-outlined">{win.icon}</span>
+          }
           <span className="tb-lbl">{filename}</span>
           <div className="tb-btns">
             <button className="wbtn" onClick={(e) => { e.stopPropagation(); closeWindow(win.id) }}>
@@ -239,7 +243,10 @@ export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status,
           className="tb"
           onPointerDown={handleTitlebarPointerDown}
         >
-          <span className="tb-ico material-symbols-outlined">{win.icon}</span>
+          {TITLEBAR_ICONS[win.type]
+            ? <span className="tb-ico" style={{ display: 'inline-flex', alignItems: 'center' }}>{TITLEBAR_ICONS[win.type]}</span>
+            : <span className="tb-ico material-symbols-outlined">{win.icon}</span>
+          }
           <span className="tb-lbl">{filename}</span>
           <div className="tb-btns">
             <button className="wbtn" onClick={(e) => { e.stopPropagation(); minimizeWindow(win.id) }}>

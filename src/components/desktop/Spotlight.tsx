@@ -9,21 +9,20 @@ interface Props {
   onClose: () => void
 }
 
-const SPOTLIGHT_APPS = spotlightApps()
-
 export function Spotlight({ open, onClose }: Props) {
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState(0)
-  const { openWindow } = useWindowStore()
+  const { openWindow, installedApps } = useWindowStore()
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const allApps = spotlightApps(installedApps)
   const results = query.trim()
-    ? SPOTLIGHT_APPS.filter(a =>
+    ? allApps.filter(a =>
         a.title.toLowerCase().includes(query.toLowerCase()) ||
         a.label.toLowerCase().includes(query.toLowerCase()) ||
         a.spotlightDesc.toLowerCase().includes(query.toLowerCase())
       )
-    : SPOTLIGHT_APPS
+    : allApps
 
   useEffect(() => {
     if (open) {

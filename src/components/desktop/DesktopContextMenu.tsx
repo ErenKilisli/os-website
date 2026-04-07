@@ -11,8 +11,6 @@ interface Props {
   onClose: () => void
 }
 
-const CONTEXT_APPS = contextMenuApps()
-
 const MENU_W = 196
 
 const sectionLabel: CSSProperties = {
@@ -86,7 +84,8 @@ function Item({
 
 export function DesktopContextMenu({ x, y, onClose }: Props) {
   const { wallpaper, setWallpaper, setSettingsInitTab } = useSystemStore()
-  const { openWindow, resetIconPositions } = useWindowStore()
+  const { openWindow, resetIconPositions, installedApps } = useWindowStore()
+  const CONTEXT_APPS = contextMenuApps(installedApps)
 
   const openWallpaperSettings = () => {
     setSettingsInitTab('Wallpaper')

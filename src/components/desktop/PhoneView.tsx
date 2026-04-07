@@ -9,8 +9,7 @@ import {
 } from '@/data/projects'
 import { APP_REGISTRY, phoneApps, type AppDef } from '@/config/appRegistry'
 
-// ── Derived from registry ─────────────────────────────────────────
-const PHONE_APPS = phoneApps()
+// Dock is fixed (always pre-installed system apps)
 
 // Dock: about, mail, browser, settings
 const DOCK_APPS: AppDef[] = (['about', 'mail', 'browser', 'settings'] as const)
@@ -74,7 +73,7 @@ function PhoneIconContent({ app, size = 26 }: { app: AppDef; size?: number }) {
 }
 
 // ── Home screen ───────────────────────────────────────────────────
-function HomeScreen({ onOpen }: { onOpen: (app: AppDef) => void }) {
+function HomeScreen({ apps, onOpen }: { apps: AppDef[]; onOpen: (app: AppDef) => void }) {
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: '16px 8px 8px' }}>
       <div style={{
@@ -82,7 +81,7 @@ function HomeScreen({ onOpen }: { onOpen: (app: AppDef) => void }) {
         gridTemplateColumns: 'repeat(4, 1fr)',
         gap: '14px 4px',
       }}>
-        {PHONE_APPS.map(app => (
+        {apps.map(app => (
           <button
             key={app.type}
             onClick={() => onOpen(app)}
@@ -720,7 +719,7 @@ function PhoneAppBar({ title, icon, color, onBack }: {
 // ── Main PhoneView ────────────────────────────────────────────────
 export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
   const { setViewMode } = useSystemStore()
-  const { openWindow } = useWindowStore()
+  const { openWindow, installedApps } = useWindowStore()
   const [activeApp, setActiveApp] = useState<AppDef | null>(null)
   const [booted, setBooted] = useState(false)
 
@@ -776,7 +775,7 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
                     transition={{ duration: 0.18 }}
                     style={{ position: 'absolute', inset: 0 }}
                   >
-                    <HomeScreen onOpen={handleOpenApp} />
+                    <HomeScreen apps={phoneApps(installedApps)} onOpen={handleOpenApp} />
                   </motion.div>
                 ) : (
                   <motion.div

@@ -15,6 +15,7 @@ export type WindowType =
   | 'notepad' | 'music' | 'calc' | 'paint' | 'sysinfo'
   | 'devfiles' | 'film' | 'game'
   | 'snake' | 'snowboard'
+  | 'appmarket'
   | 'projectdetail'
   // Legacy folder variants (kept for backward-compat with persisted state)
   | 'cinema' | 'arcade' | 'swr'
@@ -43,6 +44,12 @@ export interface AppMeta {
 
   /** One-line description shown in Spotlight results */
   spotlightDesc: string
+  /** Longer description shown in App Market listing */
+  appDescription?: string
+
+  // ── Install state ──────────────────────────────────────────────────────────
+  /** true = ships with OS and cannot be removed; false = user installs from market */
+  preInstalled: boolean
 
   // ── Visibility flags ───────────────────────────────────────────────────────
   showOnDesktop: boolean
@@ -71,6 +78,8 @@ export const APP_META: AppMeta[] = [
     width: 820, height: 640,
     phoneBg: 'linear-gradient(145deg,#3a42c4,#6a5acd)',
     spotlightDesc: 'Bio, skills & info',
+    appDescription: 'Personal profile — bio, skills, technologies and background.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: true,
     showInSpotlight: true, showInContextMenu: true,
     desktopCol: 'L1', desktopRow: 0,
@@ -82,6 +91,8 @@ export const APP_META: AppMeta[] = [
     width: 640, height: 460,
     phoneBg: 'linear-gradient(145deg,#4a40d0,#8b78ee)',
     spotlightDesc: 'Send a message',
+    appDescription: 'Send a direct message — email form with subject & body.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: true,
     showInSpotlight: true, showInContextMenu: true,
     desktopCol: 'L1', desktopRow: 1,
@@ -93,6 +104,8 @@ export const APP_META: AppMeta[] = [
     width: 520, height: 420,
     phoneBg: 'linear-gradient(145deg,#604800,#988000)',
     spotlightDesc: 'Text editor',
+    appDescription: 'Simple plain-text editor. Type, copy, clear.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: false,
     showInSpotlight: true, showInContextMenu: false,
     desktopCol: 'L1', desktopRow: 2,
@@ -104,20 +117,11 @@ export const APP_META: AppMeta[] = [
     width: 380, height: 440,
     phoneBg: 'linear-gradient(145deg,#a03070,#d060a0)',
     spotlightDesc: 'Music player',
+    appDescription: 'Built-in music player with visualiser and playlist.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: false,
     showInSpotlight: true, showInContextMenu: false,
     desktopCol: 'L1', desktopRow: 3,
-  },
-  {
-    type: 'calc',
-    title: 'CALC.EXE', label: 'CALC',
-    icon: 'calculate', iconColor: '#00ffff',
-    width: 280, height: 420,
-    phoneBg: 'linear-gradient(145deg,#102060,#1840a0)',
-    spotlightDesc: 'Calculator',
-    showOnDesktop: true, showOnPhone: true, phoneInline: false,
-    showInSpotlight: true, showInContextMenu: false,
-    desktopCol: 'L1', desktopRow: 4,
   },
   {
     type: 'terminal',
@@ -126,9 +130,11 @@ export const APP_META: AppMeta[] = [
     width: 560, height: 380,
     phoneBg: 'linear-gradient(145deg,#082808,#105010)',
     spotlightDesc: 'Command line interface',
+    appDescription: 'Interactive terminal — run commands, open apps, explore the OS.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: true,
     showInSpotlight: true, showInContextMenu: true,
-    desktopCol: 'L1', desktopRow: 5,
+    desktopCol: 'L1', desktopRow: 4,
   },
   // ── Left col 2 (L2) ────────────────────────────────────────────────────────
   {
@@ -138,6 +144,8 @@ export const APP_META: AppMeta[] = [
     width: 440, height: 360,
     phoneBg: 'linear-gradient(145deg,#303848,#505868)',
     spotlightDesc: 'System configuration',
+    appDescription: 'Wallpaper, theme, display brightness and system controls.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: true,
     showInSpotlight: true, showInContextMenu: true,
     desktopCol: 'L2', desktopRow: 0,
@@ -149,6 +157,8 @@ export const APP_META: AppMeta[] = [
     width: 860, height: 580,
     phoneBg: 'linear-gradient(145deg,#006880,#00a8c0)',
     spotlightDesc: 'Web browser',
+    appDescription: 'Embedded web browser — navigate to any URL.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: false,
     showInSpotlight: true, showInContextMenu: false,
     desktopCol: 'L2', desktopRow: 1,
@@ -160,9 +170,24 @@ export const APP_META: AppMeta[] = [
     width: 620, height: 520,
     phoneBg: 'linear-gradient(145deg,#701890,#a040c0)',
     spotlightDesc: 'Pixel art drawing app',
+    appDescription: 'Pixel art canvas with colour palette, brush sizes and eraser.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: false,
     showInSpotlight: true, showInContextMenu: true,
     desktopCol: 'L2', desktopRow: 2,
+  },
+  {
+    type: 'appmarket',
+    title: 'APP MARKET.EXE', label: 'APP MARKET', phoneLabel: 'MARKET',
+    icon: 'storefront', iconColor: '#ff71ce',
+    width: 540, height: 500,
+    phoneBg: 'linear-gradient(145deg,#701060,#b03090)',
+    spotlightDesc: 'Install and manage apps',
+    appDescription: 'Browse and install optional apps for EREN.OS.',
+    preInstalled: true,
+    showOnDesktop: true, showOnPhone: true, phoneInline: false,
+    showInSpotlight: true, showInContextMenu: true,
+    desktopCol: 'L2', desktopRow: 3,
   },
   // ── Right col (R) ──────────────────────────────────────────────────────────
   {
@@ -172,6 +197,8 @@ export const APP_META: AppMeta[] = [
     width: 520, height: 360,
     phoneBg: 'linear-gradient(145deg,#c05018,#e07030)',
     spotlightDesc: 'Software projects',
+    appDescription: 'Browse software and web development projects.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: true,
     showInSpotlight: true, showInContextMenu: false,
     desktopCol: 'R', desktopRow: 0,
@@ -183,6 +210,8 @@ export const APP_META: AppMeta[] = [
     width: 600, height: 440,
     phoneBg: 'linear-gradient(145deg,#907800,#c8a800)',
     spotlightDesc: 'Film & video work',
+    appDescription: 'Film, video and cinematography project archive.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: true,
     showInSpotlight: true, showInContextMenu: false,
     desktopCol: 'R', desktopRow: 1,
@@ -194,17 +223,21 @@ export const APP_META: AppMeta[] = [
     width: 500, height: 340,
     phoneBg: 'linear-gradient(145deg,#186018,#28a028)',
     spotlightDesc: 'Game development work',
+    appDescription: 'Game development projects — engines, jams and prototypes.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: true,
     showInSpotlight: true, showInContextMenu: false,
     desktopCol: 'R', desktopRow: 2,
   },
   {
     type: 'snowboard',
-    title: 'PIXEL SNOWBOARD', label: 'SNOWBOARD', phoneLabel: 'SKI',
+    title: 'SNOWBOARD.EXE', label: 'SNOWBOARD', phoneLabel: 'SKI',
     icon: 'downhill_skiing', iconColor: '#00ffff',
     width: 510, height: 510,
     phoneBg: 'linear-gradient(145deg,#0a5020,#1a8040)',
     spotlightDesc: 'Endless downhill run',
+    appDescription: 'Pixel-art endless snowboard runner — dodge rocks and hit speed.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: false,
     showInSpotlight: true, showInContextMenu: false,
     desktopCol: 'R', desktopRow: 3,
@@ -216,9 +249,25 @@ export const APP_META: AppMeta[] = [
     width: 444, height: 450,
     phoneBg: 'linear-gradient(145deg,#0a4020,#188040)',
     spotlightDesc: 'Classic snake game',
+    appDescription: 'Classic Snake — eat dots, grow longer, don\'t hit the wall.',
+    preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: false,
     showInSpotlight: true, showInContextMenu: true,
     desktopCol: 'R', desktopRow: 4,
+  },
+  // ── Optional apps (installed via App Market) ───────────────────────────────
+  {
+    type: 'calc',
+    title: 'CALC.EXE', label: 'CALC',
+    icon: 'calculate', iconColor: '#00ffff',
+    width: 280, height: 420,
+    phoneBg: 'linear-gradient(145deg,#102060,#1840a0)',
+    spotlightDesc: 'Calculator',
+    appDescription: 'Standard calculator — arithmetic, keyboard input supported.',
+    preInstalled: false,
+    showOnDesktop: true, showOnPhone: true, phoneInline: false,
+    showInSpotlight: true, showInContextMenu: false,
+    desktopCol: 'L1', desktopRow: 5,
   },
   // ── System — no desktop icon ────────────────────────────────────────────────
   {
@@ -228,6 +277,8 @@ export const APP_META: AppMeta[] = [
     width: 500, height: 440,
     phoneBg: 'linear-gradient(145deg,#141c28,#202c3e)',
     spotlightDesc: 'System information',
+    appDescription: 'Hardware specs, OS version and runtime information.',
+    preInstalled: true,
     showOnDesktop: false, showOnPhone: true, phoneInline: false,
     showInSpotlight: true, showInContextMenu: false,
   },
@@ -239,6 +290,7 @@ export const APP_META: AppMeta[] = [
     width: 580, height: 460,
     phoneBg: '',
     spotlightDesc: '',
+    preInstalled: true,
     showOnDesktop: false, showOnPhone: false, phoneInline: false,
     showInSpotlight: false, showInContextMenu: false,
   },
@@ -250,6 +302,7 @@ export const APP_META: AppMeta[] = [
     width: 600, height: 440,
     phoneBg: '',
     spotlightDesc: '',
+    preInstalled: true,
     showOnDesktop: false, showOnPhone: false, phoneInline: false,
     showInSpotlight: false, showInContextMenu: false,
   },
@@ -260,6 +313,7 @@ export const APP_META: AppMeta[] = [
     width: 500, height: 340,
     phoneBg: '',
     spotlightDesc: '',
+    preInstalled: true,
     showOnDesktop: false, showOnPhone: false, phoneInline: false,
     showInSpotlight: false, showInContextMenu: false,
   },
@@ -270,6 +324,7 @@ export const APP_META: AppMeta[] = [
     width: 520, height: 360,
     phoneBg: '',
     spotlightDesc: '',
+    preInstalled: true,
     showOnDesktop: false, showOnPhone: false, phoneInline: false,
     showInSpotlight: false, showInContextMenu: false,
   },

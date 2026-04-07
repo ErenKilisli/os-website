@@ -34,6 +34,7 @@ import { CalcWindow }          from '@/components/windows/CalcWindow'
 import { SysInfoWindow }       from '@/components/windows/SysInfoWindow'
 import { BrowserWindow }       from '@/components/windows/BrowserWindow'
 import { FileBrowserWindow }   from '@/components/windows/FileBrowserWindow'
+import { AppMarketWindow }     from '@/components/windows/AppMarketWindow'
 
 // ── Icon components ──────────────────────────────────────────────────────────
 import {
@@ -79,6 +80,7 @@ const componentMap: Record<WindowType, WindowComponent> = {
   calc:          CalcWindow,
   sysinfo:       SysInfoWindow,
   browser:       BrowserWindow,
+  appmarket:     AppMarketWindow,
   film:          FilmBrowser,
   devfiles:      DevfilesBrowser,
   game:          GameBrowser,
@@ -141,16 +143,22 @@ export function desktopApps(): AppDef[] {
 }
 
 /** Apps shown in the phone home screen grid (in registry order) */
-export function phoneApps(): AppDef[] {
-  return APP_REGISTRY.filter(a => a.showOnPhone)
+export function phoneApps(installed?: WindowType[]): AppDef[] {
+  return APP_REGISTRY.filter(a =>
+    a.showOnPhone && (installed == null || installed.includes(a.type))
+  )
 }
 
 /** Apps surfaced in Spotlight search */
-export function spotlightApps(): AppDef[] {
-  return APP_REGISTRY.filter(a => a.showInSpotlight)
+export function spotlightApps(installed?: WindowType[]): AppDef[] {
+  return APP_REGISTRY.filter(a =>
+    a.showInSpotlight && (installed == null || installed.includes(a.type))
+  )
 }
 
 /** Apps in the desktop right-click context menu */
-export function contextMenuApps(): AppDef[] {
-  return APP_REGISTRY.filter(a => a.showInContextMenu)
+export function contextMenuApps(installed?: WindowType[]): AppDef[] {
+  return APP_REGISTRY.filter(a =>
+    a.showInContextMenu && (installed == null || installed.includes(a.type))
+  )
 }
