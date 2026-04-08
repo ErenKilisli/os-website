@@ -1,5 +1,7 @@
 'use client'
 import React from 'react'
+import rezinnImg from '@/img/icons/rezinn.jpg'
+import deuxImg from '@/img/icons/deux.png'
 
 /* Exact copies of folder_code style.
    Same folder path, same badge area (bottom-right), only the badge symbol changes.
@@ -120,50 +122,29 @@ export function PaintBrushIcon({ size = 48 }: { size?: number }) {
   )
 }
 
-/* ─── REZINN LOGO ─── location pin with R, coral/purple gradient ────────── */
+/* ─── REZINN LOGO ─── actual brand image ────────────────────────────────── */
 export function RezinnLogoIcon({ size = 48 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 48 48" width={size} height={size} style={{ display: 'block', imageRendering: 'pixelated' }}>
-      <defs>
-        <linearGradient id="rez-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stopColor="#7c3aed" />
-          <stop offset="100%" stopColor="#db2777" />
-        </linearGradient>
-      </defs>
-      {/* Pin body */}
-      <path d="M24 4 C15.16 4 8 11.16 8 20 C8 30.4 24 46 24 46 C24 46 40 30.4 40 20 C40 11.16 32.84 4 24 4 Z"
-        fill="url(#rez-bg)" />
-      {/* Inner circle */}
-      <circle cx="24" cy="20" r="8" fill="rgba(0,0,0,0.28)" />
-      {/* R letter */}
-      <text x="24" y="25" textAnchor="middle" fill="#fff"
-        fontFamily="'Press Start 2P', monospace" fontSize="9" fontWeight="bold">R</text>
-    </svg>
+    <img
+      src={typeof rezinnImg === 'string' ? rezinnImg : rezinnImg.src}
+      alt="Rezinn"
+      width={size}
+      height={size}
+      style={{ display: 'block', objectFit: 'cover', width: size, height: size }}
+    />
   )
 }
 
-/* ─── DEUX LOGO ─── two overlapping D shapes, electric blue ─────────────── */
+/* ─── DEUX LOGO ─── actual brand image ──────────────────────────────────── */
 export function DeuxLogoIcon({ size = 48 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 48 48" width={size} height={size} style={{ display: 'block', imageRendering: 'pixelated' }}>
-      <defs>
-        <linearGradient id="deux-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stopColor="#0ea5e9" />
-          <stop offset="100%" stopColor="#6366f1" />
-        </linearGradient>
-      </defs>
-      {/* Background square */}
-      <rect x="4" y="4" width="40" height="40" fill="url(#deux-bg)" />
-      {/* D shape — left */}
-      <rect x="11" y="13" width="4" height="22" fill="rgba(255,255,255,0.9)" />
-      <path d="M15 13 Q24 13 24 24 Q24 35 15 35 Z" fill="rgba(255,255,255,0.9)" />
-      {/* D shape — right, offset + semi-transparent */}
-      <rect x="18" y="13" width="4" height="22" fill="rgba(255,255,255,0.45)" />
-      <path d="M22 13 Q31 13 31 24 Q31 35 22 35 Z" fill="rgba(255,255,255,0.45)" />
-      {/* DEUX text */}
-      <text x="24" y="45" textAnchor="middle" fill="rgba(255,255,255,0.6)"
-        fontFamily="monospace" fontSize="5" letterSpacing="2">DEUX</text>
-    </svg>
+    <img
+      src={typeof deuxImg === 'string' ? deuxImg : deuxImg.src}
+      alt="Deux"
+      width={size}
+      height={size}
+      style={{ display: 'block', objectFit: 'cover', width: size, height: size }}
+    />
   )
 }
 
