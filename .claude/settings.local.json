@@ -3,7 +3,8 @@
     "allow": [
       "Bash(npm run:*)",
       "WebFetch(domain:rezinn.com)",
-      "WebFetch(domain:deuxstud.io)"
+      "WebFetch(domain:deuxstud.io)",
+      "WebFetch(domain:www.pexels.com)"
     ]
   }
 }

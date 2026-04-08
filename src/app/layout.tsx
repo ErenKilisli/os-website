@@ -111,23 +111,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  // ── Twitter / X ─────────────────────────────────────────────────────────────
-  twitter: {
-    card: 'summary_large_image',
-    site: '@ErenKilisli',
-    creator: '@ErenKilisli',
-    title: TITLE,
-    description: DESCRIPTION,
-    images: [
-      {
-        url: `${BASE_URL}/og-image.png`,
-        alt: 'LIZARD.OS — Ibrahim Eren Kilisli Portfolio',
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
-
   // ── Verification placeholders ────────────────────────────────────────────────
   // verification: {
   //   google: 'YOUR_GOOGLE_SITE_VERIFICATION_TOKEN',
@@ -185,7 +168,7 @@ const jsonLd = {
       },
       sameAs: [
         'https://github.com/ErenKilisli',
-        'https://www.linkedin.com/in/ibrahim-eren-kilisli',
+        'https://www.linkedin.com/in/ierenkilisli/',
         BASE_URL,
       ],
     },

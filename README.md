@@ -368,7 +368,7 @@ That's it — the app automatically appears in desktop icons, the phone home gri
 ### Planned 🔜
 
 - [ ] Mobile touch controls for Snake and Snowboard
-- [ ] More preset wallpaper photos
+- [x] 6 photo wallpapers (Pexels gallery: Rice Field, Dawn Peaks, Istanbul, Lizard, Highland, Jaguar)
 - [ ] More terminal commands
 - [ ] Window snap (drag to edge to snap 50/50)
 - [ ] Multi-monitor simulation
@@ -442,6 +442,22 @@ Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more informa
 
 - Website: [himerenkilisli.com](https://himerenkilisli.com)
 - GitHub: [@ErenKilisli](https://github.com/ErenKilisli)
+- LinkedIn: [ierenkilisli](https://www.linkedin.com/in/ierenkilisli/)
+
+---
+
+## 📷 Photo Credits
+
+Wallpaper photos are sourced from [Pexels](https://www.pexels.com) under the [Pexels License](https://www.pexels.com/license/) (free for personal and commercial use, no attribution required).
+
+| Wallpaper | Photo | Photographer |
+|---|---|---|
+| RICE FIELD | [Green Rice Field](https://www.pexels.com/photo/green-rice-field-1146708/) | jplenio |
+| DAWN PEAKS | [Scenic View of Mountains During Dawn](https://www.pexels.com/photo/scenic-view-of-mountains-during-dawn-1671630/) | lastly |
+| ISTANBUL | [Kız Kulesi at Sunset in Istanbul](https://www.pexels.com/photo/kiz-kulesi-at-sunset-in-istanbul-turkiye-35389651/) | Muhammed Mahsum Tunç |
+| LIZARD | [Common Indian Garden Lizard](https://www.pexels.com/photo/close-up-of-a-common-indian-garden-lizard-in-patna-31598217/) | litti lens |
+| HIGHLAND | [Horse with Mountain Background](https://www.pexels.com/photo/a-horse-grazing-in-a-field-with-a-mountain-in-the-background-27756912/) | cmrcn |
+| JAGUAR | [Jaguar Lying on Tree Log](https://www.pexels.com/photo/jaguar-lying-on-tree-log-17528288/) | benni fish |
 
 ---
 

@@ -8,6 +8,17 @@ import {
   ANIMATED_WALLPAPERS, SOLID_COLORS,
 } from '@/store/systemStore'
 
+// Photo wallpaper imports
+import imgRice      from '@/img/wallpaper/pexels-jplenio-1146708.jpg'
+import imgDawn      from '@/img/wallpaper/pexels-lastly-1671630.jpg'
+import imgIstanbul  from '@/img/wallpaper/pexels-muhammed-mahsum-tunc-859110584-35389651.jpg'
+import imgLizard    from '@/img/wallpaper/pexels-litti-lens-680831702-31598217.jpg'
+import imgHighland  from '@/img/wallpaper/pexels-cmrcn-27756912.jpg'
+import imgJaguar    from '@/img/wallpaper/pexels-benni-fish-40038242-17528288.jpg'
+
+const imgSrc = (img: { src: string } | string) =>
+  typeof img === 'string' ? img : img.src
+
 type Tab = 'Display' | 'Wallpaper' | 'Appearance' | 'Sound' | 'System'
 const TABS: { id: Tab; icon: string }[] = [
   { id: 'Display',    icon: 'desktop_windows' },
@@ -24,6 +35,15 @@ const PRESET_WALLPAPERS: { id: Wallpaper; label: string; preview: string }[] = [
   { id: 'preset-aurora', label: 'AURORA',     preview: 'linear-gradient(135deg,#010810 0%,#00b4a0 40%,#6644ff 70%,#010810 100%)' },
   { id: 'preset-sunset', label: 'SUNSET',     preview: 'linear-gradient(180deg,#0a0525 0%,#8b1a4a 50%,#d4502a 75%,#0a0410 100%)' },
   { id: 'preset-ocean',  label: 'OCEAN DEEP', preview: 'linear-gradient(180deg,#000a14 0%,#002030 60%,#001018 100%)' },
+]
+
+const PHOTO_WALLPAPERS: { id: Wallpaper; label: string; img: { src: string } | string }[] = [
+  { id: 'preset-rice',     label: 'RICE FIELD', img: imgRice },
+  { id: 'preset-dawn',     label: 'DAWN PEAKS', img: imgDawn },
+  { id: 'preset-istanbul', label: 'ISTANBUL',   img: imgIstanbul },
+  { id: 'preset-lizard',   label: 'LIZARD',     img: imgLizard },
+  { id: 'preset-highland', label: 'HIGHLAND',   img: imgHighland },
+  { id: 'preset-jaguar',   label: 'JAGUAR',     img: imgJaguar },
 ]
 
 const SECTION: React.CSSProperties = {
@@ -179,6 +199,29 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
                     boxShadow: wallpaper === pw.id ? '0 0 10px rgba(72,79,185,0.5)' : 'none',
                   }}>
                     <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#fff', textShadow: '0 1px 3px #000' }}>
+                      {pw.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <div style={SECTION}>PHOTO GALLERY</div>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
+                {PHOTO_WALLPAPERS.map(pw => (
+                  <button key={pw.id} onClick={() => setWallpaper(pw.id)} style={{
+                    width: 80, height: 52, padding: 0, cursor: 'pointer',
+                    backgroundImage: `url(${imgSrc(pw.img)})`,
+                    backgroundSize: 'cover', backgroundPosition: 'center',
+                    border: wallpaper === pw.id ? '3px solid var(--primary)' : '2px solid rgba(255,255,255,0.18)',
+                    position: 'relative',
+                    boxShadow: wallpaper === pw.id ? '0 0 10px rgba(72,79,185,0.5)' : 'none',
+                  }}>
+                    <span style={{
+                      position: 'absolute', bottom: 2, left: 0, right: 0,
+                      fontFamily: 'var(--font-h)', fontSize: 5, color: '#fff',
+                      textAlign: 'center', textShadow: '0 1px 3px #000',
+                      letterSpacing: '0.06em',
+                    }}>
                       {pw.label}
                     </span>
                   </button>

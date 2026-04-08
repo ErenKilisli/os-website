@@ -3,7 +3,10 @@ import { persist } from 'zustand/middleware'
 
 export type Theme = 'cybercore' | 'vaporwave' | 'matrix' | 'amber'
 export type AnimatedWallpaper = 'synthwave' | 'grid' | 'stars' | 'scanlines'
-export type Wallpaper = AnimatedWallpaper | 'solid' | 'photo' | 'preset-aurora' | 'preset-sunset' | 'preset-ocean'
+export type Wallpaper = AnimatedWallpaper | 'solid' | 'photo'
+  | 'preset-aurora' | 'preset-sunset' | 'preset-ocean'
+  | 'preset-rice' | 'preset-dawn' | 'preset-istanbul'
+  | 'preset-lizard' | 'preset-highland' | 'preset-jaguar'
 export type CursorStyle = 'cyberwave' | 'pixel' | 'box'
 export type ViewMode = 'desktop' | 'phone' | 'terminal'
 export type UiMode = 'dark' | 'light'
@@ -28,9 +31,15 @@ export const WALLPAPER_LABELS: Record<Wallpaper, string> = {
   scanlines: 'SCANLINES',
   solid: 'SOLID COLOR',
   photo: 'CUSTOM PHOTO',
-  'preset-aurora': 'AURORA',
-  'preset-sunset': 'SUNSET',
-  'preset-ocean': 'OCEAN DEEP',
+  'preset-aurora':    'AURORA',
+  'preset-sunset':    'SUNSET',
+  'preset-ocean':     'OCEAN DEEP',
+  'preset-rice':      'RICE FIELD',
+  'preset-dawn':      'DAWN PEAKS',
+  'preset-istanbul':  'ISTANBUL',
+  'preset-lizard':    'LIZARD',
+  'preset-highland':  'HIGHLAND',
+  'preset-jaguar':    'JAGUAR',
 }
 
 export const ANIMATED_WALLPAPERS: AnimatedWallpaper[] = ['synthwave', 'grid', 'stars', 'scanlines']

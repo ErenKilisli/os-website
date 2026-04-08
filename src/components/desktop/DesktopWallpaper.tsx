@@ -2,6 +2,17 @@
 import { useEffect, useRef } from 'react'
 import { useSystemStore, Theme, Wallpaper } from '@/store/systemStore'
 
+// ── Photo wallpaper imports ───────────────────────────────────────────────────
+import imgRice      from '@/img/wallpaper/pexels-jplenio-1146708.jpg'
+import imgDawn      from '@/img/wallpaper/pexels-lastly-1671630.jpg'
+import imgIstanbul  from '@/img/wallpaper/pexels-muhammed-mahsum-tunc-859110584-35389651.jpg'
+import imgLizard    from '@/img/wallpaper/pexels-litti-lens-680831702-31598217.jpg'
+import imgHighland  from '@/img/wallpaper/pexels-cmrcn-27756912.jpg'
+import imgJaguar    from '@/img/wallpaper/pexels-benni-fish-40038242-17528288.jpg'
+
+const src = (img: { src: string } | string) =>
+  typeof img === 'string' ? img : img.src
+
 /* ─── Theme colour maps ──────────────────────────────────── */
 const THEME_DOT: Record<Theme, string> = {
   cybercore: '#00ffff',
@@ -549,9 +560,15 @@ export function DesktopWallpaper() {
       scanlines:      () => runScanlines(canvas, theme),
       solid:          () => runSolid(canvas, wallpaperColor),
       photo:          () => runPhoto(canvas, wallpaperPhoto || '#020812'),
-      'preset-aurora':  () => runAurora(canvas),
-      'preset-sunset':  () => runSunset(canvas),
-      'preset-ocean':   () => runOcean(canvas),
+      'preset-aurora':    () => runAurora(canvas),
+      'preset-sunset':    () => runSunset(canvas),
+      'preset-ocean':     () => runOcean(canvas),
+      'preset-rice':      () => runPhoto(canvas, src(imgRice)),
+      'preset-dawn':      () => runPhoto(canvas, src(imgDawn)),
+      'preset-istanbul':  () => runPhoto(canvas, src(imgIstanbul)),
+      'preset-lizard':    () => runPhoto(canvas, src(imgLizard)),
+      'preset-highland':  () => runPhoto(canvas, src(imgHighland)),
+      'preset-jaguar':    () => runPhoto(canvas, src(imgJaguar)),
     }
 
     const stop = RUNNERS[wallpaper]()
