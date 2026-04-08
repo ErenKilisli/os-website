@@ -44,6 +44,21 @@
   --inverse-surface: #0d0e0f;
 }
 
+/* ── UI Mode: Darker ────────────────────────────────────── */
+[data-uimode="darker"] {
+  --surface-dim: #1a1a1a;
+  --surface-hi: #2a2a2a;
+  --surface-lo: #0a0a0a;
+  --on-surface: #888888;
+  --inverse-surface: #050505;
+}
+[data-uimode="darker"] .wbody {
+  background: #101010;
+}
+[data-uimode="darker"] .settings-panel {
+  background: #0d0d0d;
+}
+
 *, *::before, *::after {
   cursor: none !important;
 }

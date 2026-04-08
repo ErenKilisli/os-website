@@ -31,11 +31,6 @@ const TABS: { id: Tab; icon: string }[] = [
 const THEMES: Theme[]      = ['cybercore', 'vaporwave', 'matrix', 'amber']
 const CURSORS: CursorStyle[] = ['cyberwave', 'pixel', 'box']
 
-const PRESET_WALLPAPERS: { id: Wallpaper; label: string; preview: string }[] = [
-  { id: 'preset-aurora', label: 'AURORA',     preview: 'linear-gradient(135deg,#010810 0%,#00b4a0 40%,#6644ff 70%,#010810 100%)' },
-  { id: 'preset-sunset', label: 'SUNSET',     preview: 'linear-gradient(180deg,#0a0525 0%,#8b1a4a 50%,#d4502a 75%,#0a0410 100%)' },
-  { id: 'preset-ocean',  label: 'OCEAN DEEP', preview: 'linear-gradient(180deg,#000a14 0%,#002030 60%,#001018 100%)' },
-]
 
 const PHOTO_WALLPAPERS: { id: Wallpaper; label: string; img: { src: string } | string }[] = [
   { id: 'preset-rice',     label: 'RICE FIELD', img: imgRice },
@@ -187,47 +182,6 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
                 ))}
               </div>
 
-              <div style={SECTION}>PRESET SCENES</div>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
-                {PRESET_WALLPAPERS.map(pw => (
-                  <button key={pw.id} onClick={() => setWallpaper(pw.id)} style={{
-                    width: 80, height: 52,
-                    background: pw.preview,
-                    border: wallpaper === pw.id ? '3px solid var(--primary)' : '2px solid rgba(255,255,255,0.18)',
-                    cursor: 'pointer', position: 'relative',
-                    display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 3,
-                    boxShadow: wallpaper === pw.id ? '0 0 10px rgba(72,79,185,0.5)' : 'none',
-                  }}>
-                    <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#fff', textShadow: '0 1px 3px #000' }}>
-                      {pw.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              <div style={SECTION}>PHOTO GALLERY</div>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
-                {PHOTO_WALLPAPERS.map(pw => (
-                  <button key={pw.id} onClick={() => setWallpaper(pw.id)} style={{
-                    width: 80, height: 52, padding: 0, cursor: 'pointer',
-                    backgroundImage: `url(${imgSrc(pw.img)})`,
-                    backgroundSize: 'cover', backgroundPosition: 'center',
-                    border: wallpaper === pw.id ? '3px solid var(--primary)' : '2px solid rgba(255,255,255,0.18)',
-                    position: 'relative',
-                    boxShadow: wallpaper === pw.id ? '0 0 10px rgba(72,79,185,0.5)' : 'none',
-                  }}>
-                    <span style={{
-                      position: 'absolute', bottom: 2, left: 0, right: 0,
-                      fontFamily: 'var(--font-h)', fontSize: 5, color: '#fff',
-                      textAlign: 'center', textShadow: '0 1px 3px #000',
-                      letterSpacing: '0.06em',
-                    }}>
-                      {pw.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
               <div style={SECTION}>SOLID COLOR</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
                 {SOLID_COLORS.map(sc => (
@@ -252,6 +206,29 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
                     onChange={e => { setWallpaperColor(e.target.value); setWallpaper('solid') }}
                     style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }} />
                 </label>
+              </div>
+
+              <div style={SECTION}>PHOTO GALLERY</div>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
+                {PHOTO_WALLPAPERS.map(pw => (
+                  <button key={pw.id} onClick={() => setWallpaper(pw.id)} style={{
+                    width: 80, height: 52, padding: 0, cursor: 'pointer',
+                    backgroundImage: `url(${imgSrc(pw.img)})`,
+                    backgroundSize: 'cover', backgroundPosition: 'center',
+                    border: wallpaper === pw.id ? '3px solid var(--primary)' : '2px solid rgba(255,255,255,0.18)',
+                    position: 'relative',
+                    boxShadow: wallpaper === pw.id ? '0 0 10px rgba(72,79,185,0.5)' : 'none',
+                  }}>
+                    <span style={{
+                      position: 'absolute', bottom: 2, left: 0, right: 0,
+                      fontFamily: 'var(--font-h)', fontSize: 5, color: '#fff',
+                      textAlign: 'center', textShadow: '0 1px 3px #000',
+                      letterSpacing: '0.06em',
+                    }}>
+                      {pw.label}
+                    </span>
+                  </button>
+                ))}
               </div>
 
               <div style={SECTION}>CUSTOM PHOTO</div>
@@ -307,10 +284,11 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
               </div>
 
               <div style={SECTION}>WINDOW CHROME</div>
-              <div style={{ display: 'flex', gap: 10 }}>
+              <div style={{ display: 'flex', gap: 8 }}>
                 {([
-                  { mode: 'dark'  as UiMode, label: 'DARK',  desc: 'Dark panels', preview: 'linear-gradient(135deg,#1a1a1a,#2a2a2a)', text: '#fff' },
-                  { mode: 'light' as UiMode, label: 'LIGHT', desc: 'White panels', preview: 'linear-gradient(135deg,#f0f0f0,#ffffff)', text: '#000' },
+                  { mode: 'darker' as UiMode, label: 'DARKER', desc: 'Deep black',   preview: 'linear-gradient(135deg,#000000,#0a0a0a)', text: '#888' },
+                  { mode: 'dark'   as UiMode, label: 'DARK',   desc: 'Dark panels',  preview: 'linear-gradient(135deg,#1a1a1a,#2a2a2a)', text: '#fff' },
+                  { mode: 'light'  as UiMode, label: 'LIGHT',  desc: 'White panels', preview: 'linear-gradient(135deg,#f0f0f0,#ffffff)', text: '#000' },
                 ]).map(opt => (
                   <button key={opt.mode} onClick={() => setUiMode(opt.mode)} style={{
                     flex: 1, height: 70, background: opt.preview,
@@ -319,10 +297,10 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
                     alignItems: 'center', justifyContent: 'center', gap: 3,
                     boxShadow: uiMode === opt.mode ? '0 0 12px rgba(72,79,185,0.4)' : 'none',
                   }}>
-                    <span style={{ fontFamily: 'var(--font-h)', fontSize: 9, color: opt.text, letterSpacing: '0.08em' }}>
+                    <span style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: opt.text, letterSpacing: '0.08em' }}>
                       {opt.label}
                     </span>
-                    <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: opt.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)' }}>
+                    <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: opt.mode === 'light' ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.4)' }}>
                       {opt.desc}
                     </span>
                     {uiMode === opt.mode && (
@@ -375,7 +353,7 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
                   <div style={{ fontFamily: 'var(--font-h)', fontSize: 9, color: '#fff', letterSpacing: '0.1em' }}>
                     LIZARD.OS
                   </div>
-                  <div style={{ fontFamily: 'var(--font-vt)', fontSize: 13, color: '#4a6080' }}>
+                  <div style={{ fontFamily: 'var(--font-vt)', fontSize: 13, color: '#a0b8d0' }}>
                     Build 2026 · Registered to: Ibrahim Eren Kilisli
                   </div>
                 </div>
@@ -426,10 +404,10 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
                       borderBottom: '1px solid #0a1628',
                     }}>
                       <span style={{
-                        fontFamily: 'var(--font-h)', fontSize: 6, color: '#4a6080',
+                        fontFamily: 'var(--font-h)', fontSize: 6, color: '#8aa8c4',
                         minWidth: 72, paddingTop: 2, flexShrink: 0, letterSpacing: '0.06em',
                       }}>{r.label}</span>
-                      <span style={{ fontFamily: 'var(--font-vt)', fontSize: 14, color: '#c8d8e8' }}>
+                      <span style={{ fontFamily: 'var(--font-vt)', fontSize: 14, color: '#e8f0f8' }}>
                         {r.value}
                       </span>
                     </div>
@@ -439,7 +417,7 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
 
               {/* About */}
               <div style={{ marginTop: 6, paddingTop: 8, borderTop: '1px solid #0a1628' }}>
-                <div style={{ fontFamily: 'var(--font-vt)', fontSize: 13, color: '#4a6080' }}>
+                <div style={{ fontFamily: 'var(--font-vt)', fontSize: 13, color: '#a0b8d0' }}>
                   Version 0.2.0 (Build 2026) · MIT License · © 2026 Ibrahim Eren Kilisli
                 </div>
               </div>

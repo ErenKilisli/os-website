@@ -27,6 +27,7 @@ export function Desktop() {
   const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(null)
   const [isMobile, setIsMobile] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [trashOpen, setTrashOpen] = useState(false)
   const { windows, icons, openWindow, selectIcon } = useWindowStore()
   const { brightness, theme, viewMode, uiMode, setViewMode } = useSystemStore()
 
@@ -150,20 +151,56 @@ export function Desktop() {
           })}
         </AnimatePresence>
 
-        {/* Cursor cluster decoration */}
-        <div className="cursor-cluster" style={{ width: 80, height: 80 }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 30, top: -8, left: -8, transform: 'rotate(12deg)' }}>near_me</span>
-          <span className="material-symbols-outlined" style={{ fontSize: 22, top: 16, left: 24, transform: 'rotate(-12deg)' }}>near_me</span>
-          <span className="material-symbols-outlined" style={{ fontSize: 18, top: 32, left: 0, transform: 'rotate(45deg)' }}>near_me</span>
-        </div>
-
-        {/* Trash bin decoration */}
-        <div className="deco-trash">
+        {/* Trash bin */}
+        <div className="deco-trash" onClick={() => setTrashOpen(t => !t)} style={{ cursor: 'pointer' }}>
           <div className="deco-trash-icon">
             <span className="material-symbols-outlined">delete</span>
           </div>
           <span className="deco-trash-lbl">Trash</span>
         </div>
+
+        {/* Trash dialog */}
+        {trashOpen && (
+          <div style={{
+            position: 'absolute', bottom: 90, right: 16, width: 220, zIndex: 800,
+            background: '#c0c0c0', border: '2px solid #fff',
+            boxShadow: '2px 2px 0 #808080, inset -1px -1px 0 #808080',
+          }}>
+            <div style={{
+              background: '#000080', padding: '3px 6px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#fff' }}>delete</span>
+                <span style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: '#fff', letterSpacing: '0.06em' }}>
+                  RECYCLE BIN
+                </span>
+              </div>
+              <button onClick={() => setTrashOpen(false)} style={{
+                background: '#c0c0c0', border: '1px solid #fff',
+                boxShadow: '1px 1px 0 #808080', width: 16, height: 14,
+                cursor: 'pointer', fontFamily: 'var(--font-h)', fontSize: 9,
+                color: '#000', padding: 0, lineHeight: 1,
+              }}>✕</button>
+            </div>
+            <div style={{ padding: '20px 12px', textAlign: 'center' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 36, color: '#808080', display: 'block' }}>delete</span>
+              <div style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: '#000', marginTop: 8, letterSpacing: '0.06em' }}>
+                RECYCLE BIN IS EMPTY
+              </div>
+            </div>
+            <div style={{
+              borderTop: '1px solid #808080', padding: '6px', display: 'flex', justifyContent: 'center',
+            }}>
+              <button onClick={() => setTrashOpen(false)} style={{
+                background: '#c0c0c0', border: '2px solid #fff',
+                boxShadow: '2px 2px 0 #808080, inset -1px -1px 0 #808080',
+                padding: '3px 16px', cursor: 'pointer',
+                fontFamily: 'var(--font-h)', fontSize: 8, color: '#000', letterSpacing: '0.06em',
+              }}>OK</button>
+            </div>
+          </div>
+        )}
       </div>
 
       <Taskbar

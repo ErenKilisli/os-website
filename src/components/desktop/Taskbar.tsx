@@ -10,9 +10,9 @@ const menuItemStyle: CSSProperties = {
   alignItems: 'center',
   gap: 10,
   width: '100%',
-  background: 'none',
+  background: 'transparent',
   border: 'none',
-  color: '#c0c0c0',
+  color: '#000',
   fontFamily: 'var(--font-h)',
   fontSize: 9,
   letterSpacing: '0.08em',
@@ -62,54 +62,68 @@ export function Taskbar({ onSpotlight, onShutdown, onRestart }: Props) {
             position: 'fixed',
             bottom: 36,
             left: 0,
-            width: 200,
-            background: '#0a0a1a',
-            border: '2px solid #00ffff',
-            boxShadow: '0 0 24px rgba(0,255,255,0.15)',
+            width: 220,
+            background: '#c0c0c0',
+            border: '2px solid #fff',
+            boxShadow: '2px 2px 0 #808080, inset -1px -1px 0 #808080',
             zIndex: 8999,
+            display: 'flex',
           }}>
-            {/* Header */}
+            {/* Vertical brand strip */}
             <div style={{
-              background: '#000080',
-              padding: '8px 10px',
-              borderBottom: '1px solid #00ffff',
+              background: 'linear-gradient(180deg, #808080 0%, #404040 100%)',
+              width: 24,
               display: 'flex',
               alignItems: 'center',
-              gap: 8,
+              justifyContent: 'center',
+              flexShrink: 0,
             }}>
-              <span style={{ fontFamily: 'var(--font-h)', fontSize: 11, color: '#fff', letterSpacing: '0.08em' }}>
-                OS.WEBSITE
-              </span>
+              <span style={{
+                fontFamily: 'var(--font-h)',
+                fontSize: 9,
+                color: '#c0c0c0',
+                letterSpacing: '0.2em',
+                writingMode: 'vertical-rl',
+                transform: 'rotate(180deg)',
+              }}>LIZARD.OS</span>
             </div>
             {/* Menu items */}
-            <div style={{ padding: '4px 0' }}>
+            <div style={{ flex: 1, padding: '4px 0' }}>
               <button
                 style={menuItemStyle}
+                onMouseEnter={e => (e.currentTarget.style.background = '#000080', e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent', e.currentTarget.style.color = '#000')}
                 onClick={() => { setStartOpen(false); openWindow('settings') }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>settings</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>settings</span>
                 SETTINGS
               </button>
               <button
                 style={menuItemStyle}
+                onMouseEnter={e => (e.currentTarget.style.background = '#000080', e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent', e.currentTarget.style.color = '#000')}
                 onClick={() => { setStartOpen(false); onSpotlight() }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>search</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>search</span>
                 SEARCH
               </button>
-              <div style={{ height: 1, background: '#1a2030', margin: '4px 0' }} />
+              <div style={{ height: 1, background: '#808080', boxShadow: '0 1px 0 #fff', margin: '4px 0' }} />
               <button
                 style={menuItemStyle}
+                onMouseEnter={e => (e.currentTarget.style.background = '#000080', e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent', e.currentTarget.style.color = '#000')}
                 onClick={() => { setStartOpen(false); onRestart() }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>restart_alt</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>restart_alt</span>
                 RESTART
               </button>
               <button
-                style={{ ...menuItemStyle, color: '#ff4444' }}
+                style={{ ...menuItemStyle, color: '#800000' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#000080'; e.currentTarget.style.color = '#fff' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#800000' }}
                 onClick={() => { setStartOpen(false); onShutdown() }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>power_settings_new</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>power_settings_new</span>
                 SHUT DOWN
               </button>
             </div>
@@ -118,7 +132,7 @@ export function Taskbar({ onSpotlight, onShutdown, onRestart }: Props) {
       )}
 
       <button id="start-btn" onClick={() => setStartOpen(s => !s)}>
-        <span className="material-symbols-filled" style={{ fontVariationSettings: "'FILL' 1" }}>grid_view</span>
+        <span style={{ fontSize: 16, lineHeight: 1 }}>🦎</span>
         START
       </button>
 
@@ -135,6 +149,11 @@ export function Taskbar({ onSpotlight, onShutdown, onRestart }: Props) {
           <div
             key={win.id}
             className={`tbw${win.id === focusedId && !win.isMinimized ? ' on' : ''}`}
+            style={win.id === focusedId && !win.isMinimized ? {
+              background: '#b0b0b0',
+              color: '#000',
+              boxShadow: 'inset 2px 2px 0px #808080, inset -1px -1px 0px #fff',
+            } : undefined}
             onClick={() => {
               if (win.isMinimized) focusWindow(win.id)
               else if (win.id === focusedId) minimizeWindow(win.id)
