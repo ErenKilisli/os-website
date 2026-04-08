@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useWindowStore } from '@/store/windowStore'
 import { useSystemStore } from '@/store/systemStore'
 import { DesktopIcon } from './DesktopIcon'
@@ -151,13 +151,20 @@ export function Desktop() {
           })}
         </AnimatePresence>
 
-        {/* Trash bin */}
-        <div className="deco-trash" onClick={() => setTrashOpen(t => !t)} style={{ cursor: 'pointer' }}>
+        {/* Trash bin — draggable */}
+        <motion.div
+          className="deco-trash"
+          drag
+          dragMomentum={false}
+          dragElastic={0}
+          onClick={() => setTrashOpen(t => !t)}
+          style={{ cursor: 'grab', position: 'absolute', bottom: 56, right: 32 }}
+        >
           <div className="deco-trash-icon">
             <span className="material-symbols-outlined">delete</span>
           </div>
           <span className="deco-trash-lbl">Trash</span>
-        </div>
+        </motion.div>
 
         {/* Trash dialog */}
         {trashOpen && (

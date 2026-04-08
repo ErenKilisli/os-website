@@ -834,8 +834,6 @@ html, body {
 /* ── Decorative: trash bin ─────────────────────────────── */
 .deco-trash {
   position: absolute;
-  bottom: 56px;
-  right: 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
