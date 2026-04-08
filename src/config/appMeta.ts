@@ -275,12 +275,12 @@ export const APP_META: AppMeta[] = [
     title: 'SYSINFO.EXE', label: 'SYSINFO',
     icon: 'memory', iconColor: '#4a6080',
     width: 500, height: 440,
-    phoneBg: 'linear-gradient(145deg,#141c28,#202c3e)',
+    phoneBg: '',
     spotlightDesc: 'System information',
     appDescription: 'Hardware specs, OS version and runtime information.',
     preInstalled: true,
-    showOnDesktop: false, showOnPhone: true, phoneInline: false,
-    showInSpotlight: true, showInContextMenu: false,
+    showOnDesktop: false, showOnPhone: false, phoneInline: false,
+    showInSpotlight: false, showInContextMenu: false,
   },
   // ── Internal — never shown in UI lists ─────────────────────────────────────
   {

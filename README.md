@@ -6,7 +6,7 @@
 
 ## Concept
 
-The site is presented as **EREN.OS**: a draggable-window desktop environment inspired by Windows 95 aesthetics fused with cyberpunk/cybercore design. Users interact with desktop icons, open windows, play mini-games, and browse projects — all within an animated OS shell.
+The site is presented as **LIZARD.OS**: a draggable-window desktop environment inspired by Windows 95 aesthetics fused with cyberpunk/cybercore design. Users interact with desktop icons, open windows, play mini-games, and browse projects — all within an animated OS shell.
 
 ---
 

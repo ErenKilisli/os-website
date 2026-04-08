@@ -79,45 +79,44 @@ export function SnowboarderPixelIcon({ size = 48 }: { size?: number }) {
   )
 }
 
-/* ─── PAINT BRUSH ─── classic diagonal brush, rainbow bristles ─── */
+/* ─── PAINT BRUSH ─── clean pixel-art brush icon ─── */
 export function PaintBrushIcon({ size = 48 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 48 48" width={size} height={size} style={{ imageRendering: 'pixelated', display: 'block' }}>
+    <svg viewBox="0 0 48 48" width={size} height={size} style={{ display: 'block' }}>
       <defs>
-        <linearGradient id="pbi-wood" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%"   stopColor="#f0c878" />
-          <stop offset="40%"  stopColor="#c88840" />
-          <stop offset="100%" stopColor="#9a6020" />
+        <linearGradient id="pbi-wood" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%"   stopColor="#f5d890" />
+          <stop offset="100%" stopColor="#a06820" />
         </linearGradient>
-        <linearGradient id="pbi-rbow" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%"    stopColor="#ff0040" />
-          <stop offset="16.7%" stopColor="#ff8800" />
-          <stop offset="33.3%" stopColor="#ffee00" />
-          <stop offset="50%"   stopColor="#44dd00" />
-          <stop offset="66.7%" stopColor="#00aaff" />
-          <stop offset="83.3%" stopColor="#8844ff" />
-          <stop offset="100%"  stopColor="#ff00cc" />
+        <linearGradient id="pbi-bristle" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%"   stopColor="#ff71ce" />
+          <stop offset="100%" stopColor="#c840a0" />
         </linearGradient>
       </defs>
-      {/* Brush rotated -45°: handle → top-right, bristle tip → bottom-left */}
-      <g transform="rotate(-45, 24, 24)">
-        {/* Wooden handle */}
-        <rect x="21" y="1" width="6" height="24" rx="3" fill="url(#pbi-wood)" />
-        {/* Handle highlight */}
-        <rect x="22" y="2" width="1.5" height="21" rx="0.75" fill="rgba(255,255,255,0.32)" />
-        {/* Ferrule — silver band */}
-        <rect x="19.5" y="24.5" width="9" height="4.5" fill="#b8b8c8" />
-        <rect x="19.5" y="24.5" width="9" height="1.5"  fill="#e8e8f0" />
-        <rect x="19.5" y="27.5" width="9" height="1.5"  fill="#808090" />
-        {/* Bristles — tapered, rainbow gradient */}
-        <path d="M19.5,29 L28.5,29 L26,43 L22,43 Z" fill="url(#pbi-rbow)" />
-        {/* Tip — pointed */}
-        <path d="M22,43 L26,43 L24,47 Z" fill="#ff00cc" />
-        {/* Subtle bristle lines */}
-        <line x1="22.5" y1="29.5" x2="21.5" y2="43" stroke="rgba(0,0,0,0.10)" strokeWidth="0.6" />
-        <line x1="24"   y1="29"   x2="24"   y2="43" stroke="rgba(0,0,0,0.10)" strokeWidth="0.6" />
-        <line x1="25.5" y1="29.5" x2="26.5" y2="43" stroke="rgba(0,0,0,0.10)" strokeWidth="0.6" />
-      </g>
+      {/* Handle — diagonal, top-right to center */}
+      <rect x="24" y="3" width="7" height="26" rx="3.5"
+        fill="url(#pbi-wood)"
+        transform="rotate(38, 27.5, 16)" />
+      {/* Handle highlight */}
+      <rect x="25.5" y="4" width="2" height="22" rx="1"
+        fill="rgba(255,255,255,0.35)"
+        transform="rotate(38, 27.5, 16)" />
+      {/* Ferrule — silver band */}
+      <rect x="21" y="26" width="10" height="4" rx="0" fill="#c8c8d8"
+        transform="rotate(38, 26, 28)" />
+      <rect x="21" y="26" width="10" height="1.5" rx="0" fill="#e8e8f8"
+        transform="rotate(38, 26, 28)" />
+      {/* Bristles */}
+      <path d="M17 33 L27 30 L30 40 L16 42 Z" fill="url(#pbi-bristle)" />
+      {/* Bristle lines */}
+      <line x1="20" y1="33" x2="17.5" y2="41.5" stroke="rgba(0,0,0,0.12)" strokeWidth="0.8" />
+      <line x1="23" y1="31.5" x2="22" y2="41" stroke="rgba(0,0,0,0.12)" strokeWidth="0.8" />
+      <line x1="26.5" y1="30.5" x2="27" y2="40" stroke="rgba(0,0,0,0.12)" strokeWidth="0.8" />
+      {/* Bristle tip */}
+      <path d="M16 42 L30 40 L25 44 Z" fill="#a83090" />
+      {/* Paint blob — bottom-left */}
+      <circle cx="12" cy="43" r="4" fill="#ff71ce" opacity="0.85" />
+      <circle cx="10" cy="41" r="2" fill="#ff9de0" opacity="0.7" />
     </svg>
   )
 }
