@@ -144,7 +144,7 @@ function SectionHeader({ icon, title, count }: { icon: string; title: string; co
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8,
       padding: '8px 10px 6px',
-      background: '#0d1438',
+      background: '#1a1c24',
       borderBottom: '1px solid rgba(255,255,255,0.08)',
       position: 'sticky', top: 0, zIndex: 1,
     }}>
@@ -181,17 +181,17 @@ export function AppMarketWindow({ win, isMobile }: { win: WindowState; isMobile?
 
   return (
     <Window win={win} isMobile={isMobile} menu={[]} status={`${installedApps.filter(t => !APP_META.find(a => a.type === t)?.preInstalled).length} user app(s) installed`}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#060c2a' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#14161e' }}>
 
         {/* ── Header ── */}
         <div style={{
           padding: '10px 12px 8px',
-          background: '#0d1438',
+          background: '#1a1c24',
           borderBottom: '2px solid rgba(72,79,185,0.4)',
           display: 'flex', alignItems: 'center', gap: 10,
           flexShrink: 0,
         }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#ff71ce' }}>storefront</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#0055ff' }}>storefront</span>
           <div>
             <div style={{ fontFamily: 'var(--font-h)', fontSize: 10, color: '#d0d2d8', letterSpacing: '0.1em' }}>
               LIZARD.OS APP MARKET

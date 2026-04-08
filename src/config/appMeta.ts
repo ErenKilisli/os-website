@@ -179,7 +179,7 @@ export const APP_META: AppMeta[] = [
   {
     type: 'appmarket',
     title: 'APP MARKET.EXE', label: 'APP MARKET', phoneLabel: 'MARKET',
-    icon: 'storefront', iconColor: '#ff71ce',
+    icon: 'storefront', iconColor: '#0055ff',
     width: 540, height: 500,
     phoneBg: 'linear-gradient(145deg,#701060,#b03090)',
     spotlightDesc: 'Install and manage apps',
