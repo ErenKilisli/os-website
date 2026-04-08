@@ -5,7 +5,7 @@ import { WindowState } from '@/store/windowStore'
 
 interface Props { win: WindowState; isMobile?: boolean }
 
-const STORAGE_KEY = 'eren-os-notepad'
+const STORAGE_KEY = 'lizard-os-notepad'
 
 export function NotePadWindow({ win, isMobile = false }: Props) {
   const [text, setText]       = useState('')

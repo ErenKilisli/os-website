@@ -157,7 +157,7 @@ export function AppMarketWindow({ win, isMobile }: { win: WindowState; isMobile?
   })
 
   return (
-    <Window win={win} isMobile={isMobile} menu={['FILE', 'STORE', 'HELP']} status="APP MARKET | EREN.OS">
+    <Window win={win} isMobile={isMobile} menu={['FILE', 'STORE', 'HELP']} status="APP MARKET | LIZARD.OS">
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0d0e0f' }}>
 
         {/* Header */}
@@ -170,7 +170,7 @@ export function AppMarketWindow({ win, isMobile }: { win: WindowState; isMobile?
         }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#ff71ce' }}>storefront</span>
           <span style={{ fontFamily: 'var(--font-h)', fontSize: 10, color: '#d3d4d5', letterSpacing: '0.08em' }}>
-            EREN.OS APP MARKET
+            LIZARD.OS APP MARKET
           </span>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 2 }}>
             <button style={tabStyle(filter === 'all')} onClick={() => setFilter('all')}>ALL</button>

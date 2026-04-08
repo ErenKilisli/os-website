@@ -1,24 +1,22 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function LoginScreen({ onLogin }: { onLogin: () => void }) {
-  const [password, setPassword] = useState('')
   const [visible, setVisible] = useState(true)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    const t = setTimeout(() => inputRef.current?.focus(), 300)
-    return () => clearTimeout(t)
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') handleLogin()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleLogin = () => {
     setVisible(false)
     setTimeout(onLogin, 500)
-  }
-
-  const handleKey = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleLogin()
   }
 
   return (
@@ -69,27 +67,27 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
               borderBottom: '2px solid #00ffff',
             }}>
               <span style={{ fontFamily: 'var(--font-h)', fontSize: 10, color: '#fff', letterSpacing: '0.1em' }}>
-                OS.WEBSITE — BEGIN LOGON
+                LIZARD.OS — BEGIN LOGON
               </span>
             </div>
 
             {/* Body */}
-            <div style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <div style={{ padding: '28px 20px', display: 'flex', flexDirection: 'column', gap: 22, alignItems: 'center' }}>
               {/* Avatar + username */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, width: '100%' }}>
                 <div style={{
-                  width: 52,
-                  height: 52,
+                  width: 56,
+                  height: 56,
                   background: '#000',
                   border: '2px solid #00ffff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 26,
+                  fontSize: 28,
                   flexShrink: 0,
-                  boxShadow: '0 0 12px rgba(0,255,255,0.2)',
+                  boxShadow: '0 0 16px rgba(0,255,255,0.25)',
                 }}>
-                  👤
+                  🦎
                 </div>
                 <div>
                   <div style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: '#00ffff', letterSpacing: '0.12em', marginBottom: 4 }}>USER</div>
@@ -97,65 +95,35 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
                 </div>
               </div>
 
-              <div style={{ height: 1, background: '#0d1a2e' }} />
+              <div style={{ height: 1, background: '#0d1a2e', width: '100%' }} />
 
-              {/* Password */}
-              <div>
-                <label style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: '#606080', display: 'block', marginBottom: 6, letterSpacing: '0.1em' }}>
-                  PASSWORD
-                </label>
-                <input
-                  ref={inputRef}
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  onKeyDown={handleKey}
-                  placeholder="••••••••"
-                  style={{
-                    width: '100%',
-                    background: '#000',
-                    border: '2px solid',
-                    borderTopColor: '#303030',
-                    borderLeftColor: '#303030',
-                    borderBottomColor: '#909090',
-                    borderRightColor: '#909090',
-                    color: '#00ffff',
-                    fontFamily: 'monospace',
-                    fontSize: 16,
-                    padding: '6px 8px',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                    letterSpacing: '0.2em',
-                  }}
-                />
-                <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#303050', marginTop: 5 }}>
-                  hint: any key will do
-                </div>
-              </div>
+              {/* Enter button */}
+              <button
+                onClick={handleLogin}
+                style={{
+                  width: '100%',
+                  background: '#000080',
+                  border: '2px solid',
+                  borderTopColor: '#a0a0c0',
+                  borderLeftColor: '#a0a0c0',
+                  borderBottomColor: '#303050',
+                  borderRightColor: '#303050',
+                  color: '#fff',
+                  fontFamily: 'var(--font-h)',
+                  fontSize: 10,
+                  padding: '12px 20px',
+                  cursor: 'pointer',
+                  letterSpacing: '0.18em',
+                  boxShadow: '0 0 18px rgba(0,255,255,0.12)',
+                }}
+                onMouseDown={e => (e.currentTarget.style.borderTopColor = '#303050')}
+                onMouseUp={e => (e.currentTarget.style.borderTopColor = '#a0a0c0')}
+              >
+                ENTER
+              </button>
 
-              {/* Buttons */}
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', paddingTop: 4 }}>
-                <button
-                  onClick={handleLogin}
-                  style={{
-                    background: '#000080',
-                    border: '2px solid',
-                    borderTopColor: '#a0a0c0',
-                    borderLeftColor: '#a0a0c0',
-                    borderBottomColor: '#303050',
-                    borderRightColor: '#303050',
-                    color: '#fff',
-                    fontFamily: 'var(--font-h)',
-                    fontSize: 9,
-                    padding: '7px 20px',
-                    cursor: 'pointer',
-                    letterSpacing: '0.08em',
-                  }}
-                  onMouseDown={e => (e.currentTarget.style.borderTopColor = '#303050')}
-                  onMouseUp={e => (e.currentTarget.style.borderTopColor = '#a0a0c0')}
-                >
-                  LOG IN
-                </button>
+              <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#303050', letterSpacing: '0.06em' }}>
+                press enter or click to continue
               </div>
             </div>
           </motion.div>

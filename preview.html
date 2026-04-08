@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EREN.OS v1.0</title>
+<title>LIZARD.OS v1.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════
-   EREN.OS — CYBERCORE WIN95 PIXEL ART
+   LIZARD.OS — CYBERCORE WIN95 PIXEL ART
    ═══════════════════════════════════════════ */
 :root {
   --bg-desk:  #030810;
@@ -66,7 +66,7 @@ body::before {
   overflow:hidden;
 }
 #desktop::after {
-  content:'EREN.OS v1.0';
+  content:'LIZARD.OS v1.0';
   position:absolute; bottom:10px; right:14px;
   font-size:7px; color:rgba(0,68,255,.18); letter-spacing:3px; pointer-events:none;
 }
@@ -644,7 +644,7 @@ function openWin(id) {
     </div>
     <div class="win-menu">${menuHTML}</div>
     <div class="wbody" style="height:${bh}px">${cfg.html()}</div>
-    <div class="wstatus"><span>${cfg.status}</span><span>EREN.OS</span></div>`;
+    <div class="wstatus"><span>${cfg.status}</span><span>LIZARD.OS</span></div>`;
 
   // Mail window: body is flex, needs different height handling
   if (id === 'mail') {
@@ -755,7 +755,7 @@ tick(); setInterval(tick, 10000);
 
 // ─── BOOT SEQUENCE ─────────────────────────────────────────
 const BOOT_LINES = [
-  {html:'<span style="color:#00f5ff;font-weight:bold">EREN.OS BIOS v2.4.1</span>'},
+  {html:'<span style="color:#00f5ff;font-weight:bold">LIZARD.OS BIOS v2.4.1</span>'},
   {html:'<span style="color:#334466">Copyright (C) 2026 Eren Kılışlı. All rights reserved.</span>'},
   {html:''},
   {html:'Initializing hardware scan...'},
@@ -765,7 +765,7 @@ const BOOT_LINES = [
   {html:'HDD: /projects/eren/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#39ff14">[OK]</span>'},
   {html:'NET: Connection established &nbsp;<span style="color:#39ff14">[OK]</span>'},
   {html:''},
-  {html:'Starting EREN.OS kernel...'},
+  {html:'Starting LIZARD.OS kernel...'},
 ];
 
 async function boot() {

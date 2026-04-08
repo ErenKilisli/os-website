@@ -183,7 +183,7 @@ export const APP_META: AppMeta[] = [
     width: 540, height: 500,
     phoneBg: 'linear-gradient(145deg,#701060,#b03090)',
     spotlightDesc: 'Install and manage apps',
-    appDescription: 'Browse and install optional apps for EREN.OS.',
+    appDescription: 'Browse and install optional apps for LIZARD.OS.',
     preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: false,
     showInSpotlight: true, showInContextMenu: true,

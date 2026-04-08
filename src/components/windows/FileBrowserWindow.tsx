@@ -1,8 +1,9 @@
 'use client'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Window } from './Window'
 import { WindowState, useWindowStore } from '@/store/windowStore'
 import { GAME_PROJECTS, FILM_PROJECTS, DEVFILES_PROJECTS, CINEMA_PROJECTS, ARCADE_PROJECTS, Project } from '@/data/projects'
+import { PROJECT_LOGOS } from '@/components/desktop/FolderIcons'
 
 interface Props { win: WindowState; category: string; isMobile?: boolean }
 
@@ -77,10 +78,14 @@ function ListRow({ p, accent, icon, selected, onClick, onDoubleClick }: {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span className="material-symbols-outlined"
-          style={{ fontSize: 20, color: selected ? '#fff' : accent, fontVariationSettings: "'FILL' 1" }}>
-          {icon}
-        </span>
+        {PROJECT_LOGOS[p.id] ? (
+          React.createElement(PROJECT_LOGOS[p.id], { size: 20 })
+        ) : (
+          <span className="material-symbols-outlined"
+            style={{ fontSize: 20, color: selected ? '#fff' : accent, fontVariationSettings: "'FILL' 1" }}>
+            {icon}
+          </span>
+        )}
       </div>
       <div style={{
         fontFamily: 'var(--font-h)', fontSize: 9,
@@ -131,21 +136,27 @@ function IconCard({ p, accent, icon, selected, onClick, onDoubleClick }: {
       }}
     >
       <div style={{ position: 'relative', display: 'flex' }}>
-        <span className="material-symbols-outlined"
-          style={{ fontSize: 54, color: accent, fontVariationSettings: "'FILL' 1" }}>
-          folder
-        </span>
-        <span className="material-symbols-outlined"
-          style={{
-            position: 'absolute', bottom: 6, right: -5,
-            fontSize: 18, color: '#fff',
-            fontVariationSettings: "'FILL' 1",
-            background: accent,
-            padding: '2px',
-            boxShadow: '1px 1px 0 #000',
-          }}>
-          {icon}
-        </span>
+        {PROJECT_LOGOS[p.id] ? (
+          React.createElement(PROJECT_LOGOS[p.id], { size: 54 })
+        ) : (
+          <>
+            <span className="material-symbols-outlined"
+              style={{ fontSize: 54, color: accent, fontVariationSettings: "'FILL' 1" }}>
+              folder
+            </span>
+            <span className="material-symbols-outlined"
+              style={{
+                position: 'absolute', bottom: 6, right: -5,
+                fontSize: 18, color: '#fff',
+                fontVariationSettings: "'FILL' 1",
+                background: accent,
+                padding: '2px',
+                boxShadow: '1px 1px 0 #000',
+              }}>
+              {icon}
+            </span>
+          </>
+        )}
       </div>
       <div style={{
         fontFamily: 'var(--font-h)', fontSize: 8,

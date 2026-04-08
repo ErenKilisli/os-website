@@ -75,7 +75,7 @@ export const useSystemStore = create<SystemStore>()(
       volume: 70,
       brightness: 100,
       theme: 'cybercore',
-      wallpaper: 'synthwave',
+      wallpaper: 'grid',
       wallpaperColor: '#020812',
       wallpaperPhoto: '',
       cursorStyle: 'cyberwave',
@@ -94,7 +94,7 @@ export const useSystemStore = create<SystemStore>()(
       setSettingsInitTab: (settingsInitTab) => set({ settingsInitTab }),
     }),
     {
-      name: 'eren-os-system',
+      name: 'lizard-os-system',
       onRehydrateStorage: () => (state) => {
         if (state && (state.wallpaper as string) === 'bliss') {
           state.wallpaper = 'synthwave'

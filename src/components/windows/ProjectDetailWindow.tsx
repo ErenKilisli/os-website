@@ -1,7 +1,9 @@
 'use client'
+import React from 'react'
 import { Window } from './Window'
 import { WindowState, useWindowStore } from '@/store/windowStore'
 import { Project } from '@/data/projects'
+import { PROJECT_LOGOS } from '@/components/desktop/FolderIcons'
 
 interface Props { win: WindowState; isMobile?: boolean }
 
@@ -48,14 +50,18 @@ export function ProjectDetailWindow({ win, isMobile = false }: Props) {
           {/* Icon box */}
           <div style={{
             width: 48, height: 48, flexShrink: 0,
-            background: '#fff',
-            boxShadow: 'inset 1.5px 1.5px 0 #808080, inset -1.5px -1.5px 0 #fff',
+            background: PROJECT_LOGOS[p.id] ? 'transparent' : '#fff',
+            boxShadow: PROJECT_LOGOS[p.id] ? 'none' : 'inset 1.5px 1.5px 0 #808080, inset -1.5px -1.5px 0 #fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <span className="material-symbols-outlined"
-              style={{ fontSize: 28, color: cat.accent, fontVariationSettings: "'FILL' 1" }}>
-              {cat.icon}
-            </span>
+            {PROJECT_LOGOS[p.id] ? (
+              React.createElement(PROJECT_LOGOS[p.id], { size: 48 })
+            ) : (
+              <span className="material-symbols-outlined"
+                style={{ fontSize: 28, color: cat.accent, fontVariationSettings: "'FILL' 1" }}>
+                {cat.icon}
+              </span>
+            )}
           </div>
 
           <div style={{ flex: 1, minWidth: 0 }}>

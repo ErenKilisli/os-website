@@ -575,7 +575,7 @@ const PHONE_BOOT_LINES = [
   'INIT KERNEL v2.0.26...',
   'LOADING HARDWARE...',
   'MOUNTING /data...',
-  'LAUNCHING EREN.OS MOBILE...',
+  'LAUNCHING LIZARD.OS MOBILE...',
 ]
 
 function PhoneBootScreen({ onComplete }: { onComplete: () => void }) {
@@ -623,7 +623,7 @@ function PhoneBootScreen({ onComplete }: { onComplete: () => void }) {
         }}>
           <span style={{ fontFamily: 'var(--font-h)', fontSize: 13, color: '#00ffff' }}>OS</span>
         </div>
-        <span style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: '#fff', letterSpacing: '0.3em' }}>EREN.OS</span>
+        <span style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: '#fff', letterSpacing: '0.3em' }}>LIZARD.OS</span>
         <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#9097ff', letterSpacing: '0.12em' }}>MOBILE</span>
       </div>
 
