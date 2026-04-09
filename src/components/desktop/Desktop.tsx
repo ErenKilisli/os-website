@@ -16,6 +16,7 @@ import { DesktopContextMenu } from './DesktopContextMenu'
 import { CustomCursor } from './CustomCursor'
 import { PhoneView } from './PhoneView'
 import { TerminalMode } from './TerminalMode'
+import { useSounds } from '@/hooks/useSounds'
 
 type Phase = 'boot' | 'login' | 'desktop' | 'shutdown' | 'restart'
 
@@ -30,9 +31,16 @@ export function Desktop() {
   const [trashOpen, setTrashOpen] = useState(false)
   const { windows, icons, openWindow, selectIcon } = useWindowStore()
   const { brightness, theme, viewMode, uiMode, setViewMode } = useSystemStore()
+  const { playStartup } = useSounds()
 
   // Mark mounted — prevents Zustand persist mismatch on brightness overlay
   useEffect(() => { setMounted(true) }, [])
+
+  // Play startup sound when desktop phase begins (after login)
+  useEffect(() => {
+    if (phase === 'desktop') playStartup()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase])
 
   // Apply theme & uiMode data attributes to <html>
   useEffect(() => {

@@ -1,5 +1,5 @@
 'use client'
-import { useCallback, useRef } from 'react'
+import { useCallback } from 'react'
 import { useSystemStore } from '@/store/systemStore'
 
 let sharedCtx: AudioContext | null = null
@@ -9,66 +9,91 @@ function getCtx(): AudioContext {
   return sharedCtx
 }
 
-function beep(
+// Bell-like sine tone — soft attack, natural exponential decay
+function ding(
   ctx: AudioContext,
   freq: number,
   duration: number,
   vol: number,
-  type: OscillatorType = 'square',
   delayMs = 0
 ) {
   if (vol <= 0) return
   setTimeout(() => {
-    const osc = ctx.createOscillator()
+    const osc  = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.connect(gain)
     gain.connect(ctx.destination)
-    osc.type = type
+    osc.type = 'sine'
     osc.frequency.setValueAtTime(freq, ctx.currentTime)
-    gain.gain.setValueAtTime(vol, ctx.currentTime)
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime)
+    gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + 0.015)       // soft attack
     gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration)
     osc.start(ctx.currentTime)
-    osc.stop(ctx.currentTime + duration + 0.01)
+    osc.stop(ctx.currentTime + duration + 0.05)
   }, delayMs)
+}
+
+// Richer ding — adds quiet octave harmonic for warmth (Win95 piano-like feel)
+function richDing(
+  ctx: AudioContext,
+  freq: number,
+  duration: number,
+  vol: number,
+  delayMs = 0
+) {
+  ding(ctx, freq,      duration,       vol,         delayMs)  // fundamental
+  ding(ctx, freq * 2,  duration * 0.5, vol * 0.12,  delayMs)  // octave harmonic
 }
 
 export function useSounds() {
   const volume = useSystemStore((s) => s.volume)
+  const v = useCallback((scale = 1) => (volume / 100) * 0.18 * scale, [volume])
 
-  const v = useCallback(() => (volume / 100) * 0.12, [volume])
-
+  // OPEN: Ascending D5 → G5 (perfect 4th up — Win95 maximize style)
   const playOpen = useCallback(() => {
     if (volume === 0) return
     const ctx = getCtx()
-    const vol = v()
-    beep(ctx, 880, 0.07, vol)
-    beep(ctx, 1320, 0.07, vol * 0.7, 'square', 70)
+    richDing(ctx, 587, 0.22, v(),       0)   // D5
+    richDing(ctx, 784, 0.28, v(0.85),  85)   // G5
   }, [volume, v])
 
+  // CLOSE: Descending G5 → D5 (reverse of open — Win95 close style)
   const playClose = useCallback(() => {
     if (volume === 0) return
     const ctx = getCtx()
-    beep(ctx, 440, 0.1, v())
+    richDing(ctx, 784, 0.18, v(0.8),   0)    // G5
+    richDing(ctx, 587, 0.22, v(0.65), 70)    // D5
   }, [volume, v])
 
+  // MINIMIZE: Quick descending D5 → B4 (smaller interval, quicker)
   const playMinimize = useCallback(() => {
     if (volume === 0) return
     const ctx = getCtx()
-    beep(ctx, 660, 0.06, v() * 0.6)
+    ding(ctx, 587, 0.14, v(0.55),  0)        // D5
+    ding(ctx, 494, 0.17, v(0.40), 60)        // B4
   }, [volume, v])
 
+  // CLICK: Near-silent soft sine tick (Win95 "ding" style)
   const playClick = useCallback(() => {
     if (volume === 0) return
     const ctx = getCtx()
-    beep(ctx, 1400, 0.025, v() * 0.3)
+    ding(ctx, 900, 0.025, v(0.20), 0)
   }, [volume, v])
 
+  // STARTUP: Win95-inspired warm ascending chord (F major — royalty-free, original feel)
+  // Win95 original used E major; this uses F major for different character
   const playStartup = useCallback(() => {
     if (volume === 0) return
     const ctx = getCtx()
-    const vol = v()
-    const notes = [523, 659, 784, 1047]
-    notes.forEach((freq, i) => beep(ctx, freq, 0.14, vol * 0.9, 'square', i * 110))
+    const vol = v(0.78)
+    const notes = [
+      { freq: 349, dur: 0.60, delay:   0 },  // F4  — first breath
+      { freq: 440, dur: 0.60, delay: 150 },  // A4
+      { freq: 523, dur: 0.65, delay: 320 },  // C5
+      { freq: 698, dur: 0.60, delay: 500 },  // F5
+      { freq: 880, dur: 1.10, delay: 680 },  // A5  — final long hold
+    ]
+    notes.forEach(({ freq, dur, delay }) => richDing(ctx, freq, dur, vol, delay))
   }, [volume, v])
 
   return { playOpen, playClose, playMinimize, playClick, playStartup }
