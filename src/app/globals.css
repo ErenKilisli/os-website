@@ -44,20 +44,97 @@
   --inverse-surface: #0d0e0f;
 }
 
-/* ── UI Mode: Darker ────────────────────────────────────── */
-[data-uimode="darker"] {
-  --surface-dim: #2e2e2e;
-  --surface-hi: #3e3e3e;
-  --surface-lo: #1a1a1a;
-  --on-surface: #b0b0b0;
-  --inverse-surface: #111111;
+/* ── UI Mode: High Contrast ──────────────────────────────── */
+/* Win95 Accessibility: black bg, white text, yellow accents  */
+[data-uimode="high_contrast"] {
+  --surface-dim: #000000;
+  --surface-hi: #ffffff;
+  --surface-lo: #444444;
+  --on-surface: #ffffff;
+  --inverse-surface: #000000;
+  --primary: #ffff00;
+  --primary-container: #ffff00;
 }
-[data-uimode="darker"] .wbody {
-  background: #1e1e1e;
+[data-uimode="high_contrast"] .wbody { background: #000000; color: #ffffff; }
+[data-uimode="high_contrast"] .settings-panel { background: #000000; }
+[data-uimode="high_contrast"] .window { box-shadow: inset 1.5px 1.5px 0 #ffff00, inset -1.5px -1.5px 0 #888800, 2px 2px 0 #ffff00; }
+[data-uimode="high_contrast"] .tb { background: #000080 !important; }
+[data-uimode="high_contrast"] .wbtn { background: #000000; border: 1px solid #ffff00; color: #ffff00; box-shadow: none; }
+[data-uimode="high_contrast"] .wbtn .material-symbols-outlined { color: #ffff00; }
+
+/* ── UI Mode: Night Shift ────────────────────────────────── */
+/* Warm amber/sepia tones — f.lux style, easy on eyes        */
+[data-uimode="night_shift"] {
+  --surface-dim: #c8a878;
+  --surface-hi: #e8d0a0;
+  --surface-lo: #785830;
+  --on-surface: #2a1800;
+  --inverse-surface: #1a0e00;
+  --primary: #b86800;
+  --primary-container: #e08820;
 }
-[data-uimode="darker"] .settings-panel {
-  background: #1a1a1a;
+[data-uimode="night_shift"] .wbody { background: #d8b880; }
+[data-uimode="night_shift"] .win-menu { background: #c8a878; }
+[data-uimode="night_shift"] .settings-panel { background: #c0a070; }
+[data-uimode="night_shift"] .tb { background: #7a3800 !important; }
+[data-uimode="night_shift"] .window { box-shadow: inset 1.5px 1.5px 0 #f0d090, inset -1.5px -1.5px 0 #604020, 2px 2px 0 #000; }
+
+/* ── UI Mode: Phosphor ───────────────────────────────────── */
+/* Classic green CRT monochrome monitor                       */
+[data-uimode="phosphor"] {
+  --surface-dim: #0c1a0c;
+  --surface-hi: #1a2e1a;
+  --surface-lo: #042004;
+  --on-surface: #00ef00;
+  --inverse-surface: #001200;
+  --primary: #00ff00;
+  --primary-container: #00cc00;
 }
+[data-uimode="phosphor"] .wbody { background: #001200; color: #00ef00; }
+[data-uimode="phosphor"] .win-menu { background: #0a180a; }
+[data-uimode="phosphor"] .settings-panel { background: #001200; }
+[data-uimode="phosphor"] .tb { background: #003800 !important; }
+[data-uimode="phosphor"] .window { box-shadow: inset 1.5px 1.5px 0 #00ff00, inset -1.5px -1.5px 0 #004400, 2px 2px 0 #000; }
+[data-uimode="phosphor"] .tb-lbl { color: #00ff00; }
+[data-uimode="phosphor"] .dic-lbl { color: #00ff00; text-shadow: 0 0 6px #00ff00; }
+
+/* ── UI Mode: Blueprint ──────────────────────────────────── */
+/* Technical drawing / CAD — dark navy + white lines          */
+[data-uimode="blueprint"] {
+  --surface-dim: #0d2244;
+  --surface-hi: #1a3a6e;
+  --surface-lo: #071628;
+  --on-surface: #c8deff;
+  --inverse-surface: #061020;
+  --primary: #4a90d9;
+  --primary-container: #6ab0ff;
+}
+[data-uimode="blueprint"] .wbody { background: #071830; color: #c8deff; }
+[data-uimode="blueprint"] .win-menu { background: #0d2244; }
+[data-uimode="blueprint"] .settings-panel { background: #071830; }
+[data-uimode="blueprint"] .tb { background: #0a1e40 !important; }
+[data-uimode="blueprint"] .window { box-shadow: inset 1.5px 1.5px 0 #4a90d9, inset -1.5px -1.5px 0 #071020, 2px 2px 0 #4a90d9; border: 1px solid #4a90d9; }
+[data-uimode="blueprint"] .tb-lbl { color: #a0c8ff; }
+
+/* ── UI Mode: Print ──────────────────────────────────────── */
+/* Newspaper / grayscale print — white panels, black ink      */
+[data-uimode="print"] {
+  --surface-dim: #f5f5f5;
+  --surface-hi: #ffffff;
+  --surface-lo: #aaaaaa;
+  --on-surface: #000000;
+  --inverse-surface: #222222;
+  --primary: #000000;
+  --primary-container: #444444;
+}
+[data-uimode="print"] .wbody { background: #ffffff; color: #000000; }
+[data-uimode="print"] .win-menu { background: #f0f0f0; }
+[data-uimode="print"] .settings-panel { background: #ffffff; }
+[data-uimode="print"] .tb { background: #222222 !important; }
+[data-uimode="print"] .window { box-shadow: inset 1.5px 1.5px 0 #fff, inset -1.5px -1.5px 0 #888, 2px 2px 0 #000; }
+[data-uimode="print"] .tb-lbl { color: #ffffff; }
+[data-uimode="print"] .dic-lbl { color: #000000; background: rgba(255,255,255,0.85); }
+
 
 *, *::before, *::after {
   cursor: none !important;

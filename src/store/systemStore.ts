@@ -9,7 +9,7 @@ export type Wallpaper = AnimatedWallpaper | 'solid' | 'photo'
   | 'preset-lizard' | 'preset-highland' | 'preset-jaguar'
 export type CursorStyle = 'cyberwave' | 'pixel' | 'box'
 export type ViewMode = 'desktop' | 'phone' | 'terminal'
-export type UiMode = 'dark' | 'light' | 'darker'
+export type UiMode = 'dark' | 'light' | 'high_contrast' | 'night_shift' | 'phosphor' | 'blueprint' | 'print'
 
 export const CURSOR_LABELS: Record<CursorStyle, string> = {
   cyberwave: 'CYBERWAVE',
