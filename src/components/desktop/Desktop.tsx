@@ -94,7 +94,7 @@ export function Desktop() {
       {/* Top nav bar — fully slides out when collapsed */}
       <nav id="top-nav" className={navCollapsed ? 'nav-collapsed' : ''}>
         <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-          <div className="nav-brand">OS.WEBSITE</div>
+          <div className="nav-brand">LIZARD.OS</div>
           <div className="nav-links">
             <span className="nav-link" onClick={() => openWindow('about')}>ABOUT ME</span>
             <span className="nav-link" onClick={() => openWindow('devfiles')}>DEV PROJECTS</span>

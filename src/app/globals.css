@@ -90,13 +90,13 @@ html, body {
   right: 0;
   height: 28px;
   z-index: 9999;
-  background: var(--primary);
-  border-bottom: 2px solid var(--surface-dim);
+  background: #0a0b1a;
+  border-bottom: 2px solid #1a1b2e;
   display: flex;
   align-items: center;
   justify-content: space-between;
   /* leave right padding for the floating toggle button */
-  padding: 0 40px 0 4px;
+  padding: 0 40px 0 0;
   user-select: none;
   transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -108,10 +108,13 @@ html, body {
   font-family: var(--font-h);
   font-size: 13px;
   font-weight: 900;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.18em;
   color: #fff;
-  padding: 0 8px;
+  padding: 0 20px 0 14px;
   white-space: nowrap;
+  border-right: 1px solid rgba(255,255,255,0.15);
+  margin-right: 16px;
+  opacity: 0.95;
 }
 .nav-links {
   display: flex;
@@ -145,11 +148,16 @@ html, body {
   align-items: center;
   gap: 8px;
   padding: 0 8px;
-  color: #fff;
+  color: rgba(255,255,255,0.85);
 }
 .nav-actions .material-symbols-outlined {
   font-size: 16px;
   cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+.nav-actions .material-symbols-outlined:hover {
+  opacity: 1;
 }
 
 /* ── Floating nav toggle button ────────────────────────── */
