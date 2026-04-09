@@ -76,7 +76,7 @@ export const APP_META: AppMeta[] = [
     title: 'ABOUTME.DOC', label: 'ABOUT ME', phoneLabel: 'ABOUT ME',
     icon: 'account_circle', iconColor: '#ffffff',
     width: 820, height: 640,
-    phoneBg: 'linear-gradient(145deg,#006868,#00a8a8)',
+    phoneBg: 'linear-gradient(145deg,#8b0000,#c0392b)',
     spotlightDesc: 'Bio, skills & info',
     appDescription: 'Personal profile — bio, skills, technologies and background.',
     preInstalled: true,
