@@ -4,7 +4,11 @@
       "Bash(npm run:*)",
       "WebFetch(domain:rezinn.com)",
       "WebFetch(domain:deuxstud.io)",
-      "WebFetch(domain:www.pexels.com)"
+      "WebFetch(domain:www.pexels.com)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(xargs ls:*)"
     ]
   }
 }
