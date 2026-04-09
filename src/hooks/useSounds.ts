@@ -96,5 +96,19 @@ export function useSounds() {
     notes.forEach(({ freq, dur, delay }) => richDing(ctx, freq, dur, vol, delay))
   }, [volume, v])
 
-  return { playOpen, playClose, playMinimize, playClick, playStartup }
+  // SHUTDOWN: Descending F major — system powering down (reverse of startup)
+  const playShutdown = useCallback(() => {
+    if (volume === 0) return
+    const ctx = getCtx()
+    const vol = v(0.72)
+    const notes = [
+      { freq: 698, dur: 0.55, delay:   0 },  // F5
+      { freq: 523, dur: 0.55, delay: 160 },  // C5
+      { freq: 440, dur: 0.60, delay: 330 },  // A4
+      { freq: 349, dur: 0.90, delay: 500 },  // F4  ← long final fade
+    ]
+    notes.forEach(({ freq, dur, delay }) => richDing(ctx, freq, dur, vol * (1 - delay / 2000), delay))
+  }, [volume, v])
+
+  return { playOpen, playClose, playMinimize, playClick, playStartup, playShutdown }
 }

@@ -36,12 +36,6 @@ export function Desktop() {
   // Mark mounted — prevents Zustand persist mismatch on brightness overlay
   useEffect(() => { setMounted(true) }, [])
 
-  // Play startup sound when desktop phase begins (after login)
-  useEffect(() => {
-    if (phase === 'desktop') playStartup()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase])
-
   // Apply theme & uiMode data attributes to <html>
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -84,7 +78,7 @@ export function Desktop() {
         <BootScreen key={bootKey} onComplete={() => setPhase('login')} />
       )}
       {phase === 'login' && (
-        <LoginScreen onLogin={() => setPhase('desktop')} />
+        <LoginScreen onLogin={() => { playStartup(); setPhase('desktop') }} />
       )}
       {(phase === 'shutdown' || phase === 'restart') && (
         <ShutdownScreen
