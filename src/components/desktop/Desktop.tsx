@@ -91,15 +91,7 @@ export function Desktop() {
         />
       )}
 
-      {/* Hover zone at top edge when nav is collapsed to reveal it */}
-      {navCollapsed && (
-        <div
-          id="nav-reveal-zone"
-          onMouseEnter={() => setNavCollapsed(false)}
-        />
-      )}
-
-      {/* Top nav bar */}
+      {/* Top nav bar — fully slides out when collapsed */}
       <nav id="top-nav" className={navCollapsed ? 'nav-collapsed' : ''}>
         <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
           <div className="nav-brand">OS.WEBSITE</div>
@@ -120,15 +112,19 @@ export function Desktop() {
             search
           </span>
           <span className="material-symbols-outlined" onClick={() => openWindow('settings')}>settings</span>
-          <span
-            className="material-symbols-outlined nav-toggle-btn"
-            onClick={() => setNavCollapsed(c => !c)}
-            title={navCollapsed ? 'Show nav bar' : 'Hide nav bar'}
-          >
-            {navCollapsed ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}
-          </span>
         </div>
       </nav>
+
+      {/* Floating toggle button — always visible, outside the nav */}
+      <button
+        id="nav-float-toggle"
+        className={navCollapsed ? 'is-collapsed' : ''}
+        onClick={() => setNavCollapsed(c => !c)}
+        title={navCollapsed ? 'Show nav bar' : 'Hide nav bar'}
+        aria-label="Toggle nav bar"
+      >
+        <span className="material-symbols-outlined">keyboard_arrow_up</span>
+      </button>
 
       {/* Brightness overlay — only after mount to avoid Zustand persist hydration mismatch */}
       {mounted && brightness < 100 && (
@@ -146,6 +142,7 @@ export function Desktop() {
 
       <div
         id="desktop"
+        className={navCollapsed ? 'nav-collapsed' : ''}
         onClick={() => selectIcon(null)}
         onContextMenu={e => {
           e.preventDefault()
