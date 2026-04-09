@@ -7,10 +7,21 @@ import type { WindowType } from '@/config/appMeta'
 import { DEVFILES_PROJECTS, FILM_PROJECTS, GAME_PROJECTS, Project } from '@/data/projects'
 import { APP_REGISTRY, phoneApps, type AppDef } from '@/config/appRegistry'
 
-// ── Win95 design tokens ───────────────────────────────────────────
-const C = {
+// ── Phone wallpaper options ───────────────────────────────────────
+export const PHONE_WALLPAPERS = [
+  { name: 'TEAL',   hex: '#008080' },
+  { name: 'NAVY',   hex: '#000050' },
+  { name: 'FOREST', hex: '#1a4a1a' },
+  { name: 'WINE',   hex: '#5a0a1a' },
+  { name: 'SLATE',  hex: '#1e2a3a' },
+  { name: 'PURPLE', hex: '#2e0a5a' },
+  { name: 'OLIVE',  hex: '#3a3a0a' },
+  { name: 'VOID',   hex: '#000000' },
+]
+
+// ── Win95 tokens — light ──────────────────────────────────────────
+const C_LIGHT = {
   bg:     '#c0c0c0',
-  desk:   '#008080',
   navy:   '#000080',
   white:  '#ffffff',
   black:  '#000000',
@@ -20,7 +31,22 @@ const C = {
   sunken: 'inset 2px 2px 0 #808080, inset -1px -1px 0 #ffffff',
   font:   'var(--font-h)',
   fontB:  'var(--font-b)',
-} as const
+}
+// ── Win95 tokens — dark ───────────────────────────────────────────
+const C_DARK = {
+  bg:     '#2e2e2e',
+  navy:   '#000080',
+  white:  '#ffffff',
+  black:  '#cccccc',
+  gray:   '#555555',
+  raised: 'inset 1.5px 1.5px 0 #555555, inset -1.5px -1.5px 0 #111111',
+  outer:  'inset 1.5px 1.5px 0 #555555, inset -1.5px -1.5px 0 #111111, 1.5px 1.5px 0 #000000',
+  sunken: 'inset 2px 2px 0 #111111, inset -1px -1px 0 #555555',
+  font:   'var(--font-h)',
+  fontB:  'var(--font-b)',
+}
+// Legacy alias (used where hooks aren't available)
+const C = C_LIGHT
 
 const DOCK_APPS: AppDef[] = (['about', 'mail', 'browser', 'settings'] as const)
   .map(t => APP_REGISTRY.find(a => a.type === t)!)
@@ -96,16 +122,16 @@ function PhoneStatusBar() {
 }
 
 // ── Home screen ───────────────────────────────────────────────────
-function HomeScreen({ apps, onOpen }: { apps: AppDef[]; onOpen: (app: AppDef) => void }) {
+function HomeScreen({ apps, onOpen, wallpaper, T }: { apps: AppDef[]; onOpen: (app: AppDef) => void; wallpaper: string; T: typeof C_LIGHT }) {
   return (
-    <div style={{ flex: 1, overflow: 'auto', padding: '10px 6px 4px', background: C.desk }}>
+    <div style={{ flex: 1, overflow: 'auto', padding: '10px 6px 4px', background: wallpaper }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px 2px' }}>
         {apps.map(app => (
           <button key={app.type} onClick={() => onOpen(app)} style={{ background: 'none', border: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '3px' }}>
-            <div style={{ width: 48, height: 48, background: C.bg, boxShadow: C.outer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 48, height: 48, background: T.bg, boxShadow: T.outer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <PhoneIconContent app={app} size={24} />
             </div>
-            <span style={{ fontFamily: C.font, fontSize: 7, color: C.white, textShadow: `1px 1px 0 ${C.black}`, textTransform: 'uppercase', textAlign: 'center', maxWidth: 58, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontFamily: T.font, fontSize: 7, color: '#ffffff', textShadow: `1px 1px 0 #000000`, textTransform: 'uppercase', textAlign: 'center', maxWidth: 58, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {app.phoneLabel ?? app.label}
             </span>
           </button>
@@ -320,40 +346,59 @@ function PhoneTerminalScreen() {
   )
 }
 
-// ── Settings screen ───────────────────────────────────────────────
+// ── Settings screen ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 function PhoneSettingsScreen() {
-  const { viewMode, setViewMode, theme, setTheme, brightness, setBrightness } = useSystemStore()
+  const { viewMode, setViewMode, uiMode, setUiMode, brightness, setBrightness, phoneWallpaper, setPhoneWallpaper } = useSystemStore()
+  const T = uiMode === 'dark' ? C_DARK : C_LIGHT
   const modes: Array<{ v: 'desktop' | 'phone' | 'terminal'; label: string; icon: string }> = [
-    { v: 'phone', label: 'PHONE', icon: 'smartphone' },
-    { v: 'desktop', label: 'DESKTOP', icon: 'desktop_windows' },
-    { v: 'terminal', label: 'TERMINAL', icon: 'terminal' },
+    { v: 'phone',    label: 'PHONE',   icon: 'smartphone' },
+    { v: 'desktop',  label: 'DESKTOP', icon: 'desktop_windows' },
+    { v: 'terminal', label: 'TERMINAL',icon: 'terminal' },
   ]
-  const themes = ['cybercore', 'vaporwave', 'matrix', 'amber'] as const
   return (
-    <div style={{ overflow: 'auto', height: '100%', padding: 10, background: C.bg }}>
+    <div style={{ overflow: 'auto', height: '100%', padding: 10, background: T.bg }}>
       <W95Header title="VIEW MODE" />
       <div style={{ display: 'flex', gap: 4, marginBottom: 14 }}>
         {modes.map(m => (
-          <button key={m.v} onClick={() => setViewMode(m.v)} style={{ flex: 1, background: viewMode === m.v ? C.navy : C.bg, color: viewMode === m.v ? C.white : C.black, fontFamily: C.font, fontSize: 6, letterSpacing: '0.04em', padding: '8px 2px', border: 'none', boxShadow: viewMode === m.v ? C.sunken : C.raised, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+          <button key={m.v} onClick={() => setViewMode(m.v)} style={{ flex: 1, background: viewMode === m.v ? T.navy : T.bg, color: viewMode === m.v ? T.white : T.black, fontFamily: T.font, fontSize: 6, letterSpacing: '0.04em', padding: '8px 2px', border: 'none', boxShadow: viewMode === m.v ? T.sunken : T.raised, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>{m.icon}</span>{m.label}
+          </button>
+        ))}
+      </div>
+      <W95Header title="WINDOW CHROME" />
+      <div style={{ display: 'flex', gap: 4, marginBottom: 14 }}>
+        {([{ v: 'light' as const, label: 'LIGHT', preview: '#c8c8c8' }, { v: 'dark' as const, label: 'DARK', preview: '#2e2e2e' }]).map(m => (
+          <button key={m.v} onClick={() => setUiMode(m.v)} style={{ flex: 1, height: 48, background: m.preview, border: uiMode === m.v ? `3px solid ${T.navy}` : `2px solid ${T.gray}`, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, boxShadow: uiMode === m.v ? T.sunken : T.raised }}>
+            <span style={{ fontFamily: T.font, fontSize: 7, color: m.v === 'dark' ? '#ddd' : '#000', letterSpacing: '0.06em' }}>{m.label}</span>
+            {uiMode === m.v && <span style={{ fontFamily: T.font, fontSize: 5, color: m.v === 'dark' ? '#bbb' : T.navy }}>✓ ACTIVE</span>}
           </button>
         ))}
       </div>
       <W95Header title="BRIGHTNESS" />
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.gray }}>brightness_low</span>
-        <div style={{ flex: 1, boxShadow: C.sunken, background: C.white, padding: '4px 2px' }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 14, color: T.gray }}>brightness_low</span>
+        <div style={{ flex: 1, boxShadow: T.sunken, background: T.white, padding: '4px 2px' }}>
           <input type="range" min={20} max={100} value={brightness} onChange={e => setBrightness(Number(e.target.value))} style={{ width: '100%', display: 'block' }} className="sslider" />
         </div>
-        <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.black }}>brightness_high</span>
-        <span style={{ fontFamily: C.font, fontSize: 7, color: C.black, minWidth: 28 }}>{brightness}%</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 14, color: T.black }}>brightness_high</span>
+        <span style={{ fontFamily: T.font, fontSize: 7, color: T.black, minWidth: 28 }}>{brightness}%</span>
       </div>
-      <W95Header title="THEME" />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
-        {themes.map(t => (
-          <button key={t} onClick={() => setTheme(t)} style={{ background: theme === t ? C.navy : C.bg, color: theme === t ? C.white : C.black, fontFamily: C.font, fontSize: 7, letterSpacing: '0.04em', padding: '8px 4px', textTransform: 'uppercase', border: 'none', boxShadow: theme === t ? C.sunken : C.raised }}>{t}</button>
+      <W95Header title="WALLPAPER" />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 5, marginBottom: 8 }}>
+        {PHONE_WALLPAPERS.map(wp => (
+          <button key={wp.hex} onClick={() => setPhoneWallpaper(wp.hex)} style={{ background: 'none', border: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: 2 }}>
+            <div style={{ width: 46, height: 30, background: wp.hex, boxShadow: phoneWallpaper === wp.hex ? `0 0 0 3px ${T.navy}` : T.raised, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {phoneWallpaper === wp.hex && <span style={{ fontSize: 14, color: '#fff', textShadow: '0 1px 2px #000' }}>✓</span>}
+            </div>
+            <span style={{ fontFamily: T.font, fontSize: 5, color: T.black, letterSpacing: '0.02em' }}>{wp.name}</span>
+          </button>
         ))}
       </div>
+      <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', background: T.bg, boxShadow: T.raised, padding: '5px 10px', width: 'fit-content' }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 14, color: T.black }}>colorize</span>
+        <span style={{ fontFamily: T.font, fontSize: 7, color: T.black }}>CUSTOM</span>
+        <input type="color" value={phoneWallpaper} onChange={e => setPhoneWallpaper(e.target.value)} style={{ width: 24, height: 16, border: 'none', padding: 0, cursor: 'pointer' }} />
+      </label>
     </div>
   )
 }
@@ -429,10 +474,11 @@ function PhoneAppBar({ title, icon, onBack }: { title: string; icon: string; onB
 
 // ── Main PhoneView ────────────────────────────────────────────────
 export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
-  const { setViewMode } = useSystemStore()
+  const { setViewMode, uiMode, phoneWallpaper } = useSystemStore()
   const { openWindow, installedApps } = useWindowStore()
   const [activeApp, setActiveApp] = useState<AppDef | null>(null)
   const [booted, setBooted] = useState(false)
+  const T = uiMode === 'dark' ? C_DARK : C_LIGHT
 
   const handleOpenDesktop = (app: AppDef) => { openWindow(app.type); setViewMode('desktop') }
 
@@ -451,7 +497,7 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
   }
 
   const screenContent = (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: C.desk }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: phoneWallpaper }}>
       <AnimatePresence mode="wait">
         {!booted ? (
           <PhoneBootScreen key="boot" onComplete={() => setBooted(true)} />
@@ -462,7 +508,7 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
               <AnimatePresence mode="wait">
                 {!activeApp ? (
                   <motion.div key="home" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.18 }} style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
-                    <HomeScreen apps={phoneApps(installedApps)} onOpen={app => setActiveApp(app)} />
+                    <HomeScreen apps={phoneApps(installedApps)} onOpen={app => setActiveApp(app)} wallpaper={phoneWallpaper} T={T} />
                   </motion.div>
                 ) : (
                   <motion.div key={activeApp.type} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ duration: 0.18 }} style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
@@ -473,11 +519,11 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
               </AnimatePresence>
             </div>
             {/* Win95 Taskbar Dock */}
-            <div style={{ flexShrink: 0, height: 46, background: C.bg, borderTop: `2px solid ${C.white}`, boxShadow: `inset 0 1px 0 ${C.white}`, display: 'flex', alignItems: 'center', padding: '0 4px', gap: 3 }}>
+            <div style={{ flexShrink: 0, height: 46, background: T.bg, borderTop: `2px solid ${T.white}`, boxShadow: `inset 0 1px 0 ${T.white}`, display: 'flex', alignItems: 'center', padding: '0 4px', gap: 3 }}>
               {DOCK_APPS.map(app => (
-                <button key={app.type} onClick={() => setActiveApp(app)} style={{ flex: 1, background: C.bg, border: 'none', boxShadow: C.raised, height: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 16, color: C.black }}>{app.icon}</span>
-                  <span style={{ fontFamily: C.font, fontSize: 5, color: C.black, textTransform: 'uppercase', letterSpacing: '0.01em' }}>{app.phoneLabel ?? app.label}</span>
+                <button key={app.type} onClick={() => setActiveApp(app)} style={{ flex: 1, background: T.bg, border: 'none', boxShadow: T.raised, height: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 16, color: T.black }}>{app.icon}</span>
+                  <span style={{ fontFamily: T.font, fontSize: 5, color: T.black, textTransform: 'uppercase', letterSpacing: '0.01em' }}>{app.phoneLabel ?? app.label}</span>
                 </button>
               ))}
             </div>

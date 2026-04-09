@@ -9,7 +9,7 @@ export type Wallpaper = AnimatedWallpaper | 'solid' | 'photo'
   | 'preset-lizard' | 'preset-highland' | 'preset-jaguar'
 export type CursorStyle = 'cyberwave' | 'pixel' | 'box'
 export type ViewMode = 'desktop' | 'phone' | 'terminal'
-export type UiMode = 'dark' | 'light' | 'high_contrast' | 'night_shift' | 'phosphor' | 'blueprint' | 'print'
+export type UiMode = 'dark' | 'light'
 
 export const CURSOR_LABELS: Record<CursorStyle, string> = {
   cyberwave: 'CYBERWAVE',
@@ -51,6 +51,7 @@ export const SOLID_COLORS: { name: string; hex: string }[] = [
   { name: 'COBALT',   hex: '#0a0a2e' },
   { name: 'VOID',     hex: '#000000' },
   { name: 'SLATE',    hex: '#1e2a3a' },
+  { name: 'TEAL',     hex: '#008080' },
   { name: 'WHITE',    hex: '#f5f5f5' },
   { name: 'BONE',     hex: '#e8e0d4' },
 ]
@@ -61,11 +62,12 @@ interface SystemStore {
   theme: Theme
   wallpaper: Wallpaper
   wallpaperColor: string
-  wallpaperPhoto: string     // base64 data URL for custom upload
+  wallpaperPhoto: string
   cursorStyle: CursorStyle
   viewMode: ViewMode
   uiMode: UiMode
-  settingsInitTab: string    // non-empty string → navigate settings to that tab on next open
+  phoneWallpaper: string
+  settingsInitTab: string
   setVolume: (v: number) => void
   setBrightness: (v: number) => void
   setTheme: (t: Theme) => void
@@ -75,6 +77,7 @@ interface SystemStore {
   setCursorStyle: (c: CursorStyle) => void
   setViewMode: (v: ViewMode) => void
   setUiMode: (m: UiMode) => void
+  setPhoneWallpaper: (c: string) => void
   setSettingsInitTab: (tab: string) => void
 }
 
@@ -90,6 +93,7 @@ export const useSystemStore = create<SystemStore>()(
       cursorStyle: 'cyberwave',
       viewMode: 'desktop',
       uiMode: 'dark',
+      phoneWallpaper: '#008080',
       settingsInitTab: '',
       setVolume: (volume) => set({ volume }),
       setBrightness: (brightness) => set({ brightness }),
@@ -100,6 +104,7 @@ export const useSystemStore = create<SystemStore>()(
       setCursorStyle: (cursorStyle) => set({ cursorStyle }),
       setViewMode: (viewMode) => set({ viewMode }),
       setUiMode: (uiMode) => set({ uiMode }),
+      setPhoneWallpaper: (phoneWallpaper) => set({ phoneWallpaper }),
       setSettingsInitTab: (settingsInitTab) => set({ settingsInitTab }),
     }),
     {

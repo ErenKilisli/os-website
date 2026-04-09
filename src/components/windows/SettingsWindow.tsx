@@ -284,32 +284,21 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
               </div>
 
               <div style={SECTION}>WINDOW CHROME</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
+              <div style={{ display: 'flex', gap: 8 }}>
                 {([
-                  { mode: 'dark'          as UiMode, label: 'DARK',        desc: 'Default',        preview: 'linear-gradient(135deg,#1a1a1a,#2a2a2a)',   text: '#fff',    accent: '#9097ff' },
-                  { mode: 'light'         as UiMode, label: 'LIGHT',       desc: 'White panels',   preview: 'linear-gradient(135deg,#f0f0f0,#ffffff)',   text: '#000',    accent: '#484fb9' },
-                  { mode: 'high_contrast' as UiMode, label: 'HI-CONTRAST', desc: 'Black+yellow',   preview: 'linear-gradient(135deg,#000000,#111100)',   text: '#ffff00', accent: '#ffff00' },
-                  { mode: 'night_shift'   as UiMode, label: 'NIGHT SHIFT', desc: 'Warm amber',     preview: 'linear-gradient(135deg,#7a3800,#c8a060)',   text: '#ffe8b0', accent: '#e08820' },
-                  { mode: 'phosphor'      as UiMode, label: 'PHOSPHOR',    desc: 'Green CRT',      preview: 'linear-gradient(135deg,#001200,#0c1a0c)',   text: '#00ff00', accent: '#00ff00' },
-                  { mode: 'blueprint'     as UiMode, label: 'BLUEPRINT',   desc: 'CAD navy',       preview: 'linear-gradient(135deg,#061020,#0d2244)',   text: '#6ab0ff', accent: '#4a90d9' },
-                  { mode: 'print'         as UiMode, label: 'PRINT',       desc: 'B&W newspaper',  preview: 'linear-gradient(135deg,#ffffff,#f0f0f0)',   text: '#000',    accent: '#000' },
-                ] as { mode: UiMode; label: string; desc: string; preview: string; text: string; accent: string }[]).map(opt => (
+                  { mode: 'dark'  as UiMode, label: 'DARK',  desc: 'Dark panels',  preview: 'linear-gradient(135deg,#1a1a1a,#2a2a2a)', text: '#fff' },
+                  { mode: 'light' as UiMode, label: 'LIGHT', desc: 'White panels', preview: 'linear-gradient(135deg,#f0f0f0,#ffffff)', text: '#000' },
+                ]).map(opt => (
                   <button key={opt.mode} onClick={() => setUiMode(opt.mode)} style={{
-                    height: 64, background: opt.preview,
-                    border: uiMode === opt.mode ? `3px solid ${opt.accent}` : '2px solid rgba(128,128,128,0.35)',
+                    flex: 1, height: 70, background: opt.preview,
+                    border: uiMode === opt.mode ? '3px solid var(--primary)' : '2px solid rgba(128,128,128,0.35)',
                     cursor: 'pointer', display: 'flex', flexDirection: 'column',
-                    alignItems: 'center', justifyContent: 'center', gap: 2, padding: '0 4px',
-                    boxShadow: uiMode === opt.mode ? `0 0 10px ${opt.accent}55` : 'none',
+                    alignItems: 'center', justifyContent: 'center', gap: 3,
+                    boxShadow: uiMode === opt.mode ? '0 0 12px rgba(72,79,185,0.4)' : 'none',
                   }}>
-                    <span style={{ fontFamily: 'var(--font-h)', fontSize: 7, color: opt.text, letterSpacing: '0.06em', textAlign: 'center', lineHeight: 1.2 }}>
-                      {opt.label}
-                    </span>
-                    <span style={{ fontFamily: 'var(--font-h)', fontSize: 5, color: opt.text, opacity: 0.6 }}>
-                      {opt.desc}
-                    </span>
-                    {uiMode === opt.mode && (
-                      <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: opt.accent }}>✓</span>
-                    )}
+                    <span style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: opt.text, letterSpacing: '0.08em' }}>{opt.label}</span>
+                    <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: opt.mode === 'light' ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.4)' }}>{opt.desc}</span>
+                    {uiMode === opt.mode && <span style={{ fontFamily: 'var(--font-h)', fontSize: 7, color: 'var(--primary)' }}>✓ ACTIVE</span>}
                   </button>
                 ))}
               </div>
