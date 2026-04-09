@@ -29,6 +29,7 @@ export function Desktop() {
   const [isMobile, setIsMobile] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [trashOpen, setTrashOpen] = useState(false)
+  const [navCollapsed, setNavCollapsed] = useState(false)
   const { windows, icons, openWindow, selectIcon } = useWindowStore()
   const { brightness, theme, viewMode, uiMode, setViewMode } = useSystemStore()
   const { playStartup } = useSounds()
@@ -90,14 +91,24 @@ export function Desktop() {
         />
       )}
 
+      {/* Hover zone at top edge when nav is collapsed to reveal it */}
+      {navCollapsed && (
+        <div
+          id="nav-reveal-zone"
+          onMouseEnter={() => setNavCollapsed(false)}
+        />
+      )}
+
       {/* Top nav bar */}
-      <nav id="top-nav">
+      <nav id="top-nav" className={navCollapsed ? 'nav-collapsed' : ''}>
         <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
           <div className="nav-brand">OS.WEBSITE</div>
           <div className="nav-links">
-            <span className="nav-link active" onClick={() => openWindow('terminal')}>TERMINAL</span>
-            <span className="nav-link" onClick={() => openWindow('devfiles')}>FILES</span>
-            <span className="nav-link" onClick={() => openWindow('mail')}>NETWORK</span>
+            <span className="nav-link" onClick={() => openWindow('about')}>ABOUT ME</span>
+            <span className="nav-link" onClick={() => openWindow('devfiles')}>DEV PROJECTS</span>
+            <span className="nav-link" onClick={() => openWindow('film')}>FILM PROJECTS</span>
+            <span className="nav-link" onClick={() => openWindow('game')}>GAME PROJECTS</span>
+            <span className="nav-link" onClick={() => openWindow('mail')}>CONTACT</span>
           </div>
         </div>
         <div className="nav-actions">
@@ -109,7 +120,13 @@ export function Desktop() {
             search
           </span>
           <span className="material-symbols-outlined" onClick={() => openWindow('settings')}>settings</span>
-          <span className="material-symbols-outlined">close</span>
+          <span
+            className="material-symbols-outlined nav-toggle-btn"
+            onClick={() => setNavCollapsed(c => !c)}
+            title={navCollapsed ? 'Show nav bar' : 'Hide nav bar'}
+          >
+            {navCollapsed ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}
+          </span>
         </div>
       </nav>
 
