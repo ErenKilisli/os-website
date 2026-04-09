@@ -4,17 +4,66 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useSystemStore } from '@/store/systemStore'
 import { useWindowStore } from '@/store/windowStore'
 import type { WindowType } from '@/config/appMeta'
-import {
-  DEVFILES_PROJECTS, FILM_PROJECTS, GAME_PROJECTS, Project,
-} from '@/data/projects'
+import { DEVFILES_PROJECTS, FILM_PROJECTS, GAME_PROJECTS, Project } from '@/data/projects'
 import { APP_REGISTRY, phoneApps, type AppDef } from '@/config/appRegistry'
 
-// Dock is fixed (always pre-installed system apps)
+// ── Win95 design tokens ───────────────────────────────────────────
+const C = {
+  bg:     '#c0c0c0',
+  desk:   '#008080',
+  navy:   '#000080',
+  white:  '#ffffff',
+  black:  '#000000',
+  gray:   '#808080',
+  raised: 'inset 1.5px 1.5px 0 #ffffff, inset -1.5px -1.5px 0 #808080',
+  outer:  'inset 1.5px 1.5px 0 #ffffff, inset -1.5px -1.5px 0 #808080, 1.5px 1.5px 0 #000000',
+  sunken: 'inset 2px 2px 0 #808080, inset -1px -1px 0 #ffffff',
+  font:   'var(--font-h)',
+  fontB:  'var(--font-b)',
+} as const
 
-// Dock: about, mail, browser, settings
 const DOCK_APPS: AppDef[] = (['about', 'mail', 'browser', 'settings'] as const)
   .map(t => APP_REGISTRY.find(a => a.type === t)!)
   .filter(Boolean)
+
+// ── Helpers ───────────────────────────────────────────────────────
+function W95Header({ title }: { title: string }) {
+  return (
+    <div style={{
+      fontFamily: C.font, fontSize: 8, fontWeight: 700, color: C.black,
+      letterSpacing: '0.08em', marginBottom: 6, paddingBottom: 4,
+      borderBottom: `2px solid ${C.gray}`,
+      boxShadow: `0 1px 0 ${C.white}`,
+    }}>
+      {title}
+    </div>
+  )
+}
+
+function W95Btn({ children, onClick, primary, style }: {
+  children: React.ReactNode; onClick?: () => void; primary?: boolean; style?: React.CSSProperties
+}) {
+  const [p, setP] = useState(false)
+  return (
+    <button
+      onMouseDown={() => setP(true)} onMouseUp={() => setP(false)} onMouseLeave={() => setP(false)}
+      onClick={onClick}
+      style={{
+        background: primary ? C.navy : C.bg, color: primary ? C.white : C.black,
+        fontFamily: C.font, fontSize: 8, letterSpacing: '0.06em',
+        padding: '5px 14px', border: 'none', textTransform: 'uppercase' as const,
+        boxShadow: p ? C.sunken : C.raised,
+        display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer',
+        ...style,
+      }}
+    >{children}</button>
+  )
+}
+
+function PhoneIconContent({ app, size = 22 }: { app: AppDef; size?: number }) {
+  if (app.phoneIconNode) return <>{app.phoneIconNode}</>
+  return <span className="material-symbols-outlined" style={{ fontSize: size, color: C.black }}>{app.icon}</span>
+}
 
 // ── Status bar ────────────────────────────────────────────────────
 function PhoneStatusBar() {
@@ -22,89 +71,43 @@ function PhoneStatusBar() {
   useEffect(() => {
     const tick = () => {
       const n = new Date()
-      const h = String(n.getHours()).padStart(2, '0')
-      const m = String(n.getMinutes()).padStart(2, '0')
-      setTime(`${h}:${m}`)
+      setTime(`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`)
     }
-    tick()
-    const id = setInterval(tick, 10000)
-    return () => clearInterval(id)
+    tick(); const id = setInterval(tick, 10000); return () => clearInterval(id)
   }, [])
-
   return (
     <div style={{
-      height: 30, flexShrink: 0,
+      height: 28, flexShrink: 0, background: C.navy,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '0 14px', background: 'rgba(0,0,0,0.55)',
+      padding: '0 6px', borderBottom: `1px solid ${C.black}`,
     }}>
-      {/* left: signal + carrier */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 1.5 }}>
-          {[5, 8, 11, 14].map((h, i) => (
-            <div key={i} style={{
-              width: 3, height: h,
-              background: '#00ffff',
-              borderRadius: 1, opacity: i < 4 ? 1 : 0.25,
-            }} />
-          ))}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ width: 16, height: 16, background: C.bg, boxShadow: C.raised, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: 8, fontFamily: C.font, color: C.navy, fontWeight: 900 }}>L</span>
         </div>
-        <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#00ffff', letterSpacing: '0.05em' }}>ERA</span>
-        <span className="material-symbols-outlined" style={{ fontSize: 11, color: '#00ffff' }}>wifi</span>
+        <span style={{ fontFamily: C.font, fontSize: 8, color: C.white, letterSpacing: '0.08em', fontWeight: 700 }}>LIZARD.OS MOBILE</span>
       </div>
-      {/* center: clock */}
-      <span style={{ fontFamily: 'var(--font-h)', fontSize: 9, color: '#fff', letterSpacing: '0.06em' }}>{time}</span>
-      {/* right: battery */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-        <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#00fd00' }}>100%</span>
-        <span className="material-symbols-outlined" style={{ fontSize: 13, color: '#00fd00' }}>battery_full</span>
+      <div style={{ background: C.bg, boxShadow: C.sunken, padding: '2px 7px', display: 'flex', alignItems: 'center', gap: 5 }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 10, color: C.black }}>schedule</span>
+        <span style={{ fontFamily: C.font, fontSize: 8, color: C.black }}>{time}</span>
       </div>
     </div>
-  )
-}
-
-// ── App icon tile content ─────────────────────────────────────────
-function PhoneIconContent({ app, size = 26 }: { app: AppDef; size?: number }) {
-  if (app.phoneIconNode) return <>{app.phoneIconNode}</>
-  return (
-    <span className="material-symbols-outlined" style={{ fontSize: size, color: '#fff' }}>
-      {app.icon}
-    </span>
   )
 }
 
 // ── Home screen ───────────────────────────────────────────────────
 function HomeScreen({ apps, onOpen }: { apps: AppDef[]; onOpen: (app: AppDef) => void }) {
   return (
-    <div style={{ flex: 1, overflow: 'auto', padding: '16px 8px 8px' }}>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: '14px 4px',
-      }}>
+    <div style={{ flex: 1, overflow: 'auto', padding: '10px 6px 4px', background: C.desk }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px 2px' }}>
         {apps.map(app => (
-          <button
-            key={app.type}
-            onClick={() => onOpen(app)}
-            style={{
-              background: 'none', border: 'none',
-              display: 'flex', flexDirection: 'column', alignItems: 'center',
-              gap: 5, padding: '2px',
-            }}
-          >
-            <div style={{
-              width: 54, height: 54,
-              background: app.phoneBg,
-              borderRadius: 14,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 3px 10px rgba(0,0,0,0.45)',
-            }}>
-              <PhoneIconContent app={app} size={26} />
+          <button key={app.type} onClick={() => onOpen(app)} style={{ background: 'none', border: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '3px' }}>
+            <div style={{ width: 48, height: 48, background: C.bg, boxShadow: C.outer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <PhoneIconContent app={app} size={24} />
             </div>
-            <span style={{
-              fontFamily: 'var(--font-h)', fontSize: 6, color: '#ccd',
-              letterSpacing: '0.02em', textAlign: 'center',
-              maxWidth: 58, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}>{app.phoneLabel ?? app.label}</span>
+            <span style={{ fontFamily: C.font, fontSize: 7, color: C.white, textShadow: `1px 1px 0 ${C.black}`, textTransform: 'uppercase', textAlign: 'center', maxWidth: 58, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {app.phoneLabel ?? app.label}
+            </span>
           </button>
         ))}
       </div>
@@ -116,74 +119,47 @@ function HomeScreen({ apps, onOpen }: { apps: AppDef[]; onOpen: (app: AppDef) =>
 function AboutScreen() {
   const skills = ['NEXT.JS','TYPESCRIPT','REACT','RUST','GO','THREE.JS','UNITY','GSAP','UNREAL','C++','NODE.JS','FILM']
   return (
-    <div style={{ overflow: 'auto', height: '100%', padding: '16px 14px' }}>
-      {/* Avatar + name */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 16 }}>
-        <div style={{
-          width: 68, height: 68, borderRadius: '50%',
-          background: 'linear-gradient(135deg, #484fb9 0%, #00ffff 100%)',
-          border: '2px solid #00ffff',
-          boxShadow: '0 0 24px rgba(0,255,255,0.28)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          marginBottom: 8,
-        }}>
-          <span style={{ fontFamily: 'var(--font-h)', fontSize: 18, color: '#fff', fontWeight: 900 }}>IEK</span>
+    <div style={{ overflow: 'auto', height: '100%', background: C.bg, padding: 10, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Name card */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: C.white, boxShadow: C.sunken, padding: '8px 10px' }}>
+        <div style={{ width: 48, height: 48, flexShrink: 0, background: C.navy, boxShadow: C.outer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontFamily: C.font, fontSize: 13, color: C.white, fontWeight: 900 }}>IEK</span>
         </div>
-        <div style={{ fontFamily: 'var(--font-h)', fontSize: 9, color: '#fff', letterSpacing: '0.1em', marginBottom: 3 }}>
-          IBRAHIM EREN KILISLI
-        </div>
-        <div style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#9097ff', letterSpacing: '0.06em' }}>
-          SOFTWARE ENG + FILMMAKER
+        <div>
+          <div style={{ fontFamily: C.font, fontSize: 9, color: C.black, fontWeight: 900, letterSpacing: '0.04em', marginBottom: 2 }}>IBRAHIM EREN KILISLI</div>
+          <div style={{ fontFamily: C.font, fontSize: 7, color: '#444', letterSpacing: '0.03em' }}>SOFTWARE ENG + FILMMAKER</div>
         </div>
       </div>
-
       {/* Bio */}
-      <div style={{
-        background: 'rgba(0,255,255,0.04)', border: '1px solid rgba(0,255,255,0.12)',
-        padding: '10px 12px', marginBottom: 12,
-      }}>
-        <div style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#00ffff', marginBottom: 6, letterSpacing: '0.1em' }}>
-          BIO.TXT
+      <div>
+        <W95Header title="ABOUT.TXT" />
+        <div style={{ background: C.white, boxShadow: C.sunken, padding: '8px 10px' }}>
+          <p style={{ fontFamily: C.fontB, fontSize: 12, color: C.black, lineHeight: 1.6, margin: 0 }}>
+            Building at the intersection of code and film. Software engineer with deep roots in game development, real-time cinematics, and creative technology.
+          </p>
         </div>
-        <p style={{ fontFamily: 'var(--font-b)', fontSize: 13, color: '#c8d8e8', lineHeight: 1.65, margin: 0 }}>
-          Building at the intersection of code and film. Software engineer with deep roots in game development,
-          real-time cinematics, and creative technology. Every project is a story worth telling.
-        </p>
       </div>
-
       {/* Skills */}
-      <div style={{ marginBottom: 14 }}>
-        <div style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#00ffff', marginBottom: 7, letterSpacing: '0.1em' }}>
-          SKILLS
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+      <div>
+        <W95Header title="SKILLS" />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
           {skills.map(s => (
-            <span key={s} style={{
-              fontFamily: 'var(--font-h)', fontSize: 6, color: '#c8d8e8',
-              background: 'rgba(72,79,185,0.28)', border: '1px solid #484fb9',
-              padding: '3px 7px', letterSpacing: '0.04em',
-            }}>{s}</span>
+            <span key={s} style={{ fontFamily: C.font, fontSize: 7, color: C.black, background: C.bg, boxShadow: C.raised, padding: '2px 6px', textTransform: 'uppercase' }}>{s}</span>
           ))}
         </div>
       </div>
-
       {/* Links */}
       <div>
-        <div style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#00ffff', marginBottom: 7, letterSpacing: '0.1em' }}>LINKS</div>
-        {[
-          { label: 'GitHub', icon: 'code' },
-          { label: 'LinkedIn', icon: 'business_center' },
-          { label: 'IMDb', icon: 'movie' },
-        ].map(link => (
-          <div key={link.label} style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            padding: '8px 0', borderBottom: '1px solid #0a1628',
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#9097ff' }}>{link.icon}</span>
-            <span style={{ fontFamily: 'var(--font-h)', fontSize: 7, color: '#c8d8e8', letterSpacing: '0.05em' }}>{link.label}</span>
-            <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#2a3040', marginLeft: 'auto' }}>arrow_forward</span>
-          </div>
-        ))}
+        <W95Header title="LINKS" />
+        <div style={{ background: C.white, boxShadow: C.sunken }}>
+          {[{ label: 'GitHub', icon: 'code' }, { label: 'LinkedIn', icon: 'business_center' }, { label: 'IMDb', icon: 'movie' }].map((link, i) => (
+            <div key={link.label} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', borderBottom: i < 2 ? `1px solid ${C.bg}` : 'none' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.navy }}>{link.icon}</span>
+              <span style={{ fontFamily: C.font, fontSize: 8, color: C.black, flex: 1, letterSpacing: '0.03em' }}>{link.label}</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 12, color: C.gray }}>arrow_forward</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -195,146 +171,93 @@ function MailScreen() {
   const [email, setEmail] = useState('')
   const [msg, setMsg] = useState('')
   const [sent, setSent] = useState(false)
-
   const canSend = name.trim() && email.trim() && msg.trim()
 
+  const field: React.CSSProperties = { width: '100%', background: C.white, boxShadow: C.sunken, color: C.black, fontFamily: C.fontB, fontSize: 12, padding: '5px 7px', outline: 'none', border: 'none', boxSizing: 'border-box' }
+  const lbl: React.CSSProperties = { fontFamily: C.font, fontSize: 7, color: C.black, letterSpacing: '0.05em', display: 'block', marginBottom: 3 }
+
   if (sent) return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, padding: 16 }}>
-      <span className="material-symbols-outlined" style={{ fontSize: 52, color: '#00fd00' }}>check_circle</span>
-      <div style={{ fontFamily: 'var(--font-h)', fontSize: 9, color: '#00fd00', letterSpacing: '0.12em' }}>MESSAGE SENT</div>
-      <div style={{ fontFamily: 'var(--font-b)', fontSize: 14, color: '#5a7a5a', textAlign: 'center' }}>Will get back to you soon.</div>
-      <button
-        onClick={() => { setName(''); setEmail(''); setMsg(''); setSent(false) }}
-        style={{ marginTop: 8, background: 'none', border: '1px solid #1a2030', color: '#6a8a6a', fontFamily: 'var(--font-h)', fontSize: 7, padding: '8px 16px', letterSpacing: '0.08em' }}
-      >NEW MESSAGE</button>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', background: C.bg, gap: 12 }}>
+      <div style={{ boxShadow: C.outer, background: C.bg, padding: '20px 28px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 32, color: C.navy }}>check_circle</span>
+        <div style={{ fontFamily: C.font, fontSize: 9, color: C.black, letterSpacing: '0.08em' }}>MESSAGE SENT</div>
+        <W95Btn onClick={() => { setName(''); setEmail(''); setMsg(''); setSent(false) }}>NEW MESSAGE</W95Btn>
+      </div>
     </div>
   )
 
-  const fieldStyle: React.CSSProperties = {
-    width: '100%', background: '#06090f', border: '1px solid #1a2030',
-    color: '#c8d8e8', fontFamily: 'var(--font-b)', fontSize: 13, padding: '8px 10px',
-    outline: 'none', boxSizing: 'border-box', marginTop: 4,
-  }
-  const labelStyle: React.CSSProperties = {
-    fontFamily: 'var(--font-h)', fontSize: 6, color: '#4a6080', letterSpacing: '0.06em',
-  }
-
   return (
-    <div style={{ overflow: 'auto', height: '100%', padding: '14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <div style={{ fontFamily: 'var(--font-h)', fontSize: 7, color: '#00ffff', letterSpacing: '0.1em', marginBottom: 2 }}>
-        COMPOSE MESSAGE
-      </div>
-      <div>
-        <span style={labelStyle}>NAME</span>
-        <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" style={fieldStyle} />
-      </div>
-      <div>
-        <span style={labelStyle}>EMAIL</span>
-        <input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" type="email" style={fieldStyle} />
-      </div>
+    <div style={{ overflow: 'auto', height: '100%', padding: 10, background: C.bg, display: 'flex', flexDirection: 'column', gap: 7 }}>
+      <W95Header title="COMPOSE MESSAGE" />
+      <div><span style={lbl}>NAME</span><input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" style={field} /></div>
+      <div><span style={lbl}>EMAIL</span><input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" type="email" style={field} /></div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <span style={labelStyle}>MESSAGE</span>
-        <textarea
-          value={msg}
-          onChange={e => setMsg(e.target.value)}
-          placeholder="What's on your mind..."
-          style={{ ...fieldStyle, resize: 'none', flex: 1, minHeight: 80 }}
-        />
+        <span style={lbl}>MESSAGE</span>
+        <textarea value={msg} onChange={e => setMsg(e.target.value)} placeholder="Your message..." style={{ ...field, resize: 'none', flex: 1, minHeight: 70 }} />
       </div>
-      <button
-        onClick={() => canSend && setSent(true)}
-        style={{
-          background: canSend ? '#484fb9' : '#0a0e18',
-          border: `1px solid ${canSend ? '#9097ff' : '#1a2030'}`,
-          color: canSend ? '#fff' : '#303848',
-          fontFamily: 'var(--font-h)', fontSize: 8, letterSpacing: '0.1em',
-          padding: '10px', transition: 'all 0.2s',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-        }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>send</span>
-        SEND
-      </button>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <W95Btn onClick={() => canSend && setSent(true)} primary={!!canSend} style={{ opacity: canSend ? 1 : 0.5 }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 12 }}>send</span>
+          SEND
+        </W95Btn>
+      </div>
     </div>
   )
 }
 
 // ── Projects screen ───────────────────────────────────────────────
 function ProjectsScreen({ category }: { category: 'devfiles' | 'film' | 'game' }) {
-  const projects: Project[] =
-    category === 'devfiles' ? DEVFILES_PROJECTS :
-    category === 'film'     ? FILM_PROJECTS     : GAME_PROJECTS
-  const accent =
-    category === 'devfiles' ? '#ff8c42' :
-    category === 'film'     ? '#eaea00' : '#00fd00'
-
+  const projects: Project[] = category === 'devfiles' ? DEVFILES_PROJECTS : category === 'film' ? FILM_PROJECTS : GAME_PROJECTS
   const [selected, setSelected] = useState<Project | null>(null)
 
   if (selected) return (
-    <div style={{ overflow: 'auto', height: '100%', padding: '12px 14px' }}>
-      <button
-        onClick={() => setSelected(null)}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#9097ff', fontFamily: 'var(--font-h)', fontSize: 7, letterSpacing: '0.05em', marginBottom: 14 }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
-        BACK
-      </button>
-      <div style={{ fontFamily: 'var(--font-h)', fontSize: 10, color: '#fff', letterSpacing: '0.08em', marginBottom: 4 }}>{selected.name}</div>
-      <div style={{ fontFamily: 'var(--font-h)', fontSize: 7, color: accent, marginBottom: 10 }}>{selected.year} · {selected.type}</div>
-      <p style={{ fontFamily: 'var(--font-b)', fontSize: 13, color: '#c8d8e8', lineHeight: 1.7, marginBottom: 12 }}>{selected.description}</p>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 12 }}>
-        {selected.tags.map(t => (
-          <span key={t} style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: accent, background: `${accent}18`, border: `1px solid ${accent}60`, padding: '2px 7px' }}>{t}</span>
-        ))}
+    <div style={{ overflow: 'auto', height: '100%', padding: 10, background: C.bg, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <W95Btn onClick={() => setSelected(null)}>
+        <span className="material-symbols-outlined" style={{ fontSize: 12 }}>arrow_back</span>BACK
+      </W95Btn>
+      <div style={{ background: C.white, boxShadow: C.sunken, padding: '10px 12px' }}>
+        <div style={{ fontFamily: C.font, fontSize: 10, color: C.black, fontWeight: 900, marginBottom: 2 }}>{selected.name}</div>
+        <div style={{ fontFamily: C.font, fontSize: 7, color: C.navy, marginBottom: 8 }}>{selected.year} · {selected.type}</div>
+        <p style={{ fontFamily: C.fontB, fontSize: 12, color: C.black, lineHeight: 1.65, marginBottom: 8 }}>{selected.description}</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+          {selected.tags.map(t => <span key={t} style={{ fontFamily: C.font, fontSize: 6, color: C.black, background: C.bg, boxShadow: C.raised, padding: '2px 6px' }}>{t}</span>)}
+        </div>
       </div>
       {selected.links.map(l => (
-        <a key={l.label} href={l.url} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-h)', fontSize: 7, color: '#00ffff', marginBottom: 8, textDecoration: 'none' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 12 }}>open_in_new</span>
-          {l.label}
+        <a key={l.label} href={l.url} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: C.font, fontSize: 7, color: C.navy, textDecoration: 'none', background: C.bg, boxShadow: C.raised, padding: '5px 10px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 12 }}>open_in_new</span>{l.label}
         </a>
       ))}
     </div>
   )
 
   return (
-    <div style={{ overflow: 'auto', height: '100%' }}>
-      {projects.map((p, i) => (
-        <button
-          key={p.id}
-          onClick={() => setSelected(p)}
-          style={{
-            width: '100%', background: 'none', border: 'none',
-            borderBottom: '1px solid #0a1628',
-            padding: '10px 14px',
-            display: 'flex', alignItems: 'center', gap: 10,
-          }}
-        >
-          <span style={{ fontFamily: 'var(--font-h)', fontSize: 7, color: '#2a3848', minWidth: 18, textAlign: 'right' }}>
-            {String(i + 1).padStart(2, '0')}
-          </span>
-          <div style={{ flex: 1, textAlign: 'left' }}>
-            <div style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: '#fff', letterSpacing: '0.05em', marginBottom: 2 }}>{p.name}</div>
-            <div style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#4a6080' }}>{p.year} · {p.type}</div>
-          </div>
-          <span className="material-symbols-outlined" style={{ fontSize: 14, color: accent }}>chevron_right</span>
-        </button>
-      ))}
+    <div style={{ height: '100%', background: C.bg, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 44px 60px', background: C.bg, padding: '3px 6px', borderBottom: `1px solid ${C.gray}`, flexShrink: 0, gap: 2 }}>
+        {['NAME','YEAR','TYPE'].map(h => <span key={h} style={{ fontFamily: C.font, fontSize: 7, color: C.black, boxShadow: C.raised, padding: '2px 4px', background: C.bg }}>{h}</span>)}
+      </div>
+      <div style={{ flex: 1, margin: 4, boxShadow: C.sunken, background: C.white, overflow: 'auto' }}>
+        {projects.map((p, i) => (
+          <button key={p.id} onClick={() => setSelected(p)} style={{ width: '100%', background: i % 2 === 0 ? C.white : '#f0f0f0', border: 'none', borderBottom: `1px solid ${C.bg}`, padding: '6px 8px', display: 'grid', gridTemplateColumns: '1fr 44px 60px', alignItems: 'center', textAlign: 'left', gap: 2 }}>
+            <span style={{ fontFamily: C.font, fontSize: 8, color: C.black, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+            <span style={{ fontFamily: C.font, fontSize: 7, color: C.gray }}>{p.year}</span>
+            <span style={{ fontFamily: C.font, fontSize: 6, color: C.gray, textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.type}</span>
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
 
 // ── Terminal screen ───────────────────────────────────────────────
-type TermLine =
-  | { kind: 'input'; text: string }
-  | { kind: 'output'; text: string; color?: string }
-  | { kind: 'blank' }
+type TermLine = { kind: 'input'; text: string } | { kind: 'output'; text: string; color?: string } | { kind: 'blank' }
 
 function PhoneTerminalScreen() {
   const openWindow = useWindowStore(s => s.openWindow)
   const { setViewMode } = useSystemStore()
   const [lines, setLines] = useState<TermLine[]>([
-    { kind: 'output', text: 'OS.WEBSITE — PHONE TERMINAL', color: '#00ffff' },
-    { kind: 'output', text: 'Type "help" for commands.', color: '#4a6a4a' },
+    { kind: 'output', text: 'LIZARD.OS MOBILE COMMAND PROMPT', color: '#c0c0c0' },
+    { kind: 'output', text: 'Type "help" for commands.', color: '#808080' },
     { kind: 'blank' },
   ])
   const [input, setInput] = useState('')
@@ -342,147 +265,53 @@ function PhoneTerminalScreen() {
   const [histIdx, setHistIdx] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
-
   const push = (...nl: TermLine[]) => setLines(l => [...l, ...nl])
 
   const run = useCallback((raw: string) => {
-    const trimmed = raw.trim()
-    const [cmd, ...args] = trimmed.split(/\s+/)
-    push({ kind: 'input', text: trimmed })
-    if (!trimmed) return
+    const trimmed = raw.trim(); const [cmd, ...args] = trimmed.split(/\s+/)
+    push({ kind: 'input', text: trimmed }); if (!trimmed) return
     switch (cmd) {
-      case 'help':
-        push(
-          { kind: 'output', text: 'Commands:', color: '#00ffff' },
-          { kind: 'output', text: '  help  ls  cat  whoami  date  clear  neofetch  open  exit' },
-        )
-        break
-      case 'ls':
-        push({ kind: 'output', text: 'about.txt  projects/  README.md  .bashrc', color: '#6ab0ff' })
-        break
-      case 'pwd':
-        push({ kind: 'output', text: '/home/eren' })
-        break
-      case 'whoami':
-        push({ kind: 'output', text: 'eren  (uid=1000, groups=admin)' })
-        break
-      case 'date':
-        push({ kind: 'output', text: new Date().toString() })
-        break
-      case 'clear':
-        setLines([]); return
-      case 'neofetch':
-        push(
-          { kind: 'output', text: 'eren@os-website', color: '#00ffff' },
-          { kind: 'output', text: '─────────────────────' },
-          { kind: 'output', text: 'OS:     OS.WEBSITE PHONE MODE' },
-          { kind: 'output', text: 'User:   Ibrahim Eren Kilisli' },
-          { kind: 'output', text: 'Shell:  bash 5.2' },
-          { kind: 'output', text: 'Stack:  Next.js · TypeScript · Framer Motion' },
-          { kind: 'output', text: 'Theme:  CYBERCORE' },
-        )
-        break
-      case 'cat':
-        if (args[0] === 'about.txt') {
-          push(
-            { kind: 'output', text: 'Ibrahim Eren Kilisli' },
-            { kind: 'output', text: 'Software Engineer & Filmmaker' },
-            { kind: 'output', text: 'Building at the intersection of code and film.' },
-          )
-        } else {
-          push({ kind: 'output', text: `cat: ${args[0] ?? ''}: No such file or directory`, color: '#ff6060' })
-        }
-        break
+      case 'help': push({ kind: 'output', text: 'help  ls  cat  whoami  date  clear  neofetch  open  exit', color: '#c0c0c0' }); break
+      case 'ls': push({ kind: 'output', text: 'about.txt  projects/  README.md', color: '#8080ff' }); break
+      case 'whoami': push({ kind: 'output', text: 'eren (uid=1000)' }); break
+      case 'date': push({ kind: 'output', text: new Date().toString() }); break
+      case 'clear': setLines([]); return
+      case 'neofetch': push({ kind: 'output', text: 'OS: LIZARD.OS PHONE' }, { kind: 'output', text: 'User: Ibrahim Eren Kilisli' }, { kind: 'output', text: 'Theme: WIN95' }); break
+      case 'cat': args[0] === 'about.txt' ? push({ kind: 'output', text: 'Ibrahim Eren Kilisli — Software Engineer & Filmmaker' }) : push({ kind: 'output', text: `cat: ${args[0] ?? ''}: No such file`, color: '#ff6060' }); break
       case 'open': {
-        const appMap: Record<string, WindowType> = {
-          about: 'about', mail: 'mail', snake: 'snake', snowboard: 'snowboard',
-          paint: 'paint', music: 'music', calc: 'calc', browser: 'browser', settings: 'settings',
-        }
-        if (appMap[args[0]]) {
-          openWindow(appMap[args[0]])
-          setViewMode('desktop')
-          push({ kind: 'output', text: `Opening ${args[0]}...`, color: '#4a6a4a' })
-        } else {
-          push({ kind: 'output', text: `open: ${args[0] ?? ''}: unknown app`, color: '#ff6060' })
-        }
+        const m: Record<string, WindowType> = { about: 'about', mail: 'mail', snake: 'snake', snowboard: 'snowboard', paint: 'paint', music: 'music', calc: 'calc', browser: 'browser', settings: 'settings' }
+        if (m[args[0]]) { openWindow(m[args[0]]); setViewMode('desktop'); push({ kind: 'output', text: `Opening ${args[0]}...`, color: '#808080' }) }
+        else push({ kind: 'output', text: `open: ${args[0] ?? ''}: unknown app`, color: '#ff6060' })
         break
       }
-      case 'exit':
-        setViewMode('desktop'); return
-      default:
-        push({ kind: 'output', text: `${cmd}: command not found`, color: '#ff6060' })
+      case 'exit': setViewMode('desktop'); return
+      default: push({ kind: 'output', text: `${cmd}: command not found`, color: '#ff6060' })
     }
     push({ kind: 'blank' })
   }, [openWindow, setViewMode])
 
-  const submit = () => {
-    const v = input.trim()
-    run(input)
-    if (v) setHistory(h => [...h, v])
-    setHistIdx(-1)
-    setInput('')
-  }
-
+  const submit = () => { const v = input.trim(); run(input); if (v) setHistory(h => [...h, v]); setHistIdx(-1); setInput('') }
   const handleKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') { submit(); return }
-    if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      const idx = histIdx === -1 ? history.length - 1 : Math.max(0, histIdx - 1)
-      setHistIdx(idx); setInput(history[idx] ?? '')
-    }
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      const idx = histIdx + 1
-      if (idx >= history.length) { setHistIdx(-1); setInput(''); return }
-      setHistIdx(idx); setInput(history[idx])
-    }
-    if (e.ctrlKey && e.key === 'l') { e.preventDefault(); setLines([]) }
+    if (e.key === 'ArrowUp') { e.preventDefault(); const idx = histIdx === -1 ? history.length - 1 : Math.max(0, histIdx - 1); setHistIdx(idx); setInput(history[idx] ?? '') }
+    if (e.key === 'ArrowDown') { e.preventDefault(); const idx = histIdx + 1; if (idx >= history.length) { setHistIdx(-1); setInput(''); return }; setHistIdx(idx); setInput(history[idx]) }
   }
-
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [lines])
 
   return (
-    <div
-      style={{
-        height: '100%', background: '#0c0f0a', display: 'flex', flexDirection: 'column',
-        fontFamily: '"SF Mono","Menlo","Monaco","Courier New",monospace',
-        fontSize: 12, lineHeight: 1.6, color: '#d4d4d4',
-      }}
-      onClick={() => inputRef.current?.focus()}
-    >
-      <div style={{ flex: 1, overflow: 'auto', padding: '8px 10px 4px' }}>
+    <div style={{ height: '100%', background: '#000', display: 'flex', flexDirection: 'column', fontFamily: '"Courier New",monospace', fontSize: 12, lineHeight: 1.5, color: '#c0c0c0' }} onClick={() => inputRef.current?.focus()}>
+      <div style={{ background: '#404040', padding: '2px 8px', fontFamily: C.font, fontSize: 7, color: C.white }}>C:\LIZARD.OS&gt;</div>
+      <div style={{ flex: 1, overflow: 'auto', padding: '6px 8px 4px' }}>
         {lines.map((l, i) => {
-          if (l.kind === 'blank') return <div key={i} style={{ height: 6 }} />
-          if (l.kind === 'input') return (
-            <div key={i} style={{ display: 'flex', gap: 0, flexWrap: 'wrap' }}>
-              <span style={{ color: '#5af78e', userSelect: 'none' }}>eren@phone:~$ </span>
-              <span style={{ color: '#d4d4d4' }}>{l.text}</span>
-            </div>
-          )
-          return (
-            <div key={i} style={{ color: l.color ?? '#d4d4d4', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-              {l.text}
-            </div>
-          )
+          if (l.kind === 'blank') return <div key={i} style={{ height: 5 }} />
+          if (l.kind === 'input') return <div key={i}><span style={{ color: '#c0c0c0', userSelect: 'none' }}>C:\&gt; </span><span style={{ color: '#fff' }}>{l.text}</span></div>
+          return <div key={i} style={{ color: l.color ?? '#c0c0c0', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{l.text}</div>
         })}
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ color: '#5af78e', flexShrink: 0, userSelect: 'none' }}>eren@phone:~$ </span>
-          <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex' }}>
+          <span style={{ color: '#c0c0c0', userSelect: 'none' }}>C:\&gt; </span>
+          <div style={{ position: 'relative', flex: 1 }}>
             <span style={{ visibility: 'hidden', whiteSpace: 'pre' }}>{input || ' '}</span>
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKey}
-              autoFocus
-              spellCheck={false}
-              style={{
-                position: 'absolute', left: 0, top: 0, width: '100%', height: '100%',
-                background: 'transparent', border: 'none', outline: 'none',
-                fontFamily: 'inherit', fontSize: 'inherit', lineHeight: 'inherit',
-                color: '#d4d4d4', caretColor: '#5af78e', padding: 0,
-              }}
-            />
+            <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKey} autoFocus spellCheck={false} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', background: 'transparent', border: 'none', outline: 'none', fontFamily: 'inherit', fontSize: 'inherit', color: '#fff', caretColor: '#c0c0c0', padding: 0 }} />
           </div>
         </div>
         <div ref={bottomRef} />
@@ -494,224 +323,106 @@ function PhoneTerminalScreen() {
 // ── Settings screen ───────────────────────────────────────────────
 function PhoneSettingsScreen() {
   const { viewMode, setViewMode, theme, setTheme, brightness, setBrightness } = useSystemStore()
-
   const modes: Array<{ v: 'desktop' | 'phone' | 'terminal'; label: string; icon: string }> = [
-    { v: 'phone',    label: 'PHONE',    icon: 'smartphone' },
-    { v: 'desktop',  label: 'DESKTOP',  icon: 'desktop_windows' },
+    { v: 'phone', label: 'PHONE', icon: 'smartphone' },
+    { v: 'desktop', label: 'DESKTOP', icon: 'desktop_windows' },
     { v: 'terminal', label: 'TERMINAL', icon: 'terminal' },
   ]
-
   const themes = ['cybercore', 'vaporwave', 'matrix', 'amber'] as const
-
   return (
-    <div style={{ overflow: 'auto', height: '100%', padding: '14px' }}>
-      {/* View Mode */}
-      <div style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#00ffff', letterSpacing: '0.12em', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid #0a1628' }}>
-        VIEW MODE
-      </div>
-      <div style={{ display: 'flex', gap: 6, marginBottom: 18 }}>
+    <div style={{ overflow: 'auto', height: '100%', padding: 10, background: C.bg }}>
+      <W95Header title="VIEW MODE" />
+      <div style={{ display: 'flex', gap: 4, marginBottom: 14 }}>
         {modes.map(m => (
-          <button
-            key={m.v}
-            onClick={() => setViewMode(m.v)}
-            style={{
-              flex: 1,
-              background: viewMode === m.v ? '#484fb9' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${viewMode === m.v ? '#9097ff' : '#1a2030'}`,
-              color: viewMode === m.v ? '#fff' : '#606880',
-              fontFamily: 'var(--font-h)', fontSize: 6, letterSpacing: '0.06em',
-              padding: '10px 4px',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
-              transition: 'all 0.18s',
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{m.icon}</span>
-            {m.label}
+          <button key={m.v} onClick={() => setViewMode(m.v)} style={{ flex: 1, background: viewMode === m.v ? C.navy : C.bg, color: viewMode === m.v ? C.white : C.black, fontFamily: C.font, fontSize: 6, letterSpacing: '0.04em', padding: '8px 2px', border: 'none', boxShadow: viewMode === m.v ? C.sunken : C.raised, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>{m.icon}</span>{m.label}
           </button>
         ))}
       </div>
-
-      {/* Brightness */}
-      <div style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#00ffff', letterSpacing: '0.12em', marginBottom: 8, paddingBottom: 8, borderBottom: '1px solid #0a1628' }}>
-        BRIGHTNESS
+      <W95Header title="BRIGHTNESS" />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.gray }}>brightness_low</span>
+        <div style={{ flex: 1, boxShadow: C.sunken, background: C.white, padding: '4px 2px' }}>
+          <input type="range" min={20} max={100} value={brightness} onChange={e => setBrightness(Number(e.target.value))} style={{ width: '100%', display: 'block' }} className="sslider" />
+        </div>
+        <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.black }}>brightness_high</span>
+        <span style={{ fontFamily: C.font, fontSize: 7, color: C.black, minWidth: 28 }}>{brightness}%</span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#4a6080' }}>brightness_low</span>
-        <input
-          type="range" min={20} max={100} value={brightness}
-          onChange={e => setBrightness(Number(e.target.value))}
-          style={{ flex: 1 }}
-          className="sslider"
-        />
-        <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#fff' }}>brightness_high</span>
-        <span style={{ fontFamily: 'var(--font-h)', fontSize: 7, color: '#00ffff', minWidth: 32 }}>{brightness}%</span>
-      </div>
-
-      {/* Theme */}
-      <div style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#00ffff', letterSpacing: '0.12em', marginBottom: 8, paddingBottom: 8, borderBottom: '1px solid #0a1628' }}>
-        THEME
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+      <W95Header title="THEME" />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
         {themes.map(t => (
-          <button
-            key={t}
-            onClick={() => setTheme(t)}
-            style={{
-              background: theme === t ? '#484fb9' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${theme === t ? '#9097ff' : '#1a2030'}`,
-              color: theme === t ? '#fff' : '#606880',
-              fontFamily: 'var(--font-h)', fontSize: 7, letterSpacing: '0.04em',
-              padding: '9px 6px', textTransform: 'uppercase', transition: 'all 0.18s',
-            }}
-          >{t}</button>
+          <button key={t} onClick={() => setTheme(t)} style={{ background: theme === t ? C.navy : C.bg, color: theme === t ? C.white : C.black, fontFamily: C.font, fontSize: 7, letterSpacing: '0.04em', padding: '8px 4px', textTransform: 'uppercase', border: 'none', boxShadow: theme === t ? C.sunken : C.raised }}>{t}</button>
         ))}
       </div>
     </div>
   )
 }
 
-// ── Phone boot screen ────────────────────────────────────────────
-const PHONE_BOOT_LINES = [
-  'INIT KERNEL v2.0.26...',
-  'LOADING HARDWARE...',
-  'MOUNTING /data...',
-  'LAUNCHING LIZARD.OS MOBILE...',
-]
+// ── Boot screen ───────────────────────────────────────────────────
+const BOOT_LINES = ['Starting LIZARD.OS...', 'Loading device drivers...', 'Initializing display...', 'Launching shell...']
 
 function PhoneBootScreen({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0)
   const [lines, setLines] = useState<string[]>([])
-
   useEffect(() => {
     let p = 0
-    const interval = setInterval(() => {
-      p = Math.min(p + 2, 100)
-      setProgress(p)
-      if (p >= 100) {
-        clearInterval(interval)
-        setTimeout(onComplete, 350)
-      }
-    }, 36)
-    const timeouts = PHONE_BOOT_LINES.map((line, i) =>
-      setTimeout(() => setLines(prev => [...prev, line]), 200 + i * 380)
-    )
-    return () => {
-      clearInterval(interval)
-      timeouts.forEach(clearTimeout)
-    }
+    const interval = setInterval(() => { p = Math.min(p + 2, 100); setProgress(p); if (p >= 100) { clearInterval(interval); setTimeout(onComplete, 350) } }, 36)
+    const timeouts = BOOT_LINES.map((line, i) => setTimeout(() => setLines(prev => [...prev, line]), 200 + i * 380))
+    return () => { clearInterval(interval); timeouts.forEach(clearTimeout) }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      style={{
-        flex: 1, display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        background: '#000', gap: 22, padding: '24px 28px',
-      }}
-    >
-      {/* Logo */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-        <div style={{
-          width: 60, height: 60,
-          border: '2px solid #00ffff',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 28px rgba(0,255,255,0.45)',
-        }}>
-          <span style={{ fontFamily: 'var(--font-h)', fontSize: 13, color: '#00ffff' }}>OS</span>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex', flexDirection: 'column', background: C.navy, padding: '20px 18px', gap: 16 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginTop: 16 }}>
+        <div style={{ width: 56, height: 56, background: C.bg, boxShadow: C.outer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontFamily: C.font, fontSize: 14, color: C.navy, fontWeight: 900 }}>L</span>
         </div>
-        <span style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: '#fff', letterSpacing: '0.3em' }}>LIZARD.OS</span>
-        <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#9097ff', letterSpacing: '0.12em' }}>MOBILE</span>
+        <span style={{ fontFamily: C.font, fontSize: 11, color: C.white, letterSpacing: '0.25em', fontWeight: 900 }}>LIZARD.OS</span>
+        <span style={{ fontFamily: C.font, fontSize: 7, color: '#8080c0', letterSpacing: '0.12em' }}>MOBILE EDITION</span>
       </div>
-
-      {/* Progress bar */}
-      <div style={{ width: '75%', height: 2, background: '#1a2030', borderRadius: 1, overflow: 'hidden' }}>
-        <motion.div
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.04 }}
-          style={{ height: '100%', background: '#00ffff', borderRadius: 1 }}
-        />
+      <div>
+        <div style={{ height: 14, boxShadow: C.sunken, background: C.white, overflow: 'hidden' }}>
+          <div style={{ height: '100%', width: `${progress}%`, background: C.navy, transition: 'width 0.04s' }} />
+        </div>
+        <div style={{ fontFamily: C.font, fontSize: 6, color: '#8080c0', letterSpacing: '0.06em', marginTop: 4, textAlign: 'center' }}>{progress}%</div>
       </div>
-
-      {/* Boot lines */}
-      <div style={{ width: '100%', minHeight: 72 }}>
+      <div style={{ flex: 1 }}>
         {lines.map((line, i) => (
-          <div key={i} style={{
-            fontFamily: 'var(--font-h)', fontSize: 6, color: '#3a5070',
-            letterSpacing: '0.05em', marginBottom: 5,
-          }}>
-            {'>'} {line}
-          </div>
+          <div key={i} style={{ fontFamily: '"Courier New",monospace', fontSize: 9, color: C.white, letterSpacing: '0.03em', marginBottom: 3 }}>&gt; {line}</div>
         ))}
       </div>
     </motion.div>
   )
 }
 
-// ── "Open on Desktop" fallback screen ────────────────────────────
+// ── Open on Desktop fallback ──────────────────────────────────────
 function OpenOnDesktopScreen({ app, onOpen }: { app: AppDef; onOpen: () => void }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 14, padding: 16 }}>
-      <div style={{
-        width: 64, height: 64, borderRadius: 18,
-        background: app.phoneBg || 'rgba(255,255,255,0.05)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: '0 0 28px rgba(72,79,185,0.25)',
-      }}>
-        <PhoneIconContent app={app} size={30} />
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 14, padding: 20, background: C.bg }}>
+      <div style={{ width: 56, height: 56, background: C.bg, boxShadow: C.outer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <PhoneIconContent app={app} size={28} />
       </div>
-      <div style={{ fontFamily: 'var(--font-h)', fontSize: 9, color: '#fff', letterSpacing: '0.1em' }}>{app.phoneLabel ?? app.label}</div>
-      <div style={{ fontFamily: 'var(--font-b)', fontSize: 13, color: '#4a6080', textAlign: 'center', lineHeight: 1.6 }}>
+      <div style={{ fontFamily: C.font, fontSize: 9, color: C.black, letterSpacing: '0.06em', textAlign: 'center' }}>{app.phoneLabel ?? app.label}</div>
+      <div style={{ fontFamily: C.fontB, fontSize: 12, color: C.gray, textAlign: 'center', lineHeight: 1.5, background: C.white, boxShadow: C.sunken, padding: '8px 12px' }}>
         This app runs on the desktop.
       </div>
-      <button
-        onClick={onOpen}
-        style={{
-          background: '#484fb9', border: 'none', color: '#fff',
-          fontFamily: 'var(--font-h)', fontSize: 8, letterSpacing: '0.1em',
-          padding: '10px 20px',
-          display: 'flex', alignItems: 'center', gap: 8,
-        }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>open_in_new</span>
-        OPEN ON DESKTOP
-      </button>
+      <W95Btn onClick={onOpen} primary>
+        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>open_in_new</span>OPEN ON DESKTOP
+      </W95Btn>
     </div>
   )
 }
 
 // ── App title bar ─────────────────────────────────────────────────
-function PhoneAppBar({ title, icon, color, onBack }: {
-  title: string; icon: string; color: string; onBack: () => void
-}) {
+function PhoneAppBar({ title, icon, onBack }: { title: string; icon: string; onBack: () => void }) {
   return (
-    <div style={{
-      height: 40, flexShrink: 0,
-      display: 'flex', alignItems: 'center', gap: 8,
-      padding: '0 12px',
-      background: 'rgba(0,0,0,0.4)',
-      borderBottom: '1px solid rgba(255,255,255,0.06)',
-    }}>
-      <button
-        onClick={onBack}
-        style={{
-          background: 'none', border: 'none', color: '#9097ff',
-          display: 'flex', alignItems: 'center', gap: 4,
-          fontFamily: 'var(--font-h)', fontSize: 7, letterSpacing: '0.04em',
-          padding: '4px 8px 4px 0',
-        }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back_ios</span>
-        BACK
+    <div style={{ height: 28, flexShrink: 0, display: 'flex', alignItems: 'center', background: C.navy }}>
+      <button onClick={onBack} style={{ background: C.bg, border: 'none', boxShadow: C.raised, display: 'flex', alignItems: 'center', gap: 3, fontFamily: C.font, fontSize: 7, color: C.black, padding: '3px 7px', margin: '3px 6px 3px 4px', height: 20 }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 12 }}>arrow_back_ios</span>BACK
       </button>
-      <div style={{ width: 1, height: 16, background: '#1a2030' }} />
-      <span className="material-symbols-outlined" style={{ fontSize: 14, color }}>{icon}</span>
-      <span style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: '#fff', letterSpacing: '0.08em', flex: 1 }}>
-        {title}
-      </span>
+      <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.3)', marginRight: 8 }} />
+      <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.white, marginRight: 5 }}>{icon}</span>
+      <span style={{ fontFamily: C.font, fontSize: 9, color: C.white, letterSpacing: '0.06em', fontWeight: 700 }}>{title}</span>
     </div>
   )
 }
@@ -723,19 +434,10 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
   const [activeApp, setActiveApp] = useState<AppDef | null>(null)
   const [booted, setBooted] = useState(false)
 
-  const handleOpenApp = (app: AppDef) => setActiveApp(app)
-
-  const handleOpenDesktop = (app: AppDef) => {
-    openWindow(app.type)
-    setViewMode('desktop')
-  }
-
-  const handleBack = () => setActiveApp(null)
+  const handleOpenDesktop = (app: AppDef) => { openWindow(app.type); setViewMode('desktop') }
 
   const renderAppContent = (app: AppDef) => {
-    if (!app.phoneInline) {
-      return <OpenOnDesktopScreen app={app} onOpen={() => handleOpenDesktop(app)} />
-    }
+    if (!app.phoneInline) return <OpenOnDesktopScreen app={app} onOpen={() => handleOpenDesktop(app)} />
     switch (app.type) {
       case 'about':    return <AboutScreen />
       case 'mail':     return <MailScreen />
@@ -748,90 +450,36 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
     }
   }
 
-  // Shared screen content (inside phone frame or fullscreen)
   const screenContent = (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#020812' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: C.desk }}>
       <AnimatePresence mode="wait">
         {!booted ? (
           <PhoneBootScreen key="boot" onComplete={() => setBooted(true)} />
         ) : (
-          <motion.div
-            key="ui"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
-          >
+          <motion.div key="ui" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <PhoneStatusBar />
-
-            {/* Content area */}
             <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
               <AnimatePresence mode="wait">
                 {!activeApp ? (
-                  <motion.div
-                    key="home"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.18 }}
-                    style={{ position: 'absolute', inset: 0 }}
-                  >
-                    <HomeScreen apps={phoneApps(installedApps)} onOpen={handleOpenApp} />
+                  <motion.div key="home" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.18 }} style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
+                    <HomeScreen apps={phoneApps(installedApps)} onOpen={app => setActiveApp(app)} />
                   </motion.div>
                 ) : (
-                  <motion.div
-                    key={activeApp.type}
-                    initial={{ opacity: 0, x: 40 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 40 }}
-                    transition={{ duration: 0.18 }}
-                    style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}
-                  >
-                    <PhoneAppBar
-                      title={activeApp.phoneLabel ?? activeApp.label}
-                      icon={activeApp.icon}
-                      color="#00ffff"
-                      onBack={handleBack}
-                    />
-                    <div style={{ flex: 1, overflow: 'hidden' }}>
-                      {renderAppContent(activeApp)}
-                    </div>
+                  <motion.div key={activeApp.type} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ duration: 0.18 }} style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
+                    <PhoneAppBar title={activeApp.phoneLabel ?? activeApp.label} icon={activeApp.icon} onBack={() => setActiveApp(null)} />
+                    <div style={{ flex: 1, overflow: 'hidden' }}>{renderAppContent(activeApp)}</div>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
-
-            {/* Dock */}
-            <div style={{
-              flexShrink: 0,
-              padding: '8px 16px 6px',
-              background: 'rgba(255,255,255,0.04)',
-              backdropFilter: 'blur(12px)',
-              borderTop: '1px solid rgba(255,255,255,0.08)',
-            }}>
-              <div style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-around',
-                background: 'rgba(255,255,255,0.06)',
-                borderRadius: 20,
-                padding: '8px 12px',
-                border: '1px solid rgba(255,255,255,0.08)',
-              }}>
-                {DOCK_APPS.map(app => (
-                  <button
-                    key={app.type}
-                    onClick={() => handleOpenApp(app)}
-                    style={{
-                      background: app.phoneBg,
-                      border: 'none',
-                      borderRadius: 14,
-                      width: 52, height: 52,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
-                    }}
-                  >
-                    <PhoneIconContent app={app} size={24} />
-                  </button>
-                ))}
-              </div>
+            {/* Win95 Taskbar Dock */}
+            <div style={{ flexShrink: 0, height: 46, background: C.bg, borderTop: `2px solid ${C.white}`, boxShadow: `inset 0 1px 0 ${C.white}`, display: 'flex', alignItems: 'center', padding: '0 4px', gap: 3 }}>
+              {DOCK_APPS.map(app => (
+                <button key={app.type} onClick={() => setActiveApp(app)} style={{ flex: 1, background: C.bg, border: 'none', boxShadow: C.raised, height: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 16, color: C.black }}>{app.icon}</span>
+                  <span style={{ fontFamily: C.font, fontSize: 5, color: C.black, textTransform: 'uppercase', letterSpacing: '0.01em' }}>{app.phoneLabel ?? app.label}</span>
+                </button>
+              ))}
             </div>
           </motion.div>
         )}
@@ -839,78 +487,38 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
     </div>
   )
 
-  // ── Fullscreen mode: fills the real device screen ──
-  if (fullscreen) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.25 }}
-        style={{ position: 'fixed', inset: 0, zIndex: 99980, display: 'flex', flexDirection: 'column' }}
-      >
-        {screenContent}
-      </motion.div>
-    )
-  }
+  if (fullscreen) return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }} style={{ position: 'fixed', inset: 0, zIndex: 99980, display: 'flex', flexDirection: 'column' }}>
+      {screenContent}
+    </motion.div>
+  )
 
-  // ── Overlay mode: phone frame on top of desktop ──
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 99980,
-        background: 'rgba(0,0,0,0.75)',
-        backdropFilter: 'blur(6px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
+      style={{ position: 'fixed', inset: 0, zIndex: 99980, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       onClick={(e) => { if (e.target === e.currentTarget) setViewMode('desktop') }}
     >
-      {/* Phone frame */}
       <motion.div
-        initial={{ y: 60, scale: 0.92, opacity: 0 }}
-        animate={{ y: 0, scale: 1, opacity: 1 }}
-        exit={{ y: 60, scale: 0.92, opacity: 0 }}
+        initial={{ y: 60, scale: 0.92, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} exit={{ y: 60, scale: 0.92, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-        style={{
-          position: 'relative',
-          width: 340,
-          height: 'min(88vh, 720px)',
-          background: '#06070f',
-          border: '3px solid #00ffff',
-          borderRadius: 38,
-          boxShadow: '0 0 60px rgba(0,255,255,0.22), 0 0 120px rgba(0,255,255,0.08), inset 0 0 20px rgba(0,0,0,0.6)',
-          display: 'flex', flexDirection: 'column',
-          overflow: 'hidden',
-        }}
+        style={{ position: 'relative', width: 340, height: 'min(88vh, 720px)', background: C.bg, boxShadow: 'inset 3px 3px 0 #ffffff, inset -3px -3px 0 #808080, 3px 3px 0 #000000', borderRadius: 6, border: `2px solid ${C.gray}`, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
       >
-        {/* Decorative side buttons */}
-        <div style={{ position: 'absolute', left: -5, top: 90, width: 5, height: 28, background: '#1a2030', borderRadius: '2px 0 0 2px' }} />
-        <div style={{ position: 'absolute', left: -5, top: 128, width: 5, height: 28, background: '#1a2030', borderRadius: '2px 0 0 2px' }} />
-        <div style={{ position: 'absolute', right: -5, top: 110, width: 5, height: 44, background: '#1a2030', borderRadius: '0 2px 2px 0' }} />
-
-        {/* Top bezel — notch */}
-        <div style={{
-          height: 22, flexShrink: 0, background: '#030408',
-          display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 3,
-        }}>
-          <div style={{ width: 100, height: 14, background: '#000', borderRadius: 7, border: '1px solid #1a2030' }} />
+        {/* Side buttons */}
+        <div style={{ position: 'absolute', left: -4, top: 90, width: 4, height: 24, background: C.gray }} />
+        <div style={{ position: 'absolute', left: -4, top: 124, width: 4, height: 24, background: C.gray }} />
+        <div style={{ position: 'absolute', right: -4, top: 106, width: 4, height: 36, background: C.gray }} />
+        {/* Top bezel */}
+        <div style={{ height: 22, flexShrink: 0, background: C.bg, boxShadow: `inset 0 -1px 0 ${C.gray}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', gap: 3 }}>
+            {[...Array(7)].map((_, i) => <div key={i} style={{ width: 3, height: 3, borderRadius: '50%', background: C.gray }} />)}
+          </div>
         </div>
-
         {screenContent}
-
-        {/* Bottom bezel — home indicator */}
-        <div style={{
-          height: 22, flexShrink: 0, background: '#030408',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <div
-            onClick={() => setActiveApp(null)}
-            style={{ width: 120, height: 5, background: '#fff', borderRadius: 3, opacity: 0.25 }}
-          />
+        {/* Bottom bezel — home button */}
+        <div style={{ height: 24, flexShrink: 0, background: C.bg, boxShadow: `inset 0 1px 0 ${C.gray}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div onClick={() => setActiveApp(null)} style={{ width: 22, height: 22, borderRadius: '50%', background: C.bg, boxShadow: C.raised, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <div style={{ width: 10, height: 10, boxShadow: C.sunken }} />
+          </div>
         </div>
       </motion.div>
     </motion.div>
