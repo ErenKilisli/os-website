@@ -111,6 +111,10 @@ export const useSystemStore = create<SystemStore>()(
         if (state && state.brightness < 20) {
           state.brightness = 20
         }
+        // Migrate removed 'darker' mode → 'dark'
+        if (state && (state.uiMode as string) === 'darker') {
+          state.uiMode = 'dark'
+        }
       },
     }
   )

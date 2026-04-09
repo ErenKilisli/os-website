@@ -45,7 +45,6 @@
 }
 
 /* ── UI Mode: High Contrast ──────────────────────────────── */
-/* Win95 Accessibility: black bg, white text, yellow accents  */
 [data-uimode="high_contrast"] {
   --surface-dim: #000000;
   --surface-hi: #ffffff;
@@ -55,15 +54,18 @@
   --primary: #ffff00;
   --primary-container: #ffff00;
 }
+[data-uimode="high_contrast"] #desktop { background: #000000 !important; }
+[data-uimode="high_contrast"] #top-nav { background: #000080 !important; border-bottom-color: #ffff00 !important; }
+[data-uimode="high_contrast"] #nav-float-toggle { background: #000080; border-color: #ffff00; }
 [data-uimode="high_contrast"] .wbody { background: #000000; color: #ffffff; }
 [data-uimode="high_contrast"] .settings-panel { background: #000000; }
 [data-uimode="high_contrast"] .window { box-shadow: inset 1.5px 1.5px 0 #ffff00, inset -1.5px -1.5px 0 #888800, 2px 2px 0 #ffff00; }
 [data-uimode="high_contrast"] .tb { background: #000080 !important; }
 [data-uimode="high_contrast"] .wbtn { background: #000000; border: 1px solid #ffff00; color: #ffff00; box-shadow: none; }
 [data-uimode="high_contrast"] .wbtn .material-symbols-outlined { color: #ffff00; }
+[data-uimode="high_contrast"] .dic-lbl { color: #ffff00; background: transparent; text-shadow: 1px 1px 0 #000; }
 
 /* ── UI Mode: Night Shift ────────────────────────────────── */
-/* Warm amber/sepia tones — f.lux style, easy on eyes        */
 [data-uimode="night_shift"] {
   --surface-dim: #c8a878;
   --surface-hi: #e8d0a0;
@@ -73,14 +75,17 @@
   --primary: #b86800;
   --primary-container: #e08820;
 }
+[data-uimode="night_shift"] #desktop { background: #1a0e00 !important; }
+[data-uimode="night_shift"] #top-nav { background: #7a3800 !important; border-bottom-color: #c87820 !important; }
+[data-uimode="night_shift"] #nav-float-toggle { background: rgba(200,120,32,0.25); border-color: rgba(200,120,32,0.5); }
 [data-uimode="night_shift"] .wbody { background: #d8b880; }
 [data-uimode="night_shift"] .win-menu { background: #c8a878; }
 [data-uimode="night_shift"] .settings-panel { background: #c0a070; }
 [data-uimode="night_shift"] .tb { background: #7a3800 !important; }
 [data-uimode="night_shift"] .window { box-shadow: inset 1.5px 1.5px 0 #f0d090, inset -1.5px -1.5px 0 #604020, 2px 2px 0 #000; }
+[data-uimode="night_shift"] .dic-lbl { color: #ffe8b0; }
 
 /* ── UI Mode: Phosphor ───────────────────────────────────── */
-/* Classic green CRT monochrome monitor                       */
 [data-uimode="phosphor"] {
   --surface-dim: #0c1a0c;
   --surface-hi: #1a2e1a;
@@ -90,6 +95,9 @@
   --primary: #00ff00;
   --primary-container: #00cc00;
 }
+[data-uimode="phosphor"] #desktop { background: #001200 !important; }
+[data-uimode="phosphor"] #top-nav { background: #003800 !important; border-bottom-color: #00ff00 !important; }
+[data-uimode="phosphor"] #nav-float-toggle { background: rgba(0,255,0,0.15); border-color: rgba(0,255,0,0.4); }
 [data-uimode="phosphor"] .wbody { background: #001200; color: #00ef00; }
 [data-uimode="phosphor"] .win-menu { background: #0a180a; }
 [data-uimode="phosphor"] .settings-panel { background: #001200; }
@@ -97,9 +105,9 @@
 [data-uimode="phosphor"] .window { box-shadow: inset 1.5px 1.5px 0 #00ff00, inset -1.5px -1.5px 0 #004400, 2px 2px 0 #000; }
 [data-uimode="phosphor"] .tb-lbl { color: #00ff00; }
 [data-uimode="phosphor"] .dic-lbl { color: #00ff00; text-shadow: 0 0 6px #00ff00; }
+[data-uimode="phosphor"] .nav-brand, [data-uimode="phosphor"] .nav-link, [data-uimode="phosphor"] .nav-actions { color: #00ff00 !important; }
 
 /* ── UI Mode: Blueprint ──────────────────────────────────── */
-/* Technical drawing / CAD — dark navy + white lines          */
 [data-uimode="blueprint"] {
   --surface-dim: #0d2244;
   --surface-hi: #1a3a6e;
@@ -109,15 +117,19 @@
   --primary: #4a90d9;
   --primary-container: #6ab0ff;
 }
+[data-uimode="blueprint"] #desktop { background: #061020 !important; }
+[data-uimode="blueprint"] #top-nav { background: #0a1e40 !important; border-bottom-color: #4a90d9 !important; }
+[data-uimode="blueprint"] #nav-float-toggle { background: rgba(74,144,217,0.2); border-color: rgba(74,144,217,0.5); }
 [data-uimode="blueprint"] .wbody { background: #071830; color: #c8deff; }
 [data-uimode="blueprint"] .win-menu { background: #0d2244; }
 [data-uimode="blueprint"] .settings-panel { background: #071830; }
 [data-uimode="blueprint"] .tb { background: #0a1e40 !important; }
 [data-uimode="blueprint"] .window { box-shadow: inset 1.5px 1.5px 0 #4a90d9, inset -1.5px -1.5px 0 #071020, 2px 2px 0 #4a90d9; border: 1px solid #4a90d9; }
 [data-uimode="blueprint"] .tb-lbl { color: #a0c8ff; }
+[data-uimode="blueprint"] .dic-lbl { color: #a0c8ff; }
+[data-uimode="blueprint"] .nav-brand, [data-uimode="blueprint"] .nav-link { color: #a0c8ff !important; }
 
 /* ── UI Mode: Print ──────────────────────────────────────── */
-/* Newspaper / grayscale print — white panels, black ink      */
 [data-uimode="print"] {
   --surface-dim: #f5f5f5;
   --surface-hi: #ffffff;
@@ -127,6 +139,9 @@
   --primary: #000000;
   --primary-container: #444444;
 }
+[data-uimode="print"] #desktop { background: #e8e8e8 !important; }
+[data-uimode="print"] #top-nav { background: #222222 !important; border-bottom-color: #000000 !important; }
+[data-uimode="print"] #nav-float-toggle { background: rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.4); }
 [data-uimode="print"] .wbody { background: #ffffff; color: #000000; }
 [data-uimode="print"] .win-menu { background: #f0f0f0; }
 [data-uimode="print"] .settings-panel { background: #ffffff; }
@@ -134,7 +149,6 @@
 [data-uimode="print"] .window { box-shadow: inset 1.5px 1.5px 0 #fff, inset -1.5px -1.5px 0 #888, 2px 2px 0 #000; }
 [data-uimode="print"] .tb-lbl { color: #ffffff; }
 [data-uimode="print"] .dic-lbl { color: #000000; background: rgba(255,255,255,0.85); }
-
 
 *, *::before, *::after {
   cursor: none !important;
