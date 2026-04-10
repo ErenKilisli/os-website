@@ -28,6 +28,8 @@ export function MouseDotGrid() {
     const dotColor = THEME_DOT[theme] ?? '#00ffff'
     const R2 = RADIUS * RADIUS
 
+    const ctx = canvas.getContext('2d')!
+
     // ── Size canvas to viewport (DPR-aware for sharp dots on retina) ─────────
     const resize = () => {
       const dpr = window.devicePixelRatio || 1
@@ -46,7 +48,6 @@ export function MouseDotGrid() {
     document.addEventListener('mousemove', onMove)
     document.addEventListener('mouseleave', onLeave)
 
-    const ctx = canvas.getContext('2d')!
     let raf = 0
 
     const tick = () => {
