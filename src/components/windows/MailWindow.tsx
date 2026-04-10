@@ -4,8 +4,8 @@ import { Window } from './Window'
 import { WindowState } from '@/store/windowStore'
 
 const CONTACTS = [
-  { service: 'LINKEDIN', emoji: '💼', name: 'linkedin.com/in/erenkilisli', href: 'https://linkedin.com/in/erenkilisli' },
-  { service: 'GITHUB',   emoji: '💻', name: 'github.com/erenkilisli',     href: 'https://github.com/erenkilisli' },
+  { service: 'LINKEDIN', emoji: '💼', name: 'linkedin.com/in/ierenkilisli', href: 'https://www.linkedin.com/in/ierenkilisli/' },
+  { service: 'GITHUB',   emoji: '💻', name: 'github.com/ErenKilisli',      href: 'https://github.com/ErenKilisli' },
   { service: 'EMAIL',    emoji: '✉',  name: 'ibr@himerenkilisli.com',     href: null },
 ]
 
