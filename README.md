@@ -43,7 +43,7 @@ LIZARD.OS is an open-source portfolio website built to look and feel like **a re
 | **Cursors** | 3 custom cursor styles |
 | **Mouse Effect** | Proximity dot-grid glow — dots light up around the cursor |
 | **Nav Dropdown** | PROJECTS nav link with DEV / FILM / GAME dropdown |
-| **Wallpapers** | 4 animated + 3 generative scenes + 6 photo presets + solid + custom upload |
+| **Wallpapers** | 4 animated (Grid is default) + 3 generative scenes + 6 photo presets + solid + custom upload |
 | **App Market** | Install / uninstall optional apps with loading animation |
 | **Games** | Snake (built-in), Pixel Snowboard (installable via App Market) |
 | **Mini-Apps** | Paint, Notepad, Calculator, Music Player, Browser |
@@ -109,6 +109,8 @@ src/
 │   ├── layout.tsx            # Root layout — fonts, full SEO metadata, JSON-LD
 │   ├── page.tsx              # Entry point → renders <Desktop />
 │   ├── globals.css           # Full design system (CSS vars, win95, themes, paint, games)
+│   ├── opengraph-image.tsx   # Auto-generated OG image (Next.js edge ImageResponse)
+│   ├── apple-icon.tsx        # Auto-generated apple-touch-icon (180×180)
 │   ├── robots.ts             # Next.js robots.txt
 │   ├── sitemap.ts            # Next.js sitemap.xml
 │   └── api/
@@ -123,6 +125,7 @@ src/
 │   ├── desktop/
 │   │   ├── Desktop.tsx             # Main desktop shell (phases: boot → login → desktop)
 │   │   ├── DesktopWallpaper.tsx    # Canvas animated wallpapers (synthwave/grid/stars/scanlines/solid/photo/presets)
+│   │   ├── MouseDotGrid.tsx        # Interactive mouse proximity dot-glow (grid wallpaper only)
 │   │   ├── DesktopIcon.tsx         # Draggable icons (rainbow Paint icon included)
 │   │   ├── DesktopContextMenu.tsx  # Right-click menu (wallpaper quick-switch + open apps)
 │   │   ├── Taskbar.tsx             # Bottom taskbar, start menu, clock, system tray
@@ -143,49 +146,54 @@ src/
 │       ├── MailWindow.tsx          # CONTACT.MSG — contact form (Resend)
 │       ├── TerminalWindow.tsx      # TERMINAL.EXE — interactive terminal emulator
 │       ├── SettingsWindow.tsx      # SETTINGS.EXE — Display/Wallpaper/Appearance/Sound/System tabs
+│       ├── BrowserWindow.tsx       # BROWSER.EXE — embedded web browser (Wikipedia search)
 │       ├── FileBrowserWindow.tsx   # File browser for project lists
 │       ├── ProjectDetailWindow.tsx # Individual project detail view
+│       ├── AppMarketWindow.tsx     # APP MARKET.EXE — install/uninstall optional apps
+│       ├── ReadmeWindow.tsx        # README.TXT — about LIZARD.OS story
+│       ├── SysInfoWindow.tsx       # SYSINFO.EXE — system info (opened from terminal)
 │       ├── MusicWindow.tsx         # MUSIC.EXE — music player with visualizer
 │       ├── NotePadWindow.tsx       # NOTEPAD.EXE — plain text editor (localStorage)
 │       ├── CalcWindow.tsx          # CALC.EXE — calculator (optional, App Market)
 │       ├── PaintWindow.tsx         # PAINT.EXE — pixel art canvas (6 tools, 20 colors, save PNG)
 │       ├── SnakeWindow.tsx         # SNAKE.EXE — classic snake (responsive canvas)
-│       ├── SnowboardWindow.tsx     # SNOWBOARD.EXE — endless pixel snowboard runner
-│       └── BrowserWindow.tsx       # BROWSER.EXE — embedded web browser
+│       └── SnowboardWindow.tsx     # SNOWBOARD.EXE — endless pixel snowboard (optional, App Market)
 │
-└── registry/
-    ├── appMeta.ts              # Single source of truth — all app metadata
-    └── appRegistry.tsx         # Auto-wires apps to desktop, phone, spotlight, taskbar, context menu
+└── config/
+    ├── appMeta.ts              # Single source of truth — all app metadata (WindowType, AppMeta, APP_META)
+    └── appRegistry.tsx         # React component map — auto-wires apps to desktop, phone, spotlight, taskbar
 ```
 
 ---
 
 ## 🖥️ Apps Reference
 
-### Built-in Apps
+### Built-in Apps (pre-installed)
 
-| App | ID | Description |
+| App | Type ID | Description |
 |---|---|---|
 | ABOUT.EXE | `about` | Bio, skills, tech tags |
 | CONTACT.MSG | `mail` | Contact form (Resend API) |
 | TERMINAL.EXE | `terminal` | Interactive terminal with custom commands |
 | SETTINGS.EXE | `settings` | Display / Wallpaper / Appearance / Sound / System tabs |
-| DEV_PROJECTS.EXE | `software` | Software projects: Rezinn, DEUX |
-| FILM_PROJECTS.EXE | `film` | Short films, commercials, music videos |
-| GAME_PROJECTS.EXE | `game` | Unreal Engine games |
+| BROWSER.EXE | `browser` | Embedded web browser (Wikipedia search, bookmarks) |
 | PAINT.EXE | `paint` | Pixel art canvas (6 tools, 20-color palette, export PNG) |
-| SNAKE.EXE | `snake` | Classic snake game |
-| SNOWBOARD.EXE | `snowboard` | Endless pixel snowboard runner |
 | MUSIC.EXE | `music` | Music player with visualizer |
 | NOTEPAD.EXE | `notepad` | Plain text editor (localStorage persist) |
+| APP MARKET.EXE | `appmarket` | Install / remove optional apps |
+| README.TXT | `readme` | About LIZARD.OS — the story behind the portfolio |
+| DEV_PROJECTS.EXE | `devfiles` | Software projects: Rezinn, DEUX |
+| FILM_PROJECTS.EXE | `film` | Short films, commercials, music videos |
+| GAME_PROJECTS.EXE | `game` | Unreal Engine games |
+| SNAKE.EXE | `snake` | Classic snake game |
+| SYSINFO.EXE | `sysinfo` | System info (open via terminal: `sysinfo`) |
 
-### Optional Apps (via App Market)
+### Optional Apps (install via App Market)
 
-| App | ID | Description |
+| App | Type ID | Description |
 |---|---|---|
 | CALC.EXE | `calc` | Calculator |
-| BROWSER.EXE | `browser` | Embedded web browser |
-| APP MARKET.EXE | `appmarket` | Install / remove optional apps |
+| SNOWBOARD.EXE | `snowboard` | Endless pixel snowboard runner |
 
 ---
 
@@ -193,7 +201,7 @@ src/
 
 | Type | Options |
 |---|---|
-| **Animated** | Synthwave (retro grid), Grid (dot wave), Stars (shooting stars), Scanlines (CRT) |
+| **Animated** | **Grid** (interactive mouse dot-glow, default), Synthwave (retro 80s), Stars (shooting stars), Scanlines (CRT) |
 | **Preset Scenes** | Aurora Borealis, Sunset City, Ocean Deep |
 | **Solid Colors** | 8 presets + custom color picker |
 | **Custom Upload** | Upload any image from your device (stored as base64) |
@@ -299,25 +307,40 @@ All state is persisted to `localStorage` via Zustand `persist` middleware.
 
 LIZARD.OS has a single-source-of-truth app registry. Adding a new app takes three steps:
 
-### Step 1 — Register app metadata in `appMeta.ts`
+### Step 1 — Add the type + metadata in `src/config/appMeta.ts`
 
 ```ts
-// src/config/appMeta.ts
-export const MY_APP: AppMeta = {
-  id: 'myapp',
-  label: 'MYAPP.EXE',
-  icon: <MyAppIcon />,         // pixel-art SVG icon
-  defaultSize: { width: 500, height: 400 },
-  isOptional: false,           // true = only available via App Market
-};
+// 1a. Add 'myapp' to the WindowType union
+export type WindowType = ... | 'myapp'
+
+// 1b. Add an entry to APP_META
+{
+  type: 'myapp',
+  title: 'MYAPP.EXE', label: 'MYAPP',
+  icon: 'terminal',           // Material Symbol name, or an emoji e.g. '🐍'
+  iconColor: '#00ffff',
+  width: 500, height: 400,
+  phoneBg: 'linear-gradient(145deg,#102060,#1840a0)',
+  spotlightDesc: 'My custom app',
+  appDescription: 'Longer description shown in App Market.',
+  preInstalled: true,         // false = installable via App Market
+  showOnDesktop: true, showOnPhone: true, phoneInline: false,
+  showInSpotlight: true, showInContextMenu: false,
+  desktopCol: 'L1', desktopRow: 6,
+},
 ```
 
-### Step 2 — Add the window component in `appRegistry.tsx`
+### Step 2 — Wire up the component in `src/config/appRegistry.tsx`
 
 ```tsx
-// src/config/appRegistry.tsx
-case 'myapp':
-  return <MyAppWindow />;
+// Import your component
+import { MyAppWindow } from '@/components/windows/MyAppWindow'
+
+// Add to componentMap
+const componentMap: Record<WindowType, WindowComponent> = {
+  ...
+  myapp: MyAppWindow,
+}
 ```
 
 ### Step 3 — Create your window component
@@ -325,8 +348,17 @@ case 'myapp':
 ```tsx
 // src/components/windows/MyAppWindow.tsx
 'use client'
-export default function MyAppWindow() {
-  return <div className="p-4 font-vt323">Hello from MYAPP.EXE!</div>;
+import { Window } from './Window'
+import { WindowState } from '@/store/windowStore'
+
+export function MyAppWindow({ win, isMobile = false }: { win: WindowState; isMobile?: boolean }) {
+  return (
+    <Window win={win} status="MYAPP.EXE" isMobile={isMobile}>
+      <div style={{ padding: 16, fontFamily: 'var(--font-b)', fontSize: 16 }}>
+        Hello from MYAPP.EXE!
+      </div>
+    </Window>
+  )
 }
 ```
 

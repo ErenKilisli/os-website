@@ -6,6 +6,25 @@ interface Props { win: WindowState; isMobile?: boolean }
 
 const GITHUB_URL = 'https://github.com/ErenKilisli/os-website'
 
+function Section({ children }: { children: string }) {
+  return (
+    <div style={{
+      background: 'rgba(0,255,255,0.06)',
+      borderLeft: '3px solid #00ffff',
+      border: '1px solid rgba(0,255,255,0.22)',
+      borderLeftWidth: 3,
+      padding: '7px 14px',
+      marginBottom: 14,
+      fontFamily: 'var(--font-h)',
+      fontSize: 10,
+      color: '#00ffff',
+      letterSpacing: '0.12em',
+    }}>
+      {children}
+    </div>
+  )
+}
+
 export function ReadmeWindow({ win, isMobile = false }: Props) {
   return (
     <Window
@@ -20,24 +39,20 @@ export function ReadmeWindow({ win, isMobile = false }: Props) {
         fontFamily: 'var(--font-b)', fontSize: 16, lineHeight: 1.8,
         boxSizing: 'border-box',
       }}>
-        {/* Header */}
+
+        {/* File header */}
         <div style={{
-          fontFamily: 'var(--font-h)', fontSize: 8, color: '#00ffff',
-          letterSpacing: '0.15em', marginBottom: 20,
-          borderBottom: '1px solid rgba(0,255,255,0.2)', paddingBottom: 12,
+          fontFamily: 'var(--font-h)', fontSize: 8, color: '#2a5070',
+          letterSpacing: '0.15em', marginBottom: 22,
+          borderBottom: '1px solid rgba(0,255,255,0.15)', paddingBottom: 12,
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
-          <span style={{ fontSize: 16 }}>📄</span>
-          README.TXT — LIZARD.OS
+          <span style={{ fontSize: 18 }}>📄</span>
+          README.TXT — LIZARD.OS v1.0
         </div>
 
-        {/* Section: Why an OS? */}
-        <div style={{
-          fontFamily: 'var(--font-h)', fontSize: 8, color: '#4a7080',
-          letterSpacing: '0.1em', marginBottom: 10,
-        }}>
-          WHY DOES THIS PORTFOLIO LOOK LIKE AN OS?
-        </div>
+        {/* ── Why an OS? ────────────────────────────────────────── */}
+        <Section>WHY DOES THIS PORTFOLIO LOOK LIKE AN OS?</Section>
 
         <p style={{ margin: '0 0 16px' }}>
           That&apos;s a fair question.
@@ -50,7 +65,7 @@ export function ReadmeWindow({ win, isMobile = false }: Props) {
           Scroll-through timeline? Still boring.
         </p>
 
-        <p style={{ margin: '0 0 24px' }}>
+        <p style={{ margin: '0 0 28px' }}>
           I also had a different problem: I live in three very separate worlds —{' '}
           <span style={{ color: '#00ffff' }}>software engineering</span>,{' '}
           <span style={{ color: '#ff71ce' }}>filmmaking</span>, and{' '}
@@ -58,13 +73,8 @@ export function ReadmeWindow({ win, isMobile = false }: Props) {
           A traditional portfolio couldn&apos;t hold all of that without feeling scattered.
         </p>
 
-        {/* Section: The solution */}
-        <div style={{
-          fontFamily: 'var(--font-h)', fontSize: 8, color: '#4a7080',
-          letterSpacing: '0.1em', marginBottom: 10,
-        }}>
-          SO I BUILT LIZARD.OS.
-        </div>
+        {/* ── The Solution ─────────────────────────────────────── */}
+        <Section>SO I BUILT LIZARD.OS.</Section>
 
         <p style={{ margin: '0 0 16px' }}>
           An open-source, OS-themed portfolio that runs entirely in the browser.
@@ -72,36 +82,31 @@ export function ReadmeWindow({ win, isMobile = false }: Props) {
           minimize them, and maybe even find a few hidden games along the way.
         </p>
 
-        <p style={{ margin: '0 0 24px' }}>
+        <p style={{ margin: '0 0 28px' }}>
           The OS metaphor gave me something a flat page never could: a place where
           software, film, and game work can coexist without competing for space.
         </p>
 
-        {/* Section: Open source */}
-        <div style={{
-          fontFamily: 'var(--font-h)', fontSize: 8, color: '#4a7080',
-          letterSpacing: '0.1em', marginBottom: 10,
-        }}>
-          IT&apos;S OPEN SOURCE — AND IT&apos;S YOURS TOO.
-        </div>
+        {/* ── Open Source ──────────────────────────────────────── */}
+        <Section>IT&apos;S OPEN SOURCE — AND IT&apos;S YOURS TOO.</Section>
 
         <p style={{ margin: '0 0 16px' }}>
           Fork it, customize it, make it yours. Add your own apps, swap in your
           own projects, build new features. The whole system is designed to be extended.
         </p>
 
-        <p style={{ margin: '0 0 24px' }}>
+        <p style={{ margin: '0 0 28px' }}>
           And if you ship something cool with it — don&apos;t forget to leave a ⭐ on GitHub.
         </p>
 
         {/* GitHub link */}
         <div style={{
-          borderTop: '1px solid rgba(0,255,255,0.15)', paddingTop: 16,
-          display: 'flex', alignItems: 'center', gap: 10,
+          borderTop: '1px solid rgba(0,255,255,0.12)', paddingTop: 16,
+          display: 'flex', alignItems: 'center', gap: 12,
         }}>
           <span style={{
-            fontFamily: 'var(--font-h)', fontSize: 7, color: '#4a6080',
-            letterSpacing: '0.08em',
+            fontFamily: 'var(--font-h)', fontSize: 7,
+            color: '#2a5070', letterSpacing: '0.08em',
           }}>
             SOURCE CODE:
           </span>
@@ -117,6 +122,7 @@ export function ReadmeWindow({ win, isMobile = false }: Props) {
             {GITHUB_URL}
           </a>
         </div>
+
       </div>
     </Window>
   )
