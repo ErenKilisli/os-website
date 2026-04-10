@@ -79,48 +79,6 @@ export function SnowboarderPixelIcon({ size = 48 }: { size?: number }) {
   )
 }
 
-/* ─── PAINT BRUSH ─── clean pixel-art brush icon ─── */
-export function PaintBrushIcon({ size = 48 }: { size?: number }) {
-  return (
-    <svg viewBox="0 0 48 48" width={size} height={size} style={{ display: 'block' }}>
-      <defs>
-        <linearGradient id="pbi-wood" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stopColor="#f5d890" />
-          <stop offset="100%" stopColor="#a06820" />
-        </linearGradient>
-        <linearGradient id="pbi-bristle" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stopColor="#ff71ce" />
-          <stop offset="100%" stopColor="#c840a0" />
-        </linearGradient>
-      </defs>
-      {/* Handle — diagonal, top-right to center */}
-      <rect x="24" y="3" width="7" height="26" rx="3.5"
-        fill="url(#pbi-wood)"
-        transform="rotate(38, 27.5, 16)" />
-      {/* Handle highlight */}
-      <rect x="25.5" y="4" width="2" height="22" rx="1"
-        fill="rgba(255,255,255,0.35)"
-        transform="rotate(38, 27.5, 16)" />
-      {/* Ferrule — silver band */}
-      <rect x="21" y="26" width="10" height="4" rx="0" fill="#c8c8d8"
-        transform="rotate(38, 26, 28)" />
-      <rect x="21" y="26" width="10" height="1.5" rx="0" fill="#e8e8f8"
-        transform="rotate(38, 26, 28)" />
-      {/* Bristles */}
-      <path d="M17 33 L27 30 L30 40 L16 42 Z" fill="url(#pbi-bristle)" />
-      {/* Bristle lines */}
-      <line x1="20" y1="33" x2="17.5" y2="41.5" stroke="rgba(0,0,0,0.12)" strokeWidth="0.8" />
-      <line x1="23" y1="31.5" x2="22" y2="41" stroke="rgba(0,0,0,0.12)" strokeWidth="0.8" />
-      <line x1="26.5" y1="30.5" x2="27" y2="40" stroke="rgba(0,0,0,0.12)" strokeWidth="0.8" />
-      {/* Bristle tip */}
-      <path d="M16 42 L30 40 L25 44 Z" fill="#a83090" />
-      {/* Paint blob — bottom-left */}
-      <circle cx="12" cy="43" r="4" fill="#ff71ce" opacity="0.85" />
-      <circle cx="10" cy="41" r="2" fill="#ff9de0" opacity="0.7" />
-    </svg>
-  )
-}
-
 /* ─── REZINN LOGO ─── actual brand image ────────────────────────────────── */
 export function RezinnLogoIcon({ size = 48 }: { size?: number }) {
   return (

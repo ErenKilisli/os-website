@@ -38,7 +38,6 @@ import { AppMarketWindow }     from '@/components/windows/AppMarketWindow'
 
 // ── Icon components ──────────────────────────────────────────────────────────
 import {
-  PaintBrushIcon,
   SnowboarderPixelIcon,
   FolderFilmIcon,
   FolderGameIcon,
@@ -92,10 +91,6 @@ const componentMap: Record<WindowType, WindowComponent> = {
 // ── Custom icon nodes (desktop + phone) ───────────────────────────────────────
 // These replace the generic material symbol wherever the app icon is shown.
 const iconMap: Partial<Record<WindowType, { desktop?: React.ReactNode; phone?: React.ReactNode }>> = {
-  paint: {
-    desktop: <PaintBrushIcon size={48} />,
-    phone:   <PaintBrushIcon size={34} />,
-  },
   snowboard: {
     desktop: (
       <div style={{

@@ -166,7 +166,7 @@ export const APP_META: AppMeta[] = [
   {
     type: 'paint',
     title: 'PAINT.EXE', label: 'PAINT',
-    icon: 'brush', iconColor: '#ff71ce',
+    icon: 'brush', iconColor: '#ff0000',
     width: 620, height: 520,
     phoneBg: 'linear-gradient(145deg,#701890,#a040c0)',
     spotlightDesc: 'Pixel art drawing app',
