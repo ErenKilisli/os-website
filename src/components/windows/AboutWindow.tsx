@@ -23,8 +23,8 @@ const FONTS = [
   'Comic Sans MS',
 ]
 
-const SKILLS = ['NEXT.JS','TYPESCRIPT','RUST','REACT','THREE.JS','UNITY','GO','FILM','NODE.JS','GSAP']
-const SKILL_ON = [0, 1, 2, 5]
+const SKILLS = ['NEXT.JS','TYPESCRIPT','REACT','UNREAL ENGINE','UNITY','DAVINCI RESOLVE','THREE.JS','NODE.JS','GO','RUST','PROJECT MGMT','FILM']
+const SKILL_ON = [0, 1, 2, 3, 4, 5]
 
 export function AboutWindow({ win, isMobile = false }: Props) {
   const [font, setFont] = useState('Calibri')
@@ -186,13 +186,14 @@ export function AboutWindow({ win, isMobile = false }: Props) {
                     <span className="atag" style={{fontSize: fontSize * 0.78}}>SOFTWARE ENG</span>
                     <span className="atag" style={{fontSize: fontSize * 0.78}}>FILMMAKER</span>
                     <span className="atag" style={{fontSize: fontSize * 0.78}}>GAME DEV</span>
-                    <span className="atag" style={{fontSize: fontSize * 0.78}}>ISTANBUL, TR</span>
+                    <span className="atag" style={{fontSize: fontSize * 0.78}}>BERLIN, DE</span>
+                    <span className="atag" style={{fontSize: fontSize * 0.78, opacity: 0.55}}>formerly ISTANBUL, TR</span>
                   </div>
                   <hr className="about-divider" />
                   <div className="about-bio" style={{fontFamily: font, fontSize: fontSize}}>
                     &gt; Building at the intersection of <em>code</em>, film &amp; play.<br/>
-                    &gt; Based in Istanbul — open to remote collab.<br/>
-                    &gt; Available for freelance &amp; full-time roles.
+                    &gt; Based in Berlin — available for collaborations.<br/>
+                    &gt; Open to freelance &amp; full-time roles worldwide.
                   </div>
                   <div className="about-skills">
                     {SKILLS.map((sk, i) => (
