@@ -6,23 +6,62 @@ import { WindowState } from '@/store/windowStore'
 interface Props { win: WindowState; isMobile?: boolean }
 
 const BOOKMARKS = [
-  { label: 'DuckDuckGo', url: 'https://duckduckgo.com' },
-  { label: 'Wikipedia',  url: 'https://en.m.wikipedia.org' },
-  { label: 'MDN',        url: 'https://developer.mozilla.org' },
+  { label: 'DDG Search',  url: 'https://html.duckduckgo.com/html/' },
+  { label: 'Wikipedia',   url: 'https://en.m.wikipedia.org/wiki/Main_Page' },
   { label: 'Hacker News', url: 'https://news.ycombinator.com' },
   { label: 'OpenStreetMap', url: 'https://www.openstreetmap.org' },
+  { label: 'MDN Docs',    url: 'https://developer.mozilla.org/en-US/' },
 ]
 
-// Sites known to block iframes — open in new tab instead
-const BLOCKED_DOMAINS = ['google.com', 'youtube.com', 'twitter.com', 'x.com', 'instagram.com', 'facebook.com', 'linkedin.com']
-
+// Sites known to hard-block iframes
+const BLOCKED_DOMAINS = [
+  'google.com', 'youtube.com', 'twitter.com', 'x.com',
+  'instagram.com', 'facebook.com', 'linkedin.com', 'duckduckgo.com',
+]
 function isLikelyBlocked(url: string) {
   return BLOCKED_DOMAINS.some(d => url.includes(d))
+}
+
+// Win95-style beveled button
+function W95Btn({
+  onClick, disabled = false, title, children,
+}: {
+  onClick?: () => void; disabled?: boolean; title?: string; children: React.ReactNode
+}) {
+  const [pressed, setPressed] = useState(false)
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      onMouseDown={() => !disabled && setPressed(true)}
+      onMouseUp={() => setPressed(false)}
+      onMouseLeave={() => setPressed(false)}
+      style={{
+        minWidth: 26, height: 24, padding: '0 6px',
+        background: disabled ? '#d4d0c8' : '#d4d0c8',
+        border: '2px solid',
+        borderTopColor:    pressed ? '#808080' : '#ffffff',
+        borderLeftColor:   pressed ? '#808080' : '#ffffff',
+        borderBottomColor: pressed ? '#ffffff' : '#808080',
+        borderRightColor:  pressed ? '#ffffff' : '#808080',
+        cursor: disabled ? 'default' : 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: disabled ? '#a0a0a0' : '#000',
+        fontFamily: 'monospace', fontSize: 12,
+        userSelect: 'none', flexShrink: 0,
+        outline: 'none',
+      }}
+    >
+      {children}
+    </button>
+  )
 }
 
 export function BrowserWindow({ win, isMobile = false }: Props) {
   const [url, setUrl]         = useState('')
   const [input, setInput]     = useState('')
+  const [homeInput, setHomeInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [blocked, setBlocked] = useState(false)
   const [blockedUrl, setBlockedUrl] = useState('')
@@ -37,8 +76,8 @@ export function BrowserWindow({ win, isMobile = false }: Props) {
       if (normalized.includes('.') && !normalized.includes(' ')) {
         normalized = 'https://' + normalized
       } else {
-        // Search query → open Google in new tab (Google blocks iframes)
-        normalized = 'https://duckduckgo.com/?q=' + encodeURIComponent(normalized)
+        // Search via DDG HTML-only endpoint (iframe-friendly)
+        normalized = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(normalized)
       }
     }
 
@@ -72,7 +111,6 @@ export function BrowserWindow({ win, isMobile = false }: Props) {
       setUrl(prev); setInput(prev); setLoading(true); setBlocked(false)
     }
   }
-
   const goForward = () => {
     if (histIdx < history.length - 1) {
       const next = history[histIdx + 1]
@@ -88,123 +126,226 @@ export function BrowserWindow({ win, isMobile = false }: Props) {
       if (doc && doc.body && doc.body.innerHTML === '') { setBlocked(true); setBlockedUrl(url) }
     } catch { setBlocked(false) }
   }
-
   const handleError = () => { setLoading(false); setBlocked(true); setBlockedUrl(url) }
 
   const canBack    = histIdx > 0
   const canForward = histIdx < history.length - 1
 
-  const navBtn = (active: boolean): React.CSSProperties => ({
-    width: 26, height: 26, background: 'none', border: 'none',
-    cursor: active ? 'pointer' : 'default',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    color: active ? '#00ffff' : '#2a3a4a', flexShrink: 0,
-  })
-
   return (
-    <Window win={win} menu={['File', 'View', 'History', 'Bookmarks', 'Help']} status={url || 'BROWSER | New Tab'} isMobile={isMobile}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#020812' }}>
+    <Window win={win} menu={['File', 'View', 'Go', 'Favorites', 'Help']} status={url || 'BROWSER.EXE | New Tab'} isMobile={isMobile}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
-        {/* Nav bar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 8px', background: 'var(--surface-dim)', borderBottom: '1px solid #0a1628' }}>
-          <button style={navBtn(canBack)}    onClick={goBack}    disabled={!canBack}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_back</span>
-          </button>
-          <button style={navBtn(canForward)} onClick={goForward} disabled={!canForward}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
-          </button>
-          <button style={navBtn(!!url)} onClick={() => { setLoading(true); setBlocked(false); setUrl(u => u) }} disabled={!url}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{loading ? 'close' : 'refresh'}</span>
-          </button>
+        {/* ── Win95 Toolbar ── */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 3,
+          padding: '3px 6px',
+          background: '#d4d0c8',
+          borderBottom: '2px solid #808080',
+        }}>
+          <W95Btn onClick={goBack}    disabled={!canBack}    title="Back">◄</W95Btn>
+          <W95Btn onClick={goForward} disabled={!canForward} title="Forward">►</W95Btn>
+          <W95Btn onClick={() => { if (url) { setLoading(true); setBlocked(false); setUrl(u => u) } }} disabled={!url} title="Refresh">↺</W95Btn>
+          <W95Btn onClick={() => { setUrl(''); setInput(''); setBlocked(false) }} title="Home">⌂</W95Btn>
 
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#000', border: '1px solid #0d2040', padding: '0 8px', height: 24, gap: 6 }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 13, color: url.startsWith('https') ? '#00c853' : '#4a6080' }}>
-              {url.startsWith('https') ? 'lock' : 'public'}
+          {/* Separator */}
+          <div style={{ width: 2, height: 20, background: '#808080', margin: '0 3px', flexShrink: 0 }} />
+
+          {/* Address bar */}
+          <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#000', flexShrink: 0 }}>Address:</span>
+          <div style={{
+            flex: 1, display: 'flex', alignItems: 'center', height: 22,
+            background: '#fff',
+            border: '2px solid',
+            borderTopColor: '#808080', borderLeftColor: '#808080',
+            borderBottomColor: '#fff', borderRightColor: '#fff',
+            padding: '0 4px', gap: 4,
+          }}>
+            <span style={{ fontSize: 11, flexShrink: 0 }}>
+              {url.startsWith('https') ? '🔒' : '🌐'}
             </span>
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && go()}
-              placeholder="Enter URL or search with DuckDuckGo..."
-              style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontFamily: 'var(--font-b)', fontSize: 13, color: '#c8d8e8', caretColor: '#00ffff' }}
+              placeholder="Type a web address or search..."
+              style={{
+                flex: 1, background: 'none', border: 'none', outline: 'none',
+                fontFamily: 'monospace', fontSize: 12, color: '#000',
+              }}
             />
           </div>
-
-          <button onClick={go} style={{ background: '#00ffff', border: 'none', cursor: 'pointer', width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', flexShrink: 0 }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
-          </button>
+          <W95Btn onClick={go} title="Go">Go</W95Btn>
         </div>
 
-        {/* Bookmarks bar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '3px 8px', background: '#030e1a', borderBottom: '1px solid #0a1628', overflowX: 'auto' }}>
+        {/* ── Bookmarks bar ── */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 1,
+          padding: '2px 6px',
+          background: '#d4d0c8',
+          borderBottom: '1px solid #808080',
+          overflowX: 'auto',
+        }}>
+          <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#808080', flexShrink: 0, marginRight: 4 }}>
+            Links:
+          </span>
           {BOOKMARKS.map(b => (
             <button key={b.url} onClick={() => navigate(b.url)}
-              style={{ fontFamily: 'var(--font-h)', fontSize: 7, padding: '2px 8px', background: 'none', border: 'none', color: '#4a7090', cursor: 'pointer', whiteSpace: 'nowrap', letterSpacing: '0.08em' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#00ffff')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#4a7090')}
+              style={{
+                fontFamily: 'monospace', fontSize: 11, padding: '1px 8px',
+                background: 'none', border: 'none', color: '#000080',
+                cursor: 'pointer', whiteSpace: 'nowrap',
+                textDecoration: 'underline',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#ff0000')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#000080')}
             >
               {b.label}
             </button>
           ))}
         </div>
 
-        {/* Content */}
-        <div style={{ flex: 1, position: 'relative', background: '#000' }}>
+        {/* ── Content area ── */}
+        <div style={{ flex: 1, position: 'relative', background: '#fff' }}>
+          {/* Loading bar */}
           {loading && (
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, zIndex: 2 }}>
-              <div style={{ height: '100%', background: '#00ffff', animation: 'browserLoad 1.2s ease-in-out infinite' }} />
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, zIndex: 2 }}>
+              <div style={{ height: '100%', background: '#000080', animation: 'browserLoad 1.2s ease-in-out infinite' }} />
             </div>
           )}
 
-          {/* New tab / home */}
+          {/* New Tab / Home */}
           {!url && (
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
-              <div style={{ fontFamily: 'var(--font-h)', fontSize: 11, color: '#1a3a5a', letterSpacing: '0.2em' }}>OS.WEBSITE BROWSER</div>
-              {/* Search box */}
-              <div style={{ display: 'flex', width: 360, gap: 0 }}>
-                <input
-                  placeholder="Search Google or enter URL..."
-                  onKeyDown={e => { if (e.key === 'Enter') navigate((e.target as HTMLInputElement).value) }}
-                  style={{ flex: 1, background: '#0a1628', border: '1px solid #0d2040', borderRight: 'none', outline: 'none', padding: '8px 12px', fontFamily: 'var(--font-b)', fontSize: 14, color: '#c8d8e8', caretColor: '#00ffff' }}
-                />
-                <button
-                  onClick={e => { const inp = (e.currentTarget.previousSibling as HTMLInputElement); navigate(inp.value) }}
-                  style={{ background: '#00ffff', border: 'none', padding: '0 14px', cursor: 'pointer', color: '#000' }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>search</span>
-                </button>
-              </div>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 400 }}>
-                {BOOKMARKS.map(b => (
-                  <button key={b.url} onClick={() => navigate(b.url)}
-                    style={{ fontFamily: 'var(--font-h)', fontSize: 7, padding: '6px 14px', background: '#0a1628', border: '1px solid #0d2040', color: '#4a7090', cursor: 'pointer', letterSpacing: '0.1em' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#00ffff')}
-                    onMouseLeave={e => (e.currentTarget.style.color = '#4a7090')}
-                  >
-                    {b.label}
-                  </button>
-                ))}
-              </div>
-              <div style={{ fontFamily: 'var(--font-h)', fontSize: 7, color: '#1a2a3a', letterSpacing: '0.1em' }}>
-                NOTE: Google/YouTube/Twitter block embedding — use DuckDuckGo to search
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16,
+              background: '#d4d0c8',
+            }}>
+              {/* Win95-style dialog box */}
+              <div style={{
+                background: '#d4d0c8',
+                border: '2px solid',
+                borderTopColor: '#fff', borderLeftColor: '#fff',
+                borderBottomColor: '#808080', borderRightColor: '#808080',
+                boxShadow: '2px 2px 0 #000',
+                width: 380,
+              }}>
+                {/* Title bar */}
+                <div style={{
+                  background: 'linear-gradient(90deg, #000080, #1084d0)',
+                  padding: '4px 8px',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                }}>
+                  <span style={{ fontSize: 14 }}>🦎</span>
+                  <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#fff', fontWeight: 'bold' }}>
+                    LIZARD.OS Internet Explorer
+                  </span>
+                </div>
+                {/* Body */}
+                <div style={{ padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ fontFamily: 'monospace', fontSize: 12, color: '#000' }}>
+                    Type a web address or search term:
+                  </div>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    <input
+                      value={homeInput}
+                      onChange={e => setHomeInput(e.target.value)}
+                      placeholder="e.g. wikipedia.org or &quot;lizard facts&quot;"
+                      autoFocus
+                      onKeyDown={e => { if (e.key === 'Enter') { navigate(homeInput); setHomeInput('') } }}
+                      style={{
+                        flex: 1,
+                        border: '2px solid', borderTopColor: '#808080', borderLeftColor: '#808080',
+                        borderBottomColor: '#fff', borderRightColor: '#fff',
+                        padding: '3px 6px', fontFamily: 'monospace', fontSize: 12, outline: 'none',
+                      }}
+                    />
+                    <W95Btn onClick={() => { navigate(homeInput); setHomeInput('') }}>Go</W95Btn>
+                  </div>
+                  {/* Quick links */}
+                  <div style={{ borderTop: '1px solid #808080', paddingTop: 10 }}>
+                    <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#808080', marginBottom: 6 }}>
+                      FAVORITES:
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                      {BOOKMARKS.map(b => (
+                        <button key={b.url} onClick={() => navigate(b.url)}
+                          style={{
+                            fontFamily: 'monospace', fontSize: 11,
+                            padding: '2px 10px', cursor: 'pointer',
+                            background: '#d4d0c8',
+                            border: '2px solid',
+                            borderTopColor: '#fff', borderLeftColor: '#fff',
+                            borderBottomColor: '#808080', borderRightColor: '#808080',
+                            color: '#000',
+                          }}
+                          onMouseDown={e => {
+                            e.currentTarget.style.borderTopColor = '#808080'
+                            e.currentTarget.style.borderLeftColor = '#808080'
+                            e.currentTarget.style.borderBottomColor = '#fff'
+                            e.currentTarget.style.borderRightColor = '#fff'
+                          }}
+                          onMouseUp={e => {
+                            e.currentTarget.style.borderTopColor = '#fff'
+                            e.currentTarget.style.borderLeftColor = '#fff'
+                            e.currentTarget.style.borderBottomColor = '#808080'
+                            e.currentTarget.style.borderRightColor = '#808080'
+                          }}
+                        >
+                          {b.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#808080' }}>
+                    Note: Some sites block embedding. Use DDG Search for web search.
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
           {/* Blocked */}
           {url && blocked && (
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, background: '#000810' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 40, color: '#ff4444' }}>block</span>
-              <div style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: '#ff4444', letterSpacing: '0.12em' }}>IFRAME BLOCKED</div>
-              <div style={{ fontFamily: 'var(--font-b)', fontSize: 13, color: '#4a6080', textAlign: 'center', maxWidth: 320 }}>
-                This site refuses to be embedded. Open it in a real browser tab instead.
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12,
+              background: '#d4d0c8',
+            }}>
+              <div style={{
+                background: '#d4d0c8',
+                border: '2px solid',
+                borderTopColor: '#fff', borderLeftColor: '#fff',
+                borderBottomColor: '#808080', borderRightColor: '#808080',
+                boxShadow: '2px 2px 0 #000', padding: '0 0 14px',
+              }}>
+                <div style={{
+                  background: 'linear-gradient(90deg, #800000, #c04040)',
+                  padding: '4px 8px', marginBottom: 14,
+                  display: 'flex', alignItems: 'center', gap: 6,
+                }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#fff', fontWeight: 'bold' }}>
+                    ✕ This page cannot be displayed
+                  </span>
+                </div>
+                <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ fontFamily: 'monospace', fontSize: 12, color: '#000' }}>
+                    The site refuses to be embedded in a frame.
+                  </div>
+                  <button
+                    onClick={() => window.open(blockedUrl, '_blank')}
+                    style={{
+                      alignSelf: 'flex-start',
+                      fontFamily: 'monospace', fontSize: 11, padding: '4px 16px',
+                      background: '#d4d0c8', cursor: 'pointer',
+                      border: '2px solid',
+                      borderTopColor: '#fff', borderLeftColor: '#fff',
+                      borderBottomColor: '#808080', borderRightColor: '#808080',
+                    }}
+                  >
+                    Open in New Window
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={() => window.open(blockedUrl, '_blank')}
-                style={{ fontFamily: 'var(--font-h)', fontSize: 8, padding: '8px 20px', background: '#00ffff', border: 'none', color: '#000', cursor: 'pointer', letterSpacing: '0.1em' }}
-              >
-                OPEN IN NEW TAB
-              </button>
             </div>
           )}
 
@@ -222,13 +363,38 @@ export function BrowserWindow({ win, isMobile = false }: Props) {
             />
           )}
         </div>
+
+        {/* ── Win95 Status bar ── */}
+        <div style={{
+          display: 'flex', alignItems: 'center',
+          background: '#d4d0c8',
+          borderTop: '1px solid #808080',
+          padding: '2px 6px', gap: 8,
+        }}>
+          <div style={{
+            flex: 1, border: '1px solid', borderTopColor: '#808080', borderLeftColor: '#808080',
+            borderBottomColor: '#fff', borderRightColor: '#fff',
+            padding: '1px 4px',
+            fontFamily: 'monospace', fontSize: 10, color: '#000',
+          }}>
+            {loading ? 'Loading...' : url ? url.slice(0, 60) : 'Done'}
+          </div>
+          <div style={{
+            border: '1px solid', borderTopColor: '#808080', borderLeftColor: '#808080',
+            borderBottomColor: '#fff', borderRightColor: '#fff',
+            padding: '1px 8px',
+            fontFamily: 'monospace', fontSize: 10, color: '#000', flexShrink: 0,
+          }}>
+            {url.startsWith('https') ? '🔒' : '🌐'} Internet
+          </div>
+        </div>
       </div>
 
       <style>{`
         @keyframes browserLoad {
-          0%   { width: 0%;  margin-left: 0; }
-          50%  { width: 60%; margin-left: 20%; }
-          100% { width: 0%;  margin-left: 100%; }
+          0%   { width: 0%;   margin-left: 0; }
+          50%  { width: 60%;  margin-left: 20%; }
+          100% { width: 0%;   margin-left: 100%; }
         }
       `}</style>
     </Window>

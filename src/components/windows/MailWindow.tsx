@@ -6,9 +6,7 @@ import { WindowState } from '@/store/windowStore'
 const CONTACTS = [
   { service: 'LINKEDIN', emoji: '💼', name: 'linkedin.com/in/erenkilisli', href: 'https://linkedin.com/in/erenkilisli' },
   { service: 'GITHUB',   emoji: '💻', name: 'github.com/erenkilisli',     href: 'https://github.com/erenkilisli' },
-  { service: 'TWITTER',  emoji: '🐦', name: '@erenkilisli',               href: 'https://twitter.com/erenkilisli' },
   { service: 'EMAIL',    emoji: '✉',  name: 'ibr@himerenkilisli.com',     href: null },
-  { service: 'RESUME',   emoji: '📄', name: 'Download CV.pdf',            href: '#' },
 ]
 
 interface Props {
@@ -17,12 +15,18 @@ interface Props {
 }
 
 export function MailWindow({ win, isMobile = false }: Props) {
+  const [from, setFrom]       = useState('')
   const [subject, setSubject] = useState('')
-  const [body, setBody] = useState('')
-  const [sent, setSent] = useState(false)
+  const [body, setBody]       = useState('')
+  const [sent, setSent]       = useState(false)
 
   const handleSend = () => {
     if (!subject.trim() && !body.trim()) return
+    const mailBody = `${body}${from ? `\n\n---\nReply-To: ${from}` : ''}`
+    window.open(
+      `mailto:ibr@himerenkilisli.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailBody)}`
+    )
+    setFrom('')
     setSubject('')
     setBody('')
     setSent(true)
@@ -55,6 +59,10 @@ export function MailWindow({ win, isMobile = false }: Props) {
         {/* Compose */}
         <div className="mail-compose">
           <div className="mail-form">
+            <div className="mail-field">
+              <div className="mail-lbl">FROM:</div>
+              <input className="mail-in" type="email" value={from} onChange={e => setFrom(e.target.value)} placeholder="your@email.com" />
+            </div>
             <div className="mail-field">
               <div className="mail-lbl">TO:</div>
               <input className="mail-in" type="text" defaultValue="ibr@himerenkilisli.com" readOnly />

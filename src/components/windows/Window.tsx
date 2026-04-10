@@ -51,47 +51,47 @@ export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status,
   const startResize = (e: React.PointerEvent, dir: ResizeDir) => {
     e.stopPropagation()
     e.preventDefault()
-    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
-    resizing.current = {
+
+    const snap = {
       dir,
       startX: e.clientX, startY: e.clientY,
       startW: liveW.get(), startH: liveH.get(),
       startPX: x.get(), startPY: y.get(),
     }
-  }
+    resizing.current = snap
 
-  const onResizeMove = (e: React.PointerEvent) => {
-    if (!resizing.current) return
-    const { dir, startX, startY, startW, startH, startPX, startPY } = resizing.current
-    const dx = e.clientX - startX
-    const dy = e.clientY - startY
+    const onMove = (ev: PointerEvent) => {
+      const dx = ev.clientX - snap.startX
+      const dy = ev.clientY - snap.startY
+      let newW = snap.startW, newH = snap.startH
+      let newX = snap.startPX, newY = snap.startPY
 
-    let newW = startW, newH = startH, newX = startPX, newY = startPY
+      if (dir.includes('e')) newW = Math.max(MIN_W, snap.startW + dx)
+      if (dir.includes('s')) newH = Math.max(MIN_H, snap.startH + dy)
+      if (dir.includes('w')) {
+        newW = Math.max(MIN_W, snap.startW - dx)
+        newX = snap.startPX + (snap.startW - newW)
+      }
+      if (dir.includes('n')) {
+        newH = Math.max(MIN_H, snap.startH - dy)
+        newY = snap.startPY + (snap.startH - newH)
+      }
 
-    if (dir.includes('e')) newW = Math.max(MIN_W, startW + dx)
-    if (dir.includes('s')) newH = Math.max(MIN_H, startH + dy)
-    if (dir.includes('w')) {
-      newW = Math.max(MIN_W, startW - dx)
-      newX = startPX + (startW - newW)
+      liveW.set(newW); liveH.set(newH)
+      liveX.set(newX); liveY.set(newY)
+      x.set(newX); y.set(newY)
     }
-    if (dir.includes('n')) {
-      newH = Math.max(MIN_H, startH - dy)
-      newY = startPY + (startH - newH)
+
+    const onUp = () => {
+      updateWindowSize(win.id, liveW.get(), liveH.get())
+      updateWindowPos(win.id, x.get(), y.get())
+      resizing.current = null
+      document.removeEventListener('pointermove', onMove)
+      document.removeEventListener('pointerup', onUp)
     }
 
-    liveW.set(newW)
-    liveH.set(newH)
-    liveX.set(newX)
-    liveY.set(newY)
-    x.set(newX)
-    y.set(newY)
-  }
-
-  const onResizeEnd = () => {
-    if (!resizing.current) return
-    updateWindowSize(win.id, liveW.get(), liveH.get())
-    updateWindowPos(win.id, x.get(), y.get())
-    resizing.current = null
+    document.addEventListener('pointermove', onMove)
+    document.addEventListener('pointerup', onUp)
   }
 
   const HANDLES: { dir: ResizeDir; style: React.CSSProperties }[] = [
@@ -231,8 +231,6 @@ export function Window({ win, children, menu = ['File', 'Edit', 'Help'], status,
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         onMouseDown={() => focusWindow(win.id)}
-        onPointerMove={onResizeMove}
-        onPointerUp={onResizeEnd}
         initial={{ scale: 0.05, opacity: 0, filter: 'brightness(4)' }}
         animate={{ scale: 1, opacity: 1, filter: 'brightness(1)' }}
         exit={{ scale: 0.05, opacity: 0 }}
