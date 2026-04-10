@@ -41,12 +41,15 @@ LIZARD.OS is an open-source portfolio website built to look and feel like **a re
 | **CRT Effects** | Scanlines + vignette overlay on desktop |
 | **Themes** | 4 color themes (Cybercore, Vaporwave, Matrix, Amber) |
 | **Cursors** | 3 custom cursor styles |
-| **Wallpapers** | 4 animated + 3 preset scenes + solid colors + custom upload |
+| **Mouse Effect** | Proximity dot-grid glow — dots light up around the cursor |
+| **Nav Dropdown** | PROJECTS nav link with DEV / FILM / GAME dropdown |
+| **Wallpapers** | 4 animated + 3 generative scenes + 6 photo presets + solid + custom upload |
 | **App Market** | Install / uninstall optional apps with loading animation |
-| **Games** | Snake, Pixel Snowboard (built-in canvas games) |
+| **Games** | Snake (built-in), Pixel Snowboard (installable via App Market) |
 | **Mini-Apps** | Paint, Notepad, Calculator, Music Player, Browser |
 | **Projects** | Game dev, film, software projects with detail views |
-| **Contact** | Contact form powered by Resend API |
+| **Contact** | Contact form — opens default mail client via `mailto:` |
+| **User Profile** | Settings → User tab: display name, animal icon, optional login password |
 
 ---
 
@@ -262,7 +265,7 @@ box-shadow:
 | `←` `→` / `A` `D` | Snowboard steer |
 | `Space` / `Enter` | Snowboard start / restart |
 | `Arrow keys` / `WASD` | Snake direction |
-| `Enter` | Login screen (no password required) |
+| `Enter` | Login screen (password optional — set via Settings → User) |
 
 ---
 
@@ -299,7 +302,7 @@ LIZARD.OS has a single-source-of-truth app registry. Adding a new app takes thre
 ### Step 1 — Register app metadata in `appMeta.ts`
 
 ```ts
-// src/registry/appMeta.ts
+// src/config/appMeta.ts
 export const MY_APP: AppMeta = {
   id: 'myapp',
   label: 'MYAPP.EXE',
@@ -312,7 +315,7 @@ export const MY_APP: AppMeta = {
 ### Step 2 — Add the window component in `appRegistry.tsx`
 
 ```tsx
-// src/registry/appRegistry.tsx
+// src/config/appRegistry.tsx
 case 'myapp':
   return <MyAppWindow />;
 ```
@@ -370,7 +373,11 @@ That's it — the app automatically appears in desktop icons, the phone home gri
 - [ ] Mobile touch controls for Snake and Snowboard
 - [x] 6 photo wallpapers (Pexels gallery: Rice Field, Dawn Peaks, Istanbul, Lizard, Highland, Jaguar)
 - [ ] More terminal commands
-- [ ] Window snap (drag to edge to snap 50/50)
+- [x] Window snap (drag to edge to snap 50/50)
+- [x] Mouse proximity dot-grid glow overlay (theme-aware, DPR-correct, lerp-smoothed)
+- [x] PROJECTS nav dropdown (DEV / FILM / GAME)
+- [x] User profile settings (name, animal icon, optional login password)
+- [x] Win95-style browser with DDG-inspired home page
 - [ ] Multi-monitor simulation
 - [ ] Save / restore desktop layout
 - [ ] Accessibility pass (ARIA, keyboard-only navigation)
@@ -438,7 +445,7 @@ Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more informa
 
 ## 👤 Author
 
-**Ibrahim Eren Kilisli** — Game Developer · Filmmaker · Full-Stack Developer
+**Ibrahim Eren Kilisli** — Game Developer · Filmmaker · Full-Stack Developer · Based in Berlin, DE
 
 - Website: [himerenkilisli.com](https://himerenkilisli.com)
 - GitHub: [@ErenKilisli](https://github.com/ErenKilisli)

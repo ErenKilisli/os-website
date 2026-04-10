@@ -10,11 +10,12 @@ const THEME_DOT: Record<string, string> = {
 }
 
 const SPACING    = 32    // px between dots
-const RADIUS     = 96    // mouse glow radius in px
+const RADIUS     = 200   // mouse glow radius in px
 const DOT_BASE_R = 1.5   // dot radius when far from mouse
-const DOT_GLOW_R = 3.0   // dot radius at mouse center
+const DOT_GLOW_R = 4.0   // dot radius at mouse center
 const BASE_ALPHA = 0.07  // opacity far from mouse
-const GLOW_ALPHA = 0.88  // opacity at mouse center
+const GLOW_ALPHA = 0.92  // opacity at mouse center
+const LERP       = 0.12  // smooth trailing factor (< 1 = animated lag)
 const R2         = RADIUS * RADIUS
 
 export function MouseDotGrid() {
@@ -23,6 +24,7 @@ export function MouseDotGrid() {
   const mouse     = useRef({ x: -9999, y: -9999 })
   // themeRef: RAF loop reads color without restarting when theme changes
   const themeRef  = useRef(theme)
+  const smooth    = useRef({ x: -9999, y: -9999 })  // lerped position
   const [enabled, setEnabled] = useState(false)
 
   // Mobile gate — no canvas on small viewports
@@ -68,8 +70,11 @@ export function MouseDotGrid() {
     const tick = () => {
       const W  = logW   // logical CSS pixels — matches ctx coordinate space
       const H  = logH
-      const mx = mouse.current.x
-      const my = mouse.current.y
+      // Lerp smoothed position toward actual mouse → animated trailing feel
+      smooth.current.x += (mouse.current.x - smooth.current.x) * LERP
+      smooth.current.y += (mouse.current.y - smooth.current.y) * LERP
+      const mx = smooth.current.x
+      const my = smooth.current.y
       const dotColor = THEME_DOT[themeRef.current] ?? '#00ffff'
 
       ctx.clearRect(0, 0, W, H)
