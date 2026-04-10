@@ -179,10 +179,7 @@ export function AboutWindow({ win, isMobile = false }: Props) {
                   <div className="about-name" style={{fontFamily: font, fontSize: fontSize * 1.15}}>
                     IBRAHIM EREN<br/>KILISLI
                   </div>
-                  <div className="about-role" style={{fontFamily: font, fontSize: fontSize}}>
-                    Software Engineer · Filmmaker · Game Dev
-                  </div>
-                  <div className="about-tags">
+<div className="about-tags">
                     <span className="atag" style={{fontSize: fontSize * 0.78}}>SOFTWARE ENG</span>
                     <span className="atag" style={{fontSize: fontSize * 0.78}}>FILMMAKER</span>
                     <span className="atag" style={{fontSize: fontSize * 0.78}}>GAME DEV</span>

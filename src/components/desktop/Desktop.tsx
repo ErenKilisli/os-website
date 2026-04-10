@@ -16,6 +16,7 @@ import { DesktopContextMenu } from './DesktopContextMenu'
 import { CustomCursor } from './CustomCursor'
 import { PhoneView } from './PhoneView'
 import { TerminalMode } from './TerminalMode'
+import { MouseDotGrid } from './MouseDotGrid'
 
 type Phase = 'boot' | 'login' | 'desktop' | 'shutdown' | 'restart'
 
@@ -207,6 +208,7 @@ export function Desktop() {
         }}
       >
         <DesktopWallpaper />
+        <MouseDotGrid />
 
         {/* Desktop icons */}
         {icons.map((icon) => (
