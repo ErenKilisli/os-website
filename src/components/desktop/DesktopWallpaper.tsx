@@ -14,12 +14,6 @@ const src = (img: { src: string } | string) =>
   typeof img === 'string' ? img : img.src
 
 /* ─── Theme colour maps ──────────────────────────────────── */
-const THEME_DOT: Record<Theme, string> = {
-  cybercore: '#00ffff',
-  vaporwave: '#ff71ce',
-  matrix:    '#00ff41',
-  amber:     '#ffaa00',
-}
 const THEME_BG: Record<Theme, string> = {
   cybercore: '#020812',
   vaporwave: '#0d0020',
@@ -37,47 +31,9 @@ const THEME_BG2: Record<Theme, string> = {
    WALLPAPER RENDERERS
 ════════════════════════════════════════════════════════════ */
 
-function runGrid(canvas: HTMLCanvasElement, theme: Theme): () => void {
-  const ctx = canvas.getContext('2d')!
-  const dot = THEME_DOT[theme]
-  const bg  = THEME_BG[theme]
-  let frame = 0
-  let raf   = 0
-
-  const tick = () => {
-    const W = canvas.width
-    const H = canvas.height
-    frame++
-
-    ctx.fillStyle = bg
-    ctx.fillRect(0, 0, W, H)
-
-    const spacing = 36
-    const t = frame * 0.025
-    const pulse = (Math.sin(t) + 1) / 2
-
-    for (let x = 0; x <= W; x += spacing) {
-      for (let y = 0; y <= H; y += spacing) {
-        const dx = x - W / 2
-        const dy = y - H / 2
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        const wave = (Math.sin(t * 1.1 - dist * 0.014) + 1) / 2
-        ctx.globalAlpha = 0.06 + wave * 0.20 + pulse * 0.04
-        ctx.fillStyle = dot
-        ctx.fillRect(x - 1, y - 1, 2, 2)
-      }
-    }
-
-    ctx.globalAlpha = 0.04
-    ctx.fillStyle = dot
-    const scanY = ((frame * 1.5) % (H + 40)) - 20
-    ctx.fillRect(0, scanY, W, 2)
-
-    ctx.globalAlpha = 1
-    raf = requestAnimationFrame(tick)
-  }
-  tick()
-  return () => cancelAnimationFrame(raf)
+function runGrid(canvas: HTMLCanvasElement, _theme: Theme): () => void {
+  // Pure black background — MouseDotGrid handles all dot rendering in grid mode
+  return runSolid(canvas, '#000000')
 }
 
 function runStars(canvas: HTMLCanvasElement): () => void {

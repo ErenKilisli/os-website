@@ -23,10 +23,8 @@ export function MouseDotGrid() {
   const wallpaper = useSystemStore((s) => s.wallpaper)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mouse     = useRef({ x: -9999, y: -9999 })
-  // themeRef: RAF loop reads color without restarting when theme changes
-  const themeRef    = useRef(theme)
-  const wallpaperRef = useRef(wallpaper)
-  const smooth      = useRef({ x: -9999, y: -9999 })  // lerped position
+  const themeRef  = useRef(theme)
+  const smooth    = useRef({ x: -9999, y: -9999 })
   const [enabled, setEnabled] = useState(false)
 
   // Mobile gate — no canvas on small viewports
@@ -34,9 +32,8 @@ export function MouseDotGrid() {
     setEnabled(window.innerWidth >= 768)
   }, [])
 
-  // Keep themeRef + wallpaperRef in sync (no RAF restart needed)
-  useEffect(() => { themeRef.current    = theme    }, [theme])
-  useEffect(() => { wallpaperRef.current = wallpaper }, [wallpaper])
+  // Keep themeRef in sync (no RAF restart needed)
+  useEffect(() => { themeRef.current = theme }, [theme])
 
   useEffect(() => {
     if (!enabled) return
@@ -45,7 +42,7 @@ export function MouseDotGrid() {
 
     const ctx = canvas.getContext('2d')!
 
-    // ── DPR-aware resize — logical coords for drawing, physical for canvas ───
+    // ── DPR-aware resize ─────────────────────────────────────────────────────
     let logW = window.innerWidth
     let logH = window.innerHeight
 
@@ -57,12 +54,12 @@ export function MouseDotGrid() {
       canvas.height = logH * dpr
       canvas.style.width  = logW + 'px'
       canvas.style.height = logH + 'px'
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)  // safe reset + scale (vs cumulative ctx.scale)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
     resize()
     window.addEventListener('resize', resize)
 
-    // ── Track mouse globally (works even when cursor is over windows) ────────
+    // ── Track mouse globally ─────────────────────────────────────────────────
     const onMove  = (e: MouseEvent) => { mouse.current = { x: e.clientX, y: e.clientY } }
     const onLeave = () => { mouse.current = { x: -9999, y: -9999 } }
     document.addEventListener('mousemove', onMove)
@@ -71,9 +68,8 @@ export function MouseDotGrid() {
     let raf = 0
 
     const tick = () => {
-      const W  = logW   // logical CSS pixels — matches ctx coordinate space
-      const H  = logH
-      // Lerp smoothed position toward actual mouse → animated trailing feel
+      const W = logW
+      const H = logH
       smooth.current.x += (mouse.current.x - smooth.current.x) * LERP
       smooth.current.y += (mouse.current.y - smooth.current.y) * LERP
       const mx = smooth.current.x
@@ -82,25 +78,23 @@ export function MouseDotGrid() {
 
       ctx.clearRect(0, 0, W, H)
 
-      // ── Pass 1: far dots — skipped when wallpaper is 'grid' (avoids double-grid) ──
-      if (wallpaperRef.current !== 'grid') {
-        ctx.fillStyle   = dotColor
-        ctx.shadowBlur  = 0
-        ctx.globalAlpha = BASE_ALPHA
-        ctx.beginPath()
-        for (let x = SPACING / 2; x < W; x += SPACING) {
-          for (let y = SPACING / 2; y < H; y += SPACING) {
-            const dx = mx - x, dy = my - y
-            if (dx * dx + dy * dy > R2) {
-              ctx.moveTo(x + DOT_BASE_R, y)
-              ctx.arc(x, y, DOT_BASE_R, 0, Math.PI * 2)
-            }
+      // ── Pass 1: all far dots — single batched path ────────────────────────
+      ctx.fillStyle   = dotColor
+      ctx.shadowBlur  = 0
+      ctx.globalAlpha = BASE_ALPHA
+      ctx.beginPath()
+      for (let x = SPACING / 2; x < W; x += SPACING) {
+        for (let y = SPACING / 2; y < H; y += SPACING) {
+          const dx = mx - x, dy = my - y
+          if (dx * dx + dy * dy > R2) {
+            ctx.moveTo(x + DOT_BASE_R, y)
+            ctx.arc(x, y, DOT_BASE_R, 0, Math.PI * 2)
           }
         }
-        ctx.fill()
       }
+      ctx.fill()
 
-      // ── Pass 2: glow dots near mouse — individual draws with shadow ───────
+      // ── Pass 2: glow dots near mouse ──────────────────────────────────────
       ctx.shadowColor = dotColor
       for (let x = SPACING / 2; x < W; x += SPACING) {
         for (let y = SPACING / 2; y < H; y += SPACING) {
@@ -133,7 +127,8 @@ export function MouseDotGrid() {
     }
   }, [enabled])
 
-  if (!enabled) return null
+  // Only render on desktop AND only when wallpaper is 'grid'
+  if (!enabled || wallpaper !== 'grid') return null
 
   return (
     <canvas
@@ -141,8 +136,8 @@ export function MouseDotGrid() {
       style={{
         position: 'absolute',
         inset: 0,
-        zIndex: 2,             // above wallpaper (z:0), below CRT scanlines (z:40) and windows (z:100+)
-        pointerEvents: 'none', // never blocks clicks/drags
+        zIndex: 2,
+        pointerEvents: 'none',
       }}
     />
   )
