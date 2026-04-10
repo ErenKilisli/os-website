@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSystemStore } from '@/store/systemStore'
 
 const THEME_DOT: Record<string, string> = {
@@ -10,34 +10,49 @@ const THEME_DOT: Record<string, string> = {
 }
 
 const SPACING    = 32    // px between dots
-const RADIUS     = 160   // mouse glow radius in px
+const RADIUS     = 96    // mouse glow radius in px
 const DOT_BASE_R = 1.5   // dot radius when far from mouse
-const DOT_GLOW_R = 4.0   // dot radius at mouse center
+const DOT_GLOW_R = 3.0   // dot radius at mouse center
 const BASE_ALPHA = 0.07  // opacity far from mouse
 const GLOW_ALPHA = 0.88  // opacity at mouse center
+const R2         = RADIUS * RADIUS
 
 export function MouseDotGrid() {
-  const theme    = useSystemStore((s) => s.theme)
+  const theme     = useSystemStore((s) => s.theme)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const mouse    = useRef({ x: -9999, y: -9999 })
+  const mouse     = useRef({ x: -9999, y: -9999 })
+  // themeRef: RAF loop reads color without restarting when theme changes
+  const themeRef  = useRef(theme)
+  const [enabled, setEnabled] = useState(false)
+
+  // Mobile gate — no canvas on small viewports
+  useEffect(() => {
+    setEnabled(window.innerWidth >= 768)
+  }, [])
+
+  // Keep themeRef in sync (no RAF restart needed)
+  useEffect(() => { themeRef.current = theme }, [theme])
 
   useEffect(() => {
+    if (!enabled) return
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const dotColor = THEME_DOT[theme] ?? '#00ffff'
-    const R2 = RADIUS * RADIUS
-
     const ctx = canvas.getContext('2d')!
 
-    // ── Size canvas to viewport (DPR-aware for sharp dots on retina) ─────────
+    // ── DPR-aware resize — logical coords for drawing, physical for canvas ───
+    let logW = window.innerWidth
+    let logH = window.innerHeight
+
     const resize = () => {
       const dpr = window.devicePixelRatio || 1
-      canvas.width  = window.innerWidth  * dpr
-      canvas.height = window.innerHeight * dpr
-      canvas.style.width  = window.innerWidth  + 'px'
-      canvas.style.height = window.innerHeight + 'px'
-      ctx.scale(dpr, dpr)
+      logW = window.innerWidth
+      logH = window.innerHeight
+      canvas.width  = logW * dpr
+      canvas.height = logH * dpr
+      canvas.style.width  = logW + 'px'
+      canvas.style.height = logH + 'px'
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)  // safe reset + scale (vs cumulative ctx.scale)
     }
     resize()
     window.addEventListener('resize', resize)
@@ -51,16 +66,17 @@ export function MouseDotGrid() {
     let raf = 0
 
     const tick = () => {
-      const W  = canvas.width
-      const H  = canvas.height
+      const W  = logW   // logical CSS pixels — matches ctx coordinate space
+      const H  = logH
       const mx = mouse.current.x
       const my = mouse.current.y
+      const dotColor = THEME_DOT[themeRef.current] ?? '#00ffff'
 
       ctx.clearRect(0, 0, W, H)
 
       // ── Pass 1: far dots — single batched path (very fast) ────────────────
-      ctx.fillStyle  = dotColor
-      ctx.shadowBlur = 0
+      ctx.fillStyle   = dotColor
+      ctx.shadowBlur  = 0
       ctx.globalAlpha = BASE_ALPHA
       ctx.beginPath()
       for (let x = SPACING / 2; x < W; x += SPACING) {
@@ -92,10 +108,8 @@ export function MouseDotGrid() {
         }
       }
 
-      // Reset context state
       ctx.shadowBlur  = 0
       ctx.globalAlpha = 1
-
       raf = requestAnimationFrame(tick)
     }
 
@@ -107,7 +121,9 @@ export function MouseDotGrid() {
       document.removeEventListener('mousemove', onMove)
       document.removeEventListener('mouseleave', onLeave)
     }
-  }, [theme])
+  }, [enabled])
+
+  if (!enabled) return null
 
   return (
     <canvas
@@ -115,10 +131,8 @@ export function MouseDotGrid() {
       style={{
         position: 'absolute',
         inset: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: 1,          // above wallpaper (z:0), below windows (z:100+)
-        pointerEvents: 'none',  // never blocks clicks/drags
+        zIndex: 2,             // above wallpaper (z:0), below CRT scanlines (z:40) and windows (z:100+)
+        pointerEvents: 'none', // never blocks clicks/drags
       }}
     />
   )
