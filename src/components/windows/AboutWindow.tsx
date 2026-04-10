@@ -187,13 +187,12 @@ export function AboutWindow({ win, isMobile = false }: Props) {
                     <span className="atag" style={{fontSize: fontSize * 0.78}}>FILMMAKER</span>
                     <span className="atag" style={{fontSize: fontSize * 0.78}}>GAME DEV</span>
                     <span className="atag" style={{fontSize: fontSize * 0.78}}>BERLIN, DE</span>
-                    <span className="atag" style={{fontSize: fontSize * 0.78, opacity: 0.55}}>formerly ISTANBUL, TR</span>
                   </div>
                   <hr className="about-divider" />
                   <div className="about-bio" style={{fontFamily: font, fontSize: fontSize}}>
                     &gt; Building at the intersection of <em>code</em>, film &amp; play.<br/>
-                    &gt; Based in Berlin — available for collaborations.<br/>
-                    &gt; Open to freelance &amp; full-time roles worldwide.
+                    &gt; Based in Berlin, formerly Istanbul.<br/>
+                    &gt; Open for collaborations worldwide.
                   </div>
                   <div className="about-skills">
                     {SKILLS.map((sk, i) => (
