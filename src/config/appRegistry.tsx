@@ -35,6 +35,7 @@ import { SysInfoWindow }       from '@/components/windows/SysInfoWindow'
 import { BrowserWindow }       from '@/components/windows/BrowserWindow'
 import { FileBrowserWindow }   from '@/components/windows/FileBrowserWindow'
 import { AppMarketWindow }     from '@/components/windows/AppMarketWindow'
+import { ReadmeWindow }        from '@/components/windows/ReadmeWindow'
 
 // ── Icon components ──────────────────────────────────────────────────────────
 import {
@@ -80,6 +81,7 @@ const componentMap: Record<WindowType, WindowComponent> = {
   sysinfo:       SysInfoWindow,
   browser:       BrowserWindow,
   appmarket:     AppMarketWindow,
+  readme:        ReadmeWindow,
   film:          FilmBrowser,
   devfiles:      DevfilesBrowser,
   game:          GameBrowser,

@@ -20,11 +20,13 @@ const R2         = RADIUS * RADIUS
 
 export function MouseDotGrid() {
   const theme     = useSystemStore((s) => s.theme)
+  const wallpaper = useSystemStore((s) => s.wallpaper)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mouse     = useRef({ x: -9999, y: -9999 })
   // themeRef: RAF loop reads color without restarting when theme changes
-  const themeRef  = useRef(theme)
-  const smooth    = useRef({ x: -9999, y: -9999 })  // lerped position
+  const themeRef    = useRef(theme)
+  const wallpaperRef = useRef(wallpaper)
+  const smooth      = useRef({ x: -9999, y: -9999 })  // lerped position
   const [enabled, setEnabled] = useState(false)
 
   // Mobile gate — no canvas on small viewports
@@ -32,8 +34,9 @@ export function MouseDotGrid() {
     setEnabled(window.innerWidth >= 768)
   }, [])
 
-  // Keep themeRef in sync (no RAF restart needed)
-  useEffect(() => { themeRef.current = theme }, [theme])
+  // Keep themeRef + wallpaperRef in sync (no RAF restart needed)
+  useEffect(() => { themeRef.current    = theme    }, [theme])
+  useEffect(() => { wallpaperRef.current = wallpaper }, [wallpaper])
 
   useEffect(() => {
     if (!enabled) return
@@ -79,21 +82,23 @@ export function MouseDotGrid() {
 
       ctx.clearRect(0, 0, W, H)
 
-      // ── Pass 1: far dots — single batched path (very fast) ────────────────
-      ctx.fillStyle   = dotColor
-      ctx.shadowBlur  = 0
-      ctx.globalAlpha = BASE_ALPHA
-      ctx.beginPath()
-      for (let x = SPACING / 2; x < W; x += SPACING) {
-        for (let y = SPACING / 2; y < H; y += SPACING) {
-          const dx = mx - x, dy = my - y
-          if (dx * dx + dy * dy > R2) {
-            ctx.moveTo(x + DOT_BASE_R, y)
-            ctx.arc(x, y, DOT_BASE_R, 0, Math.PI * 2)
+      // ── Pass 1: far dots — skipped when wallpaper is 'grid' (avoids double-grid) ──
+      if (wallpaperRef.current !== 'grid') {
+        ctx.fillStyle   = dotColor
+        ctx.shadowBlur  = 0
+        ctx.globalAlpha = BASE_ALPHA
+        ctx.beginPath()
+        for (let x = SPACING / 2; x < W; x += SPACING) {
+          for (let y = SPACING / 2; y < H; y += SPACING) {
+            const dx = mx - x, dy = my - y
+            if (dx * dx + dy * dy > R2) {
+              ctx.moveTo(x + DOT_BASE_R, y)
+              ctx.arc(x, y, DOT_BASE_R, 0, Math.PI * 2)
+            }
           }
         }
+        ctx.fill()
       }
-      ctx.fill()
 
       // ── Pass 2: glow dots near mouse — individual draws with shadow ───────
       ctx.shadowColor = dotColor

@@ -15,7 +15,7 @@ export type WindowType =
   | 'notepad' | 'music' | 'calc' | 'paint' | 'sysinfo'
   | 'devfiles' | 'film' | 'game'
   | 'snake' | 'snowboard'
-  | 'appmarket'
+  | 'appmarket' | 'readme'
   | 'projectdetail'
   // Legacy folder variants (kept for backward-compat with persisted state)
   | 'cinema' | 'arcade' | 'swr'
@@ -188,6 +188,18 @@ export const APP_META: AppMeta[] = [
     showOnDesktop: true, showOnPhone: true, phoneInline: false,
     showInSpotlight: true, showInContextMenu: true,
     desktopCol: 'L2', desktopRow: 3,
+  },
+  {
+    type: 'readme',
+    title: 'README.TXT', label: 'README',
+    icon: 'text_snippet', iconColor: '#aabbcc',
+    width: 560, height: 480,
+    phoneBg: '',
+    spotlightDesc: 'About LIZARD.OS',
+    preInstalled: true,
+    showOnDesktop: true, showOnPhone: false, phoneInline: false,
+    showInSpotlight: true, showInContextMenu: false,
+    desktopCol: 'L2', desktopRow: 4,
   },
   // ── Right col (R) ──────────────────────────────────────────────────────────
   {
