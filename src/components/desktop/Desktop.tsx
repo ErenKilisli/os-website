@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useWindowStore } from '@/store/windowStore'
 import { useSystemStore } from '@/store/systemStore'
@@ -29,6 +29,8 @@ export function Desktop() {
   const [mounted, setMounted] = useState(false)
   const [trashOpen, setTrashOpen] = useState(false)
   const [navCollapsed, setNavCollapsed] = useState(false)
+  const [projectsOpen, setProjectsOpen] = useState(false)
+  const projectsRef = useRef<HTMLDivElement>(null)
   const { windows, icons, openWindow, selectIcon } = useWindowStore()
   const { brightness, theme, viewMode, uiMode, setViewMode } = useSystemStore()
   // Mark mounted — prevents Zustand persist mismatch on brightness overlay
@@ -53,6 +55,17 @@ export function Desktop() {
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
   }, [setViewMode])
+
+  // Close projects dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (projectsRef.current && !projectsRef.current.contains(e.target as Node)) {
+        setProjectsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
 
   // Cmd+K or Ctrl+K opens spotlight
   useEffect(() => {
@@ -94,9 +107,55 @@ export function Desktop() {
           <div className="nav-brand">LIZARD.OS</div>
           <div className="nav-links">
             <span className="nav-link" onClick={() => openWindow('about')}>ABOUT ME</span>
-            <span className="nav-link" onClick={() => openWindow('devfiles')}>DEV PROJECTS</span>
-            <span className="nav-link" onClick={() => openWindow('film')}>FILM PROJECTS</span>
-            <span className="nav-link" onClick={() => openWindow('game')}>GAME PROJECTS</span>
+
+            {/* Projects dropdown */}
+            <div ref={projectsRef} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <span
+                className={`nav-link${projectsOpen ? ' active' : ''}`}
+                onClick={() => setProjectsOpen(o => !o)}
+                style={{ gap: 4, display: 'flex', alignItems: 'center' }}
+              >
+                PROJECTS
+                <span style={{ fontSize: 8, opacity: 0.7 }}>{projectsOpen ? '▲' : '▼'}</span>
+              </span>
+              {projectsOpen && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  minWidth: 140,
+                  background: 'var(--surface)',
+                  border: '1px solid var(--outline)',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
+                  zIndex: 99999,
+                }}>
+                  {([
+                    { label: 'DEV', type: 'devfiles' as const },
+                    { label: 'FILM', type: 'film' as const },
+                    { label: 'GAME', type: 'game' as const },
+                  ] as const).map(item => (
+                    <div
+                      key={item.type}
+                      onClick={() => { openWindow(item.type); setProjectsOpen(false) }}
+                      style={{
+                        padding: '8px 14px',
+                        fontFamily: 'var(--font-h)',
+                        fontSize: 10,
+                        color: 'var(--on-surface)',
+                        cursor: 'pointer',
+                        borderBottom: '1px solid var(--outline)',
+                        letterSpacing: '0.08em',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--primary-container)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      {item.label} PROJECTS
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <span className="nav-link" onClick={() => openWindow('mail')}>CONTACT</span>
           </div>
         </div>

@@ -237,10 +237,10 @@ export const APP_META: AppMeta[] = [
     phoneBg: 'linear-gradient(145deg,#0a5020,#1a8040)',
     spotlightDesc: 'Endless downhill run',
     appDescription: 'Pixel-art endless snowboard runner — dodge rocks and hit speed.',
-    preInstalled: true,
+    preInstalled: false,
     showOnDesktop: true, showOnPhone: true, phoneInline: false,
     showInSpotlight: true, showInContextMenu: false,
-    desktopCol: 'R', desktopRow: 3,
+    desktopCol: 'R', desktopRow: 4,
   },
   {
     type: 'snake',
@@ -253,7 +253,7 @@ export const APP_META: AppMeta[] = [
     preInstalled: true,
     showOnDesktop: true, showOnPhone: true, phoneInline: false,
     showInSpotlight: true, showInContextMenu: true,
-    desktopCol: 'R', desktopRow: 4,
+    desktopCol: 'R', desktopRow: 3,
   },
   // ── Optional apps (installed via App Market) ───────────────────────────────
   {

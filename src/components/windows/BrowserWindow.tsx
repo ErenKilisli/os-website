@@ -6,20 +6,31 @@ import { WindowState } from '@/store/windowStore'
 interface Props { win: WindowState; isMobile?: boolean }
 
 const BOOKMARKS = [
-  { label: 'DDG Search',  url: 'https://html.duckduckgo.com/html/' },
-  { label: 'Wikipedia',   url: 'https://en.m.wikipedia.org/wiki/Main_Page' },
-  { label: 'Hacker News', url: 'https://news.ycombinator.com' },
-  { label: 'OpenStreetMap', url: 'https://www.openstreetmap.org' },
-  { label: 'MDN Docs',    url: 'https://developer.mozilla.org/en-US/' },
+  { label: 'himerenkilisli.com', url: 'https://himerenkilisli.com' },
+  { label: 'Lizard — Wikipedia', url: 'https://en.wikipedia.org/wiki/Lizard' },
+  { label: 'Hacker News',        url: 'https://news.ycombinator.com' },
+  { label: 'OpenStreetMap',      url: 'https://www.openstreetmap.org' },
+  { label: 'MDN Docs',           url: 'https://developer.mozilla.org/en-US/' },
 ]
 
 // Sites known to hard-block iframes
 const BLOCKED_DOMAINS = [
   'google.com', 'youtube.com', 'twitter.com', 'x.com',
-  'instagram.com', 'facebook.com', 'linkedin.com', 'duckduckgo.com',
+  'instagram.com', 'facebook.com', 'linkedin.com',
 ]
 function isLikelyBlocked(url: string) {
+  // Allow html.duckduckgo.com (iframe-friendly endpoint), block duckduckgo.com home
+  if (url.includes('html.duckduckgo.com')) return false
+  if (url.includes('duckduckgo.com')) return true
   return BLOCKED_DOMAINS.some(d => url.includes(d))
+}
+
+/** Returns true if the input looks like a search query (not a URL) */
+function isSearchQuery(input: string) {
+  const t = input.trim()
+  if (t.startsWith('http://') || t.startsWith('https://')) return false
+  if (t.includes('.') && !t.includes(' ') && !t.startsWith('/')) return false
+  return true
 }
 
 // Win95-style beveled button
@@ -39,7 +50,7 @@ function W95Btn({
       onMouseLeave={() => setPressed(false)}
       style={{
         minWidth: 26, height: 24, padding: '0 6px',
-        background: disabled ? '#d4d0c8' : '#d4d0c8',
+        background: '#d4d0c8',
         border: '2px solid',
         borderTopColor:    pressed ? '#808080' : '#ffffff',
         borderLeftColor:   pressed ? '#808080' : '#ffffff',
@@ -72,13 +83,15 @@ export function BrowserWindow({ win, isMobile = false }: Props) {
   const navigate = useCallback((target: string) => {
     let normalized = target.trim()
     if (!normalized) return
+
+    // Search query → open in new tab (no search engine allows iframe embedding)
+    if (isSearchQuery(normalized)) {
+      window.open('https://duckduckgo.com/?q=' + encodeURIComponent(normalized), '_blank')
+      return
+    }
+
     if (!normalized.startsWith('http://') && !normalized.startsWith('https://')) {
-      if (normalized.includes('.') && !normalized.includes(' ')) {
-        normalized = 'https://' + normalized
-      } else {
-        // Search via DDG HTML-only endpoint (iframe-friendly)
-        normalized = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(normalized)
-      }
+      normalized = 'https://' + normalized
     }
 
     if (isLikelyBlocked(normalized)) {
@@ -213,93 +226,91 @@ export function BrowserWindow({ win, isMobile = false }: Props) {
             </div>
           )}
 
-          {/* New Tab / Home */}
+          {/* ── Home / New Tab page — DDG-inspired ── */}
           {!url && (
             <div style={{
               position: 'absolute', inset: 0,
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16,
-              background: '#d4d0c8',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              background: '#ffffff',
+              gap: 0,
             }}>
-              {/* Win95-style dialog box */}
-              <div style={{
-                background: '#d4d0c8',
-                border: '2px solid',
-                borderTopColor: '#fff', borderLeftColor: '#fff',
-                borderBottomColor: '#808080', borderRightColor: '#808080',
-                boxShadow: '2px 2px 0 #000',
-                width: 380,
-              }}>
-                {/* Title bar */}
+              {/* Logo area */}
+              <div style={{ marginBottom: 24, textAlign: 'center' }}>
+                <div style={{ fontSize: 52, lineHeight: 1, marginBottom: 8 }}>🦎</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 22, fontWeight: 'bold', color: '#cc3300', letterSpacing: 2 }}>
+                  LIZARD
+                  <span style={{ color: '#ff6600' }}>.</span>
+                  <span style={{ color: '#cc3300' }}>OS</span>
+                </div>
+                <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#888', marginTop: 2 }}>
+                  Internet Browser
+                </div>
+              </div>
+
+              {/* Search box */}
+              <div style={{ width: 'min(480px, 88%)', marginBottom: 20 }}>
                 <div style={{
-                  background: 'linear-gradient(90deg, #000080, #1084d0)',
-                  padding: '4px 8px',
-                  display: 'flex', alignItems: 'center', gap: 6,
+                  display: 'flex', border: '2px solid #ccc',
+                  borderRadius: 0, overflow: 'hidden',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                 }}>
-                  <span style={{ fontSize: 14 }}>🦎</span>
-                  <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#fff', fontWeight: 'bold' }}>
-                    LIZARD.OS Internet Explorer
-                  </span>
+                  <input
+                    value={homeInput}
+                    onChange={e => setHomeInput(e.target.value)}
+                    placeholder="Search or enter a web address"
+                    autoFocus
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        navigate(homeInput)
+                        setHomeInput('')
+                      }
+                    }}
+                    style={{
+                      flex: 1, padding: '10px 14px',
+                      border: 'none', outline: 'none',
+                      fontFamily: 'monospace', fontSize: 13, color: '#000',
+                      background: '#fff',
+                    }}
+                  />
+                  <button
+                    onClick={() => { navigate(homeInput); setHomeInput('') }}
+                    style={{
+                      padding: '0 16px',
+                      background: '#cc3300', border: 'none',
+                      color: '#fff', fontFamily: 'monospace', fontSize: 12,
+                      cursor: 'pointer', fontWeight: 'bold',
+                    }}
+                  >
+                    Go
+                  </button>
                 </div>
-                {/* Body */}
-                <div style={{ padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <div style={{ fontFamily: 'monospace', fontSize: 12, color: '#000' }}>
-                    Type a web address or search term:
-                  </div>
-                  <div style={{ display: 'flex', gap: 4 }}>
-                    <input
-                      value={homeInput}
-                      onChange={e => setHomeInput(e.target.value)}
-                      placeholder="e.g. wikipedia.org or &quot;lizard facts&quot;"
-                      autoFocus
-                      onKeyDown={e => { if (e.key === 'Enter') { navigate(homeInput); setHomeInput('') } }}
-                      style={{
-                        flex: 1,
-                        border: '2px solid', borderTopColor: '#808080', borderLeftColor: '#808080',
-                        borderBottomColor: '#fff', borderRightColor: '#fff',
-                        padding: '3px 6px', fontFamily: 'monospace', fontSize: 12, outline: 'none',
-                      }}
-                    />
-                    <W95Btn onClick={() => { navigate(homeInput); setHomeInput('') }}>Go</W95Btn>
-                  </div>
-                  {/* Quick links */}
-                  <div style={{ borderTop: '1px solid #808080', paddingTop: 10 }}>
-                    <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#808080', marginBottom: 6 }}>
-                      FAVORITES:
-                    </div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                      {BOOKMARKS.map(b => (
-                        <button key={b.url} onClick={() => navigate(b.url)}
-                          style={{
-                            fontFamily: 'monospace', fontSize: 11,
-                            padding: '2px 10px', cursor: 'pointer',
-                            background: '#d4d0c8',
-                            border: '2px solid',
-                            borderTopColor: '#fff', borderLeftColor: '#fff',
-                            borderBottomColor: '#808080', borderRightColor: '#808080',
-                            color: '#000',
-                          }}
-                          onMouseDown={e => {
-                            e.currentTarget.style.borderTopColor = '#808080'
-                            e.currentTarget.style.borderLeftColor = '#808080'
-                            e.currentTarget.style.borderBottomColor = '#fff'
-                            e.currentTarget.style.borderRightColor = '#fff'
-                          }}
-                          onMouseUp={e => {
-                            e.currentTarget.style.borderTopColor = '#fff'
-                            e.currentTarget.style.borderLeftColor = '#fff'
-                            e.currentTarget.style.borderBottomColor = '#808080'
-                            e.currentTarget.style.borderRightColor = '#808080'
-                          }}
-                        >
-                          {b.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#808080' }}>
-                    Note: Some sites block embedding. Use DDG Search for web search.
-                  </div>
+                <div style={{
+                  fontFamily: 'monospace', fontSize: 9, color: '#aaa', marginTop: 6, textAlign: 'center',
+                }}>
+                  Search opens DuckDuckGo in a new tab · URLs load in browser
                 </div>
+              </div>
+
+              {/* Bookmarks grid */}
+              <div style={{
+                display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center',
+                width: 'min(480px, 88%)',
+              }}>
+                {BOOKMARKS.map(b => (
+                  <button key={b.url} onClick={() => navigate(b.url)}
+                    style={{
+                      fontFamily: 'monospace', fontSize: 11,
+                      padding: '5px 12px', cursor: 'pointer',
+                      background: '#f5f5f5',
+                      border: '1px solid #ddd',
+                      color: '#333',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#ffe8e0'; e.currentTarget.style.borderColor = '#cc3300' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#f5f5f5'; e.currentTarget.style.borderColor = '#ddd' }}
+                  >
+                    {b.label}
+                  </button>
+                ))}
               </div>
             </div>
           )}
