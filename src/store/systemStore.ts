@@ -68,6 +68,9 @@ interface SystemStore {
   uiMode: UiMode
   phoneWallpaper: string
   settingsInitTab: string
+  userName: string
+  userIcon: string
+  loginPassword: string
   setVolume: (v: number) => void
   setBrightness: (v: number) => void
   setTheme: (t: Theme) => void
@@ -79,6 +82,9 @@ interface SystemStore {
   setUiMode: (m: UiMode) => void
   setPhoneWallpaper: (c: string) => void
   setSettingsInitTab: (tab: string) => void
+  setUserName: (n: string) => void
+  setUserIcon: (icon: string) => void
+  setLoginPassword: (p: string) => void
 }
 
 export const useSystemStore = create<SystemStore>()(
@@ -95,6 +101,9 @@ export const useSystemStore = create<SystemStore>()(
       uiMode: 'dark',
       phoneWallpaper: '#008080',
       settingsInitTab: '',
+      userName: 'EREN_KILISLI',
+      userIcon: '🦎',
+      loginPassword: '',
       setVolume: (volume) => set({ volume }),
       setBrightness: (brightness) => set({ brightness }),
       setTheme: (theme) => set({ theme }),
@@ -106,6 +115,9 @@ export const useSystemStore = create<SystemStore>()(
       setUiMode: (uiMode) => set({ uiMode }),
       setPhoneWallpaper: (phoneWallpaper) => set({ phoneWallpaper }),
       setSettingsInitTab: (settingsInitTab) => set({ settingsInitTab }),
+      setUserName: (userName) => set({ userName }),
+      setUserIcon: (userIcon) => set({ userIcon }),
+      setLoginPassword: (loginPassword) => set({ loginPassword }),
     }),
     {
       name: 'lizard-os-system',

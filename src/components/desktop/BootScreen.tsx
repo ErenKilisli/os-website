@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useSounds } from '@/hooks/useSounds'
 
 const LINES = [
   { html: '<span class="hi">OS.WEBSITE LIZARD VERSION</span>' },
@@ -20,6 +21,7 @@ export function BootScreen({ onComplete }: { onComplete: () => void }) {
   const [lines, setLines] = useState<string[]>([])
   const [progress, setProgress] = useState(0)
   const [visible, setVisible] = useState(true)
+  const { playStartup } = useSounds()
 
   useEffect(() => {
     let lineIdx = 0
@@ -36,16 +38,19 @@ export function BootScreen({ onComplete }: { onComplete: () => void }) {
           setProgress(p)
           if (p >= 100) {
             clearInterval(fill)
+            // Play startup sound at 100% — fires when desktop OS is "ready"
+            playStartup()
             setTimeout(() => {
               setVisible(false)
               setTimeout(onComplete, 400)
-            }, 400)
+            }, 500)
           }
         }, 16)
       }
     }
     const t = setTimeout(addLine, 300)
     return () => clearTimeout(t)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onComplete])
 
   return (

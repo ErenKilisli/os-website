@@ -16,7 +16,6 @@ import { DesktopContextMenu } from './DesktopContextMenu'
 import { CustomCursor } from './CustomCursor'
 import { PhoneView } from './PhoneView'
 import { TerminalMode } from './TerminalMode'
-import { useSounds } from '@/hooks/useSounds'
 
 type Phase = 'boot' | 'login' | 'desktop' | 'shutdown' | 'restart'
 
@@ -32,8 +31,6 @@ export function Desktop() {
   const [navCollapsed, setNavCollapsed] = useState(false)
   const { windows, icons, openWindow, selectIcon } = useWindowStore()
   const { brightness, theme, viewMode, uiMode, setViewMode } = useSystemStore()
-  const { playStartup } = useSounds()
-
   // Mark mounted — prevents Zustand persist mismatch on brightness overlay
   useEffect(() => { setMounted(true) }, [])
 
@@ -79,7 +76,7 @@ export function Desktop() {
         <BootScreen key={bootKey} onComplete={() => setPhase('login')} />
       )}
       {phase === 'login' && (
-        <LoginScreen onLogin={() => { playStartup(); setPhase('desktop') }} />
+        <LoginScreen onLogin={() => setPhase('desktop')} />
       )}
       {(phase === 'shutdown' || phase === 'restart') && (
         <ShutdownScreen

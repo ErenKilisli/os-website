@@ -17,6 +17,41 @@ function Blink() {
   return <span style={{ opacity: on ? 1 : 0 }}>_</span>
 }
 
+// Classic Win95 beveled button
+function Win95Button({ onClick, children }: { onClick?: () => void; children: React.ReactNode }) {
+  const [pressed, setPressed] = useState(false)
+  return (
+    <button
+      onClick={onClick}
+      onMouseDown={() => setPressed(true)}
+      onMouseUp={() => setPressed(false)}
+      onMouseLeave={() => setPressed(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        background: '#c0c0c0',
+        border: '2px solid',
+        borderTopColor:    pressed ? '#808080' : '#ffffff',
+        borderLeftColor:   pressed ? '#808080' : '#ffffff',
+        borderBottomColor: pressed ? '#ffffff' : '#808080',
+        borderRightColor:  pressed ? '#ffffff' : '#808080',
+        boxShadow: pressed ? 'none' : '1px 1px 0 #000',
+        color: '#000000',
+        fontFamily: 'var(--font-press-start, monospace)',
+        fontSize: 8,
+        letterSpacing: '0.12em',
+        padding: pressed ? '9px 18px 7px 22px' : '8px 20px',
+        cursor: 'pointer',
+        outline: 'none',
+        userSelect: 'none',
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
 export function ShutdownScreen({ mode, onComplete }: Props) {
   const [phase, setPhase] = useState<'text' | 'safe'>('text')
   const { playShutdown } = useSounds()
@@ -77,7 +112,7 @@ export function ShutdownScreen({ mode, onComplete }: Props) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 32,
+              gap: 28,
               textAlign: 'center',
             }}
           >
@@ -86,7 +121,6 @@ export function ShutdownScreen({ mode, onComplete }: Props) {
               border: '2px solid #404040',
               padding: '32px 56px',
               background: '#060610',
-              boxShadow: 'inset 0 0 40px rgba(0,0,0,0.6)',
             }}>
               <div style={{ fontFamily: 'monospace', fontSize: 15, color: '#606060', marginBottom: 10 }}>
                 It is now safe to
@@ -96,38 +130,16 @@ export function ShutdownScreen({ mode, onComplete }: Props) {
               </div>
             </div>
 
-            {/* Restart button */}
-            <motion.button
-              onClick={onComplete}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.4 }}
-              whileHover={{ boxShadow: '0 0 24px rgba(0,255,255,0.5), 0 0 48px rgba(0,255,255,0.2)' }}
-              whileTap={{ scale: 0.97 }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                background: '#000',
-                border: '2px solid #00ffff',
-                color: '#00ffff',
-                fontFamily: 'var(--font-press-start, monospace)',
-                fontSize: 9,
-                letterSpacing: '0.18em',
-                padding: '14px 28px',
-                cursor: 'pointer',
-                boxShadow: '0 0 12px rgba(0,255,255,0.25)',
-                outline: 'none',
-              }}
-            >
-              <span style={{ fontSize: 16, lineHeight: 1 }}>⏻</span>
+            {/* Classic Win95 grey restart button */}
+            <Win95Button onClick={onComplete}>
+              <span style={{ fontSize: 13, lineHeight: 1 }}>⏻</span>
               PRESS TO RESTART
-            </motion.button>
+            </Win95Button>
 
             <div style={{
               fontFamily: 'monospace',
               fontSize: 10,
-              color: '#303040',
+              color: '#242424',
               letterSpacing: '0.08em',
             }}>
               OS.WEBSITE v1.0 — EREN KILISLI

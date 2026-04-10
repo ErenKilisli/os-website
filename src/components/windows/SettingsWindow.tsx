@@ -19,12 +19,19 @@ import imgJaguar    from '@/img/wallpaper/pexels-benni-fish-40038242-17528288.jp
 const imgSrc = (img: { src: string } | string) =>
   typeof img === 'string' ? img : img.src
 
-type Tab = 'Display' | 'Wallpaper' | 'Appearance' | 'Sound' | 'System'
+const ANIMAL_ICONS = [
+  '🦎','🐉','🐈','🐕','🐺','🦊','🐻','🦁','🐯','🐨',
+  '🐼','🦝','🦋','🦅','🦉','🐸','🐙','🦑','🦈','🐬',
+  '🦔','🐇','🦦','🐊','🦕','🦖','🐳','🦜','🦚','🐧',
+]
+
+type Tab = 'Display' | 'Wallpaper' | 'Appearance' | 'Sound' | 'User' | 'System'
 const TABS: { id: Tab; icon: string }[] = [
   { id: 'Display',    icon: 'desktop_windows' },
   { id: 'Wallpaper',  icon: 'wallpaper' },
   { id: 'Appearance', icon: 'palette' },
   { id: 'Sound',      icon: 'volume_up' },
+  { id: 'User',       icon: 'person' },
   { id: 'System',     icon: 'memory' },
 ]
 
@@ -53,12 +60,17 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
   const {
     volume, brightness, theme, wallpaper, wallpaperColor, wallpaperPhoto,
     cursorStyle, viewMode, uiMode, settingsInitTab,
+    userName, userIcon, loginPassword,
     setVolume, setBrightness, setTheme, setWallpaper, setWallpaperColor, setWallpaperPhoto,
     setCursorStyle, setViewMode, setUiMode, setSettingsInitTab,
+    setUserName, setUserIcon, setLoginPassword,
   } = useSystemStore()
 
   const [activeTab, setActiveTab] = useState<Tab>('Display')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [draftName, setDraftName] = useState(userName)
+  const [draftPass, setDraftPass] = useState(loginPassword)
+  const [showPass, setShowPass] = useState(false)
 
   // Real browser sys info
   const [sysInfo, setSysInfo] = useState({
@@ -322,6 +334,111 @@ export function SettingsWindow({ win, isMobile = false }: Props) {
                   ))}
                 </div>
               </div>
+            </>
+          )}
+
+          {/* ─── USER ─── */}
+          {activeTab === 'User' && (
+            <>
+              {/* Current profile preview */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 14,
+                padding: '10px 12px', marginBottom: 4,
+                background: '#020812', border: '1px solid rgba(0,255,255,0.15)',
+              }}>
+                <div style={{
+                  width: 48, height: 48, background: '#000',
+                  border: '2px solid #00ffff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 26, boxShadow: '0 0 12px rgba(0,255,255,0.2)', flexShrink: 0,
+                }}>
+                  {userIcon}
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'var(--font-h)', fontSize: 10, color: '#00ffff', letterSpacing: '0.1em' }}>
+                    {userName}
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#404860', letterSpacing: '0.1em', marginTop: 4 }}>
+                    LIZARD.OS USER ACCOUNT
+                  </div>
+                </div>
+              </div>
+
+              <div style={SECTION}>ANIMAL ICON</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {ANIMAL_ICONS.map(icon => (
+                  <button
+                    key={icon}
+                    onClick={() => setUserIcon(icon)}
+                    title={icon}
+                    style={{
+                      width: 34, height: 34, fontSize: 18,
+                      background: userIcon === icon ? 'rgba(0,255,255,0.15)' : 'transparent',
+                      border: userIcon === icon ? '2px solid #00ffff' : '2px solid rgba(255,255,255,0.08)',
+                      cursor: 'pointer', borderRadius: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: userIcon === icon ? '0 0 8px rgba(0,255,255,0.3)' : 'none',
+                    }}
+                  >
+                    {icon}
+                  </button>
+                ))}
+              </div>
+
+              <div style={SECTION}>DISPLAY NAME</div>
+              <input
+                type="text"
+                value={draftName}
+                maxLength={14}
+                onChange={e => setDraftName(e.target.value.toUpperCase())}
+                style={{
+                  background: '#000', width: '100%', boxSizing: 'border-box',
+                  border: '2px solid', borderTopColor: '#404040', borderLeftColor: '#404040',
+                  borderBottomColor: '#00ffff', borderRightColor: '#00ffff',
+                  color: '#00ffff', fontFamily: 'monospace', fontSize: 14,
+                  padding: '6px 8px', outline: 'none', letterSpacing: '0.12em',
+                }}
+              />
+
+              <div style={SECTION}>LOCK SCREEN PASSWORD</div>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                <input
+                  type={showPass ? 'text' : 'password'}
+                  value={draftPass}
+                  placeholder="leave blank to disable"
+                  onChange={e => setDraftPass(e.target.value)}
+                  style={{
+                    background: '#000', flex: 1,
+                    border: '2px solid', borderTopColor: '#404040', borderLeftColor: '#404040',
+                    borderBottomColor: '#00ffff', borderRightColor: '#00ffff',
+                    color: '#00ffff', fontFamily: 'monospace', fontSize: 13,
+                    padding: '6px 8px', outline: 'none', letterSpacing: '0.1em',
+                  }}
+                />
+                <button
+                  onClick={() => setShowPass(s => !s)}
+                  className="swp-btn"
+                  style={{ padding: '5px 8px', flexShrink: 0 }}
+                  title={showPass ? 'Hide' : 'Show'}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                    {showPass ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
+              <div style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#303850', letterSpacing: '0.1em', marginTop: 5 }}>
+                SHOWN ON LOGIN SCREEN IF SET
+              </div>
+
+              {/* Save button */}
+              <button
+                className="sbtn"
+                onClick={() => { setUserName(draftName || 'USER'); setLoginPassword(draftPass) }}
+                style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 13 }}>save</span>
+                SAVE PROFILE
+              </button>
             </>
           )}
 
