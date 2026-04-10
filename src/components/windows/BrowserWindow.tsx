@@ -7,8 +7,9 @@ interface Props { win: WindowState; isMobile?: boolean }
 
 const BOOKMARKS = [
   { label: 'himerenkilisli.com', url: 'https://himerenkilisli.com' },
-  { label: 'Lizard — Wikipedia', url: 'https://en.wikipedia.org/wiki/Lizard' },
+  { label: 'Lizard — Wikipedia', url: 'https://en.m.wikipedia.org/wiki/Lizard' },
   { label: 'Hacker News',        url: 'https://news.ycombinator.com' },
+  { label: 'Internet Archive',   url: 'https://archive.org' },
   { label: 'OpenStreetMap',      url: 'https://www.openstreetmap.org' },
   { label: 'MDN Docs',           url: 'https://developer.mozilla.org/en-US/' },
 ]
@@ -84,10 +85,9 @@ export function BrowserWindow({ win, isMobile = false }: Props) {
     let normalized = target.trim()
     if (!normalized) return
 
-    // Search query → open in new tab (no search engine allows iframe embedding)
+    // Search query → Wikipedia search (iframe-friendly; all major search engines block embedding)
     if (isSearchQuery(normalized)) {
-      window.open('https://duckduckgo.com/?q=' + encodeURIComponent(normalized), '_blank')
-      return
+      normalized = 'https://en.m.wikipedia.org/wiki/Special:Search?search=' + encodeURIComponent(normalized)
     }
 
     if (!normalized.startsWith('http://') && !normalized.startsWith('https://')) {
@@ -287,7 +287,7 @@ export function BrowserWindow({ win, isMobile = false }: Props) {
                 <div style={{
                   fontFamily: 'monospace', fontSize: 9, color: '#aaa', marginTop: 6, textAlign: 'center',
                 }}>
-                  Search opens DuckDuckGo in a new tab · URLs load in browser
+                  Search loads Wikipedia · Enter a URL to browse any site
                 </div>
               </div>
 
