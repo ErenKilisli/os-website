@@ -19,7 +19,12 @@
       "Bash(for url:*)",
       "Bash(do echo:*)",
       "Bash(npx next:*)",
-      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(list\\(d.get\\(''''dependencies'''',{}\\).keys\\(\\)\\)\\)\")"
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(list\\(d.get\\(''''dependencies'''',{}\\).keys\\(\\)\\)\\)\")",
+      "Bash(sed -i '' 's|https://linkedin.com/in/erenkilisli|https://www.linkedin.com/in/ierenkilisli/|g' /Users/erenkilisli/Documents/AI_Development/personal-website/preview.html)",
+      "Bash(sed -i '' 's|linkedin.com/in/erenkilisli|linkedin.com/in/ierenkilisli|g' /Users/erenkilisli/Documents/AI_Development/personal-website/preview.html)",
+      "Bash(sed -i '' 's|https://github.com/erenkilisli|https://github.com/ErenKilisli|g' /Users/erenkilisli/Documents/AI_Development/personal-website/preview.html)",
+      "Bash(sed -i '' 's|github.com/erenkilisli|github.com/ErenKilisli|g' /Users/erenkilisli/Documents/AI_Development/personal-website/preview.html)",
+      "Bash(git rm:*)"
     ]
   }
 }
