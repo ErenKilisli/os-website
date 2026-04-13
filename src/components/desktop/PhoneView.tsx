@@ -426,8 +426,8 @@ function PhoneBootScreen({ onComplete }: { onComplete: () => void }) {
         <span style={{ fontFamily: C.font, fontSize: 7, color: '#8080c0', letterSpacing: '0.12em' }}>MOBILE EDITION</span>
       </div>
       <div>
-        <div style={{ height: 14, boxShadow: C.sunken, background: C.white, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${progress}%`, background: C.navy, transition: 'width 0.04s' }} />
+        <div style={{ height: 14, boxShadow: C.sunken, background: C.black, overflow: 'hidden' }}>
+          <div style={{ height: '100%', width: `${progress}%`, background: C.white, transition: 'width 0.04s' }} />
         </div>
         <div style={{ fontFamily: C.font, fontSize: 6, color: '#8080c0', letterSpacing: '0.06em', marginTop: 4, textAlign: 'center' }}>{progress}%</div>
       </div>
