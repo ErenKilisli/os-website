@@ -67,6 +67,7 @@ export function CustomCursor() {
   const [clicking, setClicking]       = useState(false)
   const [resizeDir, setResizeDir]     = useState<string | null>(null)
   const cursorStyle = useSystemStore(s => s.cursorStyle)
+  const viewMode = useSystemStore(s => s.viewMode)
 
   useEffect(() => {
     let lastDir: string | null = null
@@ -101,6 +102,8 @@ export function CustomCursor() {
       window.removeEventListener('mouseup',   up)
     }
   }, [])
+
+  if (viewMode === 'phone') return null
 
   return (
     <div ref={posRef} style={{

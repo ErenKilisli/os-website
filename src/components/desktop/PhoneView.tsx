@@ -519,11 +519,11 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
               </AnimatePresence>
             </div>
             {/* Win95 Taskbar Dock */}
-            <div style={{ flexShrink: 0, height: 46, background: T.bg, borderTop: `2px solid ${T.white}`, boxShadow: `inset 0 1px 0 ${T.white}`, display: 'flex', alignItems: 'center', padding: '0 4px', gap: 3 }}>
+            <div style={{ flexShrink: 0, height: 60, background: T.bg, borderTop: `2px solid ${T.white}`, boxShadow: `inset 0 1px 0 ${T.white}`, display: 'flex', alignItems: 'center', padding: '0 4px', gap: 3 }}>
               {DOCK_APPS.map(app => (
-                <button key={app.type} onClick={() => setActiveApp(app)} style={{ flex: 1, background: T.bg, border: 'none', boxShadow: T.raised, height: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 16, color: T.black }}>{app.icon}</span>
-                  <span style={{ fontFamily: T.font, fontSize: 5, color: T.black, textTransform: 'uppercase', letterSpacing: '0.01em' }}>{app.phoneLabel ?? app.label}</span>
+                <button key={app.type} onClick={() => setActiveApp(app)} style={{ flex: 1, background: T.bg, border: 'none', boxShadow: T.raised, height: 50, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 24, color: T.black }}>{app.icon}</span>
+                  <span style={{ fontFamily: T.font, fontSize: 9, color: T.black, textTransform: 'uppercase', letterSpacing: '0.01em' }}>{app.phoneLabel ?? app.label}</span>
                 </button>
               ))}
             </div>
