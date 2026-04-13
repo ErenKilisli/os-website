@@ -1,9 +1,10 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Window } from './Window'
 import { WindowState, useWindowStore } from '@/store/windowStore'
 import { GAME_PROJECTS, FILM_PROJECTS, DEVFILES_PROJECTS, CINEMA_PROJECTS, ARCADE_PROJECTS, Project } from '@/data/projects'
 import { PROJECT_LOGOS } from '@/components/desktop/FolderIcons'
+import { useColumnResize } from './useColumnResize'
 
 interface Props { win: WindowState; category: string; isMobile?: boolean }
 
@@ -56,8 +57,9 @@ function TBtn({ children, active, onClick, title, disabled }: {
 }
 
 // ── List row ──────────────────────────────────────────────────────────
-function ListRow({ p, accent, icon, selected, onClick, onDoubleClick }: {
+function ListRow({ p, accent, icon, selected, colsString, onClick, onDoubleClick }: {
   p: Project; accent: string; icon: string; selected: boolean
+  colsString: string
   onClick: () => void; onDoubleClick: () => void
 }) {
   const [hov, setHov] = useState(false)
@@ -69,7 +71,7 @@ function ListRow({ p, accent, icon, selected, onClick, onDoubleClick }: {
       onMouseLeave={() => setHov(false)}
       style={{
         display: 'grid',
-        gridTemplateColumns: '30px 1fr 110px 44px',
+        gridTemplateColumns: colsString,
         alignItems: 'center',
         height: 28,
         borderBottom: '1px solid #e8e8e8',
@@ -178,6 +180,8 @@ export function FileBrowserWindow({ win, category, isMobile = false }: Props) {
   const data = CATEGORY_DATA[category]
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [viewMode, setViewMode]     = useState<ViewMode>('list')
+  const nameRef = useRef<HTMLDivElement>(null)
+  const { colsString, onMouseDown } = useColumnResize(250, 50)
 
   if (!data) return null
 
@@ -251,22 +255,47 @@ export function FileBrowserWindow({ win, category, isMobile = false }: Props) {
                 {/* Column headers */}
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: '30px 1fr 110px 44px',
+                  gridTemplateColumns: colsString,
                   height: 22,
-                  position: 'sticky', top: 0, zIndex: 1,
+                  position: 'sticky', top: 0, zIndex: 2,
                   background: 'var(--surface-dim)',
                   boxShadow: 'inset 1.5px 1.5px 0 #fff, inset -1.5px -1.5px 0 #808080',
                   borderBottom: '1px solid #808080',
                 }}>
                   {['', 'Name', 'Type', 'Year'].map((col, i) => (
-                    <div key={i} style={{
-                      display: 'flex', alignItems: 'center',
-                      paddingLeft: i === 0 ? 0 : 6,
-                      fontFamily: 'var(--font-h)', fontSize: 6,
-                      color: '#333', letterSpacing: '0.06em',
-                      borderRight: i < 3 ? '1px solid #808080' : 'none',
-                    }}>
+                    <div
+                      key={i}
+                      ref={i === 1 ? nameRef : undefined}
+                      style={{
+                        display: 'flex', alignItems: 'center',
+                        paddingLeft: i === 0 ? 0 : 6,
+                        fontFamily: 'var(--font-h)', fontSize: 6,
+                        color: '#333', letterSpacing: '0.06em',
+                        borderRight: i < 3 ? '1px solid #808080' : 'none',
+                        position: 'relative',
+                      }}
+                    >
                       {col}
+                      {i === 1 && (
+                        <div
+                          data-cursor="e"
+                          onMouseDown={(e) => onMouseDown('name', e, nameRef.current)}
+                          style={{
+                            position: 'absolute', right: -3, top: 0, bottom: 0, width: 6,
+                            cursor: 'col-resize', zIndex: 10,
+                          }}
+                        />
+                      )}
+                      {i === 2 && (
+                        <div
+                          data-cursor="e"
+                          onMouseDown={(e) => onMouseDown('type', e, nameRef.current)}
+                          style={{
+                            position: 'absolute', right: -3, top: 0, bottom: 0, width: 6,
+                            cursor: 'col-resize', zIndex: 10,
+                          }}
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
@@ -275,6 +304,7 @@ export function FileBrowserWindow({ win, category, isMobile = false }: Props) {
                   <ListRow
                     key={p.id} p={p} accent={data.accent} icon={data.icon}
                     selected={selectedId === p.id}
+                    colsString={colsString}
                     onClick={() => setSelectedId(p.id)}
                     onDoubleClick={() => open(p)}
                   />
