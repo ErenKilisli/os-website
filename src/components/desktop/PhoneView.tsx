@@ -88,7 +88,7 @@ function W95Btn({ children, onClick, primary, style }: {
 
 function PhoneIconContent({ app, size = 22 }: { app: AppDef; size?: number }) {
   if (app.phoneIconNode) return <>{app.phoneIconNode}</>
-  return <span className="material-symbols-outlined" style={{ fontSize: size, color: C.black }}>{app.icon}</span>
+  return <span className="material-symbols-outlined" style={{ fontSize: size, color: app.iconColor || C.black }}>{app.icon}</span>
 }
 
 // ── Status bar ────────────────────────────────────────────────────
@@ -522,7 +522,7 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
             <div style={{ flexShrink: 0, height: 60, background: T.bg, borderTop: `2px solid ${T.white}`, boxShadow: `inset 0 1px 0 ${T.white}`, display: 'flex', alignItems: 'center', padding: '0 4px', gap: 3 }}>
               {DOCK_APPS.map(app => (
                 <button key={app.type} onClick={() => setActiveApp(app)} style={{ flex: 1, background: T.bg, border: 'none', boxShadow: T.raised, height: 50, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 24, color: T.black }}>{app.icon}</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 24, color: app.iconColor || T.black }}>{app.icon}</span>
                   <span style={{ fontFamily: T.font, fontSize: 9, color: T.black, textTransform: 'uppercase', letterSpacing: '0.01em' }}>{app.phoneLabel ?? app.label}</span>
                 </button>
               ))}
