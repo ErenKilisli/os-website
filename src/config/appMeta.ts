@@ -250,7 +250,7 @@ export const APP_META: AppMeta[] = [
     spotlightDesc: 'Endless downhill run',
     appDescription: 'Pixel-art endless snowboard runner — dodge rocks and hit speed.',
     preInstalled: false,
-    showOnDesktop: true, showOnPhone: true, phoneInline: false,
+    showOnDesktop: true, showOnPhone: true, phoneInline: true,
     showInSpotlight: true, showInContextMenu: false,
     desktopCol: 'R', desktopRow: 4,
   },
