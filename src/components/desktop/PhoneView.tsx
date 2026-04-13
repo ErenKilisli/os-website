@@ -348,8 +348,8 @@ function PhoneTerminalScreen() {
 
 // ── Settings screen ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 function PhoneSettingsScreen() {
-  const { viewMode, setViewMode, uiMode, setUiMode, brightness, setBrightness, phoneWallpaper, setPhoneWallpaper } = useSystemStore()
-  const T = uiMode === 'dark' ? C_DARK : C_LIGHT
+  const { viewMode, setViewMode, phoneUiMode, setPhoneUiMode, brightness, setBrightness, phoneWallpaper, setPhoneWallpaper } = useSystemStore()
+  const T = phoneUiMode === 'dark' ? C_DARK : C_LIGHT
   const modes: Array<{ v: 'desktop' | 'phone' | 'terminal'; label: string; icon: string }> = [
     { v: 'phone',    label: 'PHONE',   icon: 'smartphone' },
     { v: 'desktop',  label: 'DESKTOP', icon: 'desktop_windows' },
@@ -368,9 +368,9 @@ function PhoneSettingsScreen() {
       <W95Header title="WINDOW CHROME" />
       <div style={{ display: 'flex', gap: 4, marginBottom: 14 }}>
         {([{ v: 'light' as const, label: 'LIGHT', preview: '#c8c8c8' }, { v: 'dark' as const, label: 'DARK', preview: '#2e2e2e' }]).map(m => (
-          <button key={m.v} onClick={() => setUiMode(m.v)} style={{ flex: 1, height: 48, background: m.preview, border: uiMode === m.v ? `3px solid ${T.navy}` : `2px solid ${T.gray}`, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, boxShadow: uiMode === m.v ? T.sunken : T.raised }}>
+          <button key={m.v} onClick={() => setPhoneUiMode(m.v)} style={{ flex: 1, height: 48, background: m.preview, border: phoneUiMode === m.v ? `3px solid ${T.navy}` : `2px solid ${T.gray}`, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, boxShadow: phoneUiMode === m.v ? T.sunken : T.raised }}>
             <span style={{ fontFamily: T.font, fontSize: 7, color: m.v === 'dark' ? '#ddd' : '#000', letterSpacing: '0.06em' }}>{m.label}</span>
-            {uiMode === m.v && <span style={{ fontFamily: T.font, fontSize: 5, color: m.v === 'dark' ? '#bbb' : T.navy }}>✓ ACTIVE</span>}
+            {phoneUiMode === m.v && <span style={{ fontFamily: T.font, fontSize: 5, color: m.v === 'dark' ? '#bbb' : T.navy }}>✓ ACTIVE</span>}
           </button>
         ))}
       </div>
@@ -474,11 +474,11 @@ function PhoneAppBar({ title, icon, onBack }: { title: string; icon: string; onB
 
 // ── Main PhoneView ────────────────────────────────────────────────
 export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
-  const { setViewMode, uiMode, phoneWallpaper } = useSystemStore()
+  const { setViewMode, phoneUiMode, phoneWallpaper } = useSystemStore()
   const { openWindow, installedApps } = useWindowStore()
   const [activeApp, setActiveApp] = useState<AppDef | null>(null)
   const [booted, setBooted] = useState(false)
-  const T = uiMode === 'dark' ? C_DARK : C_LIGHT
+  const T = phoneUiMode === 'dark' ? C_DARK : C_LIGHT
 
   const handleOpenDesktop = (app: AppDef) => { openWindow(app.type); setViewMode('desktop') }
 

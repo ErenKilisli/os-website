@@ -66,6 +66,7 @@ interface SystemStore {
   cursorStyle: CursorStyle
   viewMode: ViewMode
   uiMode: UiMode
+  phoneUiMode: UiMode
   phoneWallpaper: string
   settingsInitTab: string
   userName: string
@@ -80,6 +81,7 @@ interface SystemStore {
   setCursorStyle: (c: CursorStyle) => void
   setViewMode: (v: ViewMode) => void
   setUiMode: (m: UiMode) => void
+  setPhoneUiMode: (m: UiMode) => void
   setPhoneWallpaper: (c: string) => void
   setSettingsInitTab: (tab: string) => void
   setUserName: (n: string) => void
@@ -99,6 +101,7 @@ export const useSystemStore = create<SystemStore>()(
       cursorStyle: 'cyberwave',
       viewMode: 'desktop',
       uiMode: 'dark',
+      phoneUiMode: 'light',
       phoneWallpaper: '#008080',
       settingsInitTab: '',
       userName: 'EREN_KILISLI',
@@ -113,6 +116,7 @@ export const useSystemStore = create<SystemStore>()(
       setCursorStyle: (cursorStyle) => set({ cursorStyle }),
       setViewMode: (viewMode) => set({ viewMode }),
       setUiMode: (uiMode) => set({ uiMode }),
+      setPhoneUiMode: (phoneUiMode) => set({ phoneUiMode }),
       setPhoneWallpaper: (phoneWallpaper) => set({ phoneWallpaper }),
       setSettingsInitTab: (settingsInitTab) => set({ settingsInitTab }),
       setUserName: (userName) => set({ userName }),
