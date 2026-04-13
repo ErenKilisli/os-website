@@ -24,7 +24,12 @@ const TOOLS: { id: Tool; icon: string; label: string }[] = [
   { id: 'ellipse', icon: 'circle',       label: 'Ellipse' },
 ]
 
-export function PaintWindow({ win, isMobile = false }: { win: WindowState; isMobile?: boolean }) {
+export function PaintAppCore({ isMobile = false, onToolChange, onColorChange, onBrushChange }: {
+  isMobile?: boolean,
+  onToolChange?: (t: Tool) => void,
+  onColorChange?: (c: string) => void,
+  onBrushChange?: (b: number) => void
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const overlayRef = useRef<HTMLCanvasElement>(null)
   const snapshotRef = useRef<ImageData | null>(null)
@@ -33,9 +38,13 @@ export function PaintWindow({ win, isMobile = false }: { win: WindowState; isMob
   const [brushSize, setBrushSize] = useState(2)
   const [drawing, setDrawing] = useState(false)
   const startRef = useRef<{ x: number; y: number } | null>(null)
-  const [canvasSize, setCanvasSize] = useState({ w: 480, h: 320 })
+  
+  const [canvasSize] = useState({ w: 480, h: 320 })
 
-  // Init white canvas
+  const handleTool = (t: Tool) => { setTool(t); if(onToolChange) onToolChange(t); }
+  const handleColor = (c: string) => { setColor(c); if(onColorChange) onColorChange(c); }
+  const handleBrush = (b: number) => { setBrushSize(b); if(onBrushChange) onBrushChange(b); }
+
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -45,15 +54,14 @@ export function PaintWindow({ win, isMobile = false }: { win: WindowState; isMob
     ctx.fillRect(0, 0, canvas.width, canvas.height)
   }, [canvasSize])
 
-  const getPos = (e: React.MouseEvent<HTMLCanvasElement>): { x: number; y: number } => {
-    const rect = e.currentTarget.getBoundingClientRect()
+  const getPos = (clientX: number, clientY: number, target: EventTarget): { x: number; y: number } => {
+    const rect = (target as HTMLElement).getBoundingClientRect()
     return {
-      x: Math.round(e.clientX - rect.left),
-      y: Math.round(e.clientY - rect.top),
+      x: Math.round(clientX - rect.left),
+      y: Math.round(clientY - rect.top),
     }
   }
 
-  // Flood fill
   const floodFill = useCallback((canvas: HTMLCanvasElement, startX: number, startY: number, fillColor: string) => {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
@@ -89,7 +97,7 @@ export function PaintWindow({ win, isMobile = false }: { win: WindowState; isMob
 
   const drawShape = useCallback((
     ctx: CanvasRenderingContext2D,
-    tool: Tool,
+    t: Tool,
     x0: number, y0: number,
     x1: number, y1: number,
     col: string,
@@ -100,11 +108,11 @@ export function PaintWindow({ win, isMobile = false }: { win: WindowState; isMob
     ctx.lineWidth = size
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
-    if (tool === 'line') {
+    if (t === 'line') {
       ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke()
-    } else if (tool === 'rect') {
+    } else if (t === 'rect') {
       ctx.strokeRect(x0, y0, x1 - x0, y1 - y0)
-    } else if (tool === 'ellipse') {
+    } else if (t === 'ellipse') {
       ctx.beginPath()
       ctx.ellipse(
         (x0 + x1) / 2, (y0 + y1) / 2,
@@ -115,8 +123,8 @@ export function PaintWindow({ win, isMobile = false }: { win: WindowState; isMob
     }
   }, [])
 
-  const onMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    const pos = getPos(e)
+  const startDraw = (clientX: number, clientY: number, target: EventTarget) => {
+    const pos = getPos(clientX, clientY, target)
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
@@ -140,11 +148,11 @@ export function PaintWindow({ win, isMobile = false }: { win: WindowState; isMob
     } else {
       snapshotRef.current = ctx.getImageData(0, 0, canvas.width, canvas.height)
     }
-  }, [tool, color, brushSize, floodFill])
+  }
 
-  const onMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+  const moveDraw = (clientX: number, clientY: number, target: EventTarget) => {
     if (!drawing) return
-    const pos = getPos(e)
+    const pos = getPos(clientX, clientY, target)
     const canvas = canvasRef.current
     const overlay = overlayRef.current
     if (!canvas || !overlay) return
@@ -160,12 +168,12 @@ export function PaintWindow({ win, isMobile = false }: { win: WindowState; isMob
       oCtx.clearRect(0, 0, overlay.width, overlay.height)
       drawShape(oCtx, tool, startRef.current.x, startRef.current.y, pos.x, pos.y, color, brushSize)
     }
-  }, [drawing, tool, color, brushSize, drawShape])
+  }
 
-  const onMouseUp = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+  const stopDraw = (clientX: number, clientY: number, target: EventTarget) => {
     if (!drawing) return
     setDrawing(false)
-    const pos = getPos(e)
+    const pos = getPos(clientX, clientY, target)
     const canvas = canvasRef.current
     const overlay = overlayRef.current
     if (!canvas || !overlay) return
@@ -179,7 +187,32 @@ export function PaintWindow({ win, isMobile = false }: { win: WindowState; isMob
       oCtx.clearRect(0, 0, overlay.width, overlay.height)
     }
     startRef.current = null
-  }, [drawing, tool, color, brushSize, drawShape])
+  }
+
+  const onMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => startDraw(e.clientX, e.clientY, e.currentTarget)
+  const onMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => moveDraw(e.clientX, e.clientY, e.currentTarget)
+  const onMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => stopDraw(e.clientX, e.clientY, e.currentTarget)
+
+  const onTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault()
+    const t = e.touches[0]
+    startDraw(t.clientX, t.clientY, e.currentTarget)
+  }
+  const onTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault()
+    const t = e.touches[0]
+    moveDraw(t.clientX, t.clientY, e.currentTarget)
+  }
+  const onTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault()
+    if (e.changedTouches.length > 0) {
+      const t = e.changedTouches[0]
+      stopDraw(t.clientX, t.clientY, e.currentTarget)
+    } else {
+      setDrawing(false)
+      startRef.current = null
+    }
+  }
 
   const clearCanvas = () => {
     const canvas = canvasRef.current
@@ -194,7 +227,7 @@ export function PaintWindow({ win, isMobile = false }: { win: WindowState; isMob
     const canvas = canvasRef.current
     if (!canvas) return
     const link = document.createElement('a')
-    link.download = 'paint-artwork.png'
+    link.download = 'paint.png'
     link.href = canvas.toDataURL()
     link.click()
   }
@@ -203,99 +236,88 @@ export function PaintWindow({ win, isMobile = false }: { win: WindowState; isMob
   const H = canvasSize.h
 
   return (
-    <Window win={win} menu={['File', 'Edit', 'View', 'Help']} status={`PAINT.EXE | ${tool.toUpperCase()} | ${color.toUpperCase()} | ${brushSize}px`} isMobile={isMobile}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#c0c0c0', overflow: 'hidden' }}>
-
-        {/* Toolbar */}
-        <div className="paint-toolbar">
-          {/* Tools */}
-          <div className="paint-tool-group">
-            {TOOLS.map((t) => (
-              <button
-                key={t.id}
-                className={`paint-tool-btn${tool === t.id ? ' active' : ''}`}
-                onClick={() => setTool(t.id)}
-                title={t.label}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>{t.icon}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="paint-toolbar-sep" />
-
-          {/* Brush sizes */}
-          <div className="paint-tool-group">
-            {BRUSH_SIZES.map((sz) => (
-              <button
-                key={sz}
-                className={`paint-size-btn${brushSize === sz ? ' active' : ''}`}
-                onClick={() => setBrushSize(sz)}
-                title={`${sz}px`}
-              >
-                <div style={{ width: sz * 2 + 2, height: sz * 2 + 2, borderRadius: '50%', background: '#000', margin: 'auto' }} />
-              </button>
-            ))}
-          </div>
-
-          <div className="paint-toolbar-sep" />
-
-          {/* Actions */}
-          <div className="paint-tool-group">
-            <button className="paint-action-btn" onClick={clearCanvas} title="Clear">
-              <span className="material-symbols-outlined" style={{ fontSize: 15 }}>delete</span>
-              <span>CLR</span>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#c0c0c0', overflow: 'hidden' }}>
+      <div className="paint-toolbar" style={{ flexWrap: isMobile ? 'wrap' : 'nowrap' }}>
+        <div className="paint-tool-group">
+          {TOOLS.map((t) => (
+            <button key={t.id} className={`paint-tool-btn${tool === t.id ? ' active' : ''}`} onClick={() => handleTool(t.id)} title={t.label}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>{t.icon}</span>
             </button>
-            <button className="paint-action-btn" onClick={downloadCanvas} title="Save PNG">
-              <span className="material-symbols-outlined" style={{ fontSize: 15 }}>download</span>
-              <span>SAVE</span>
-            </button>
-          </div>
-
-          {/* Active color swatch */}
-          <div className="paint-active-color" style={{ background: color }} title={color} />
-        </div>
-
-        {/* Canvas area */}
-        <div className="paint-canvas-area">
-          <div style={{ position: 'relative', display: 'inline-block', cursor: tool === 'eraser' ? 'cell' : 'crosshair' }}>
-            <canvas
-              ref={canvasRef}
-              width={W}
-              height={H}
-              style={{ display: 'block', imageRendering: 'pixelated' }}
-              onMouseDown={onMouseDown}
-              onMouseMove={onMouseMove}
-              onMouseUp={onMouseUp}
-              onMouseLeave={onMouseUp}
-            />
-            <canvas
-              ref={overlayRef}
-              width={W}
-              height={H}
-              style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
-            />
-          </div>
-        </div>
-
-        {/* Color palette */}
-        <div className="paint-palette">
-          {PALETTE.map((c) => (
-            <button
-              key={c}
-              className={`paint-swatch${color === c ? ' active' : ''}`}
-              style={{ background: c }}
-              onClick={() => setColor(c)}
-              title={c}
-            />
           ))}
-          {/* Custom color */}
-          <label className="paint-custom-color" title="Custom color">
-            <span className="material-symbols-outlined" style={{ fontSize: 12 }}>colorize</span>
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} style={{ display: 'none' }} />
-          </label>
+        </div>
+        <div className="paint-toolbar-sep" />
+        <div className="paint-tool-group">
+          {BRUSH_SIZES.map((sz) => (
+            <button key={sz} className={`paint-size-btn${brushSize === sz ? ' active' : ''}`} onClick={() => handleBrush(sz)} title={`${sz}px`}>
+              <div style={{ width: sz * 2 + 2, height: sz * 2 + 2, borderRadius: '50%', background: '#000', margin: 'auto' }} />
+            </button>
+          ))}
+        </div>
+        <div className="paint-toolbar-sep" />
+        <div className="paint-tool-group">
+          <button className="paint-action-btn" onClick={clearCanvas} title="Clear">
+            <span className="material-symbols-outlined" style={{ fontSize: 15 }}>delete</span>
+            <span>CLR</span>
+          </button>
+          <button className="paint-action-btn" onClick={downloadCanvas} title="Save PNG">
+            <span className="material-symbols-outlined" style={{ fontSize: 15 }}>download</span>
+            <span>SAVE</span>
+          </button>
+        </div>
+        <div className="paint-active-color" style={{ background: color }} title={color} />
+      </div>
+
+      <div className="paint-canvas-area" style={{ flex: 1, overflow: isMobile ? 'auto' : 'hidden' }}>
+        <div style={{ position: 'relative', display: 'inline-block', cursor: tool === 'eraser' ? 'cell' : 'crosshair' }}>
+          <canvas
+            ref={canvasRef}
+            width={W}
+            height={H}
+            style={{ display: 'block', imageRendering: 'pixelated', touchAction: 'none' }}
+            onMouseDown={onMouseDown}
+            onMouseMove={onMouseMove}
+            onMouseUp={onMouseUp}
+            onMouseLeave={onMouseUp}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            onTouchCancel={onTouchEnd}
+          />
+          <canvas
+            ref={overlayRef}
+            width={W}
+            height={H}
+            style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
+          />
         </div>
       </div>
+
+      <div className="paint-palette">
+        {PALETTE.map((c) => (
+          <button key={c} className={`paint-swatch${color === c ? ' active' : ''}`} style={{ background: c }} onClick={() => handleColor(c)} title={c} />
+        ))}
+        <label className="paint-custom-color" title="Custom color">
+          <span className="material-symbols-outlined" style={{ fontSize: 12 }}>colorize</span>
+          <input type="color" value={color} onChange={(e) => handleColor(e.target.value)} style={{ display: 'none' }} />
+        </label>
+      </div>
+    </div>
+  )
+}
+
+export function PaintWindow({ win, isMobile = false }: { win: WindowState; isMobile?: boolean }) {
+  const [tool, setTool] = useState('pencil')
+  const [color, setColor] = useState('#000000')
+  const [brush, setBrush] = useState(2)
+
+  return (
+    <Window win={win} menu={['File', 'Edit', 'View', 'Help']} status={`PAINT.EXE | ${tool.toUpperCase()} | ${color.toUpperCase()} | ${brush}px`} isMobile={isMobile}>
+      <PaintAppCore
+        isMobile={isMobile}
+        onToolChange={(t) => setTool(t)}
+        onColorChange={setColor}
+        onBrushChange={setBrush}
+      />
     </Window>
   )
 }

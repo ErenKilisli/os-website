@@ -6,6 +6,10 @@ import { useWindowStore } from '@/store/windowStore'
 import type { WindowType } from '@/config/appMeta'
 import { DEVFILES_PROJECTS, FILM_PROJECTS, GAME_PROJECTS, Project } from '@/data/projects'
 import { APP_REGISTRY, phoneApps, type AppDef } from '@/config/appRegistry'
+import { APP_META } from '@/config/appMeta'
+import { SnakeAppCore } from '../windows/SnakeWindow'
+import { PaintAppCore } from '../windows/PaintWindow'
+
 
 // ── Phone wallpaper options ───────────────────────────────────────
 export const PHONE_WALLPAPERS = [
@@ -88,7 +92,7 @@ function W95Btn({ children, onClick, primary, style }: {
 
 function PhoneIconContent({ app, size = 22 }: { app: AppDef; size?: number }) {
   if (app.phoneIconNode) return <>{app.phoneIconNode}</>
-  return <span className="material-symbols-outlined" style={{ fontSize: size, color: app.iconColor || C.black }}>{app.icon}</span>
+  return <span className="material-symbols-outlined" style={{ fontSize: size, color: C.black }}>{app.icon}</span>
 }
 
 // ── Status bar ────────────────────────────────────────────────────
@@ -472,6 +476,74 @@ function PhoneAppBar({ title, icon, onBack }: { title: string; icon: string; onB
   )
 }
 
+// ── App Market screen ─────────────────────────────────────────────
+const MARKET_APPS = APP_META.filter(a =>
+  a.type !== 'projectdetail' &&
+  a.type !== 'cinema' &&
+  a.type !== 'arcade' &&
+  a.type !== 'swr' &&
+  a.type !== 'appmarket' &&
+  a.type !== 'sysinfo'
+)
+const SYSTEM_APPS = MARKET_APPS.filter(a => a.preInstalled)
+const OPTIONAL_APPS = MARKET_APPS.filter(a => !a.preInstalled)
+
+function PhoneAppMarketScreen({ T }: { T: typeof C_LIGHT }) {
+  const { installedApps, installApp, uninstallApp } = useWindowStore()
+  const [tab, setTab] = useState<'install' | 'system'>('install')
+  const [installing, setInstalling] = useState<Partial<Record<string, boolean>>>({})
+
+  const handleInstall = (type: WindowType) => {
+    setInstalling(p => ({ ...p, [type]: true }))
+    setTimeout(() => {
+      installApp(type)
+      setInstalling(p => ({ ...p, [type]: false }))
+    }, 1400)
+  }
+
+  const appsToList = tab === 'system' ? SYSTEM_APPS : OPTIONAL_APPS
+
+  return (
+    <div style={{ overflow: 'auto', height: '100%', padding: 10, background: T.bg, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: 4 }}>
+        <button onClick={() => setTab('install')} style={{ flex: 1, background: tab === 'install' ? T.navy : T.bg, color: tab === 'install' ? T.white : T.black, border: 'none', boxShadow: tab === 'install' ? T.sunken : T.raised, padding: '8px 0', fontFamily: T.font, fontSize: 8 }}>INSTALL APPS</button>
+        <button onClick={() => setTab('system')} style={{ flex: 1, background: tab === 'system' ? T.navy : T.bg, color: tab === 'system' ? T.white : T.black, border: 'none', boxShadow: tab === 'system' ? T.sunken : T.raised, padding: '8px 0', fontFamily: T.font, fontSize: 8 }}>SYSTEM APPS</button>
+      </div>
+
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8, paddingBottom: 10 }}>
+        {appsToList.map(app => {
+          const isInstalled = app.preInstalled || installedApps.includes(app.type)
+          const isInstalling = !!installing[app.type]
+
+          return (
+            <div key={app.type} style={{ background: T.white, boxShadow: T.sunken, padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 36, height: 36, background: T.bg, boxShadow: T.raised, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                 <span className="material-symbols-outlined" style={{ fontSize: 20, color: app.iconColor || T.black }}>{app.icon}</span>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: T.font, fontSize: 9, color: T.black, marginBottom: 2 }}>{app.label}</div>
+                <div style={{ fontFamily: T.font, fontSize: 6, color: T.gray }}>{app.spotlightDesc}</div>
+              </div>
+              <div>
+                {app.preInstalled ? (
+                   <div style={{ fontFamily: T.font, fontSize: 6, color: T.gray, border: `1px solid ${T.gray}`, padding: '4px 6px' }}>SYSTEM</div>
+                ) : isInstalling ? (
+                   <div style={{ fontFamily: T.font, fontSize: 6, color: '#9097ff', border: `1px solid #9097ff`, background: '#2a3050', padding: '4px 6px' }}>LOADING</div>
+                ) : isInstalled ? (
+                   <W95Btn onClick={() => uninstallApp(app.type)} style={{ color: '#cc5555' }}>REMOVE</W95Btn>
+                ) : (
+                   <W95Btn onClick={() => handleInstall(app.type)} primary>INSTALL</W95Btn>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 // ── Main PhoneView ────────────────────────────────────────────────
 export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
   const { setViewMode, phoneUiMode, phoneWallpaper } = useSystemStore()
@@ -485,14 +557,17 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
   const renderAppContent = (app: AppDef) => {
     if (!app.phoneInline) return <OpenOnDesktopScreen app={app} onOpen={() => handleOpenDesktop(app)} />
     switch (app.type) {
-      case 'about':    return <AboutScreen />
-      case 'mail':     return <MailScreen />
-      case 'devfiles': return <ProjectsScreen category="devfiles" />
-      case 'film':     return <ProjectsScreen category="film" />
-      case 'game':     return <ProjectsScreen category="game" />
-      case 'terminal': return <PhoneTerminalScreen />
-      case 'settings': return <PhoneSettingsScreen />
-      default:         return null
+      case 'about':     return <AboutScreen />
+      case 'mail':      return <MailScreen />
+      case 'devfiles':  return <ProjectsScreen category="devfiles" />
+      case 'film':      return <ProjectsScreen category="film" />
+      case 'game':      return <ProjectsScreen category="game" />
+      case 'terminal':  return <PhoneTerminalScreen />
+      case 'settings':  return <PhoneSettingsScreen />
+      case 'appmarket': return <PhoneAppMarketScreen T={T} />
+      case 'paint':     return <PaintAppCore isMobile />
+      case 'snake':     return <SnakeAppCore isMobile />
+      default:          return null
     }
   }
 
@@ -522,7 +597,7 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
             <div style={{ flexShrink: 0, height: 60, background: T.bg, borderTop: `2px solid ${T.white}`, boxShadow: `inset 0 1px 0 ${T.white}`, display: 'flex', alignItems: 'center', padding: '0 4px', gap: 3 }}>
               {DOCK_APPS.map(app => (
                 <button key={app.type} onClick={() => setActiveApp(app)} style={{ flex: 1, background: T.bg, border: 'none', boxShadow: T.raised, height: 50, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 24, color: app.iconColor || T.black }}>{app.icon}</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 24, color: T.black }}>{app.icon}</span>
                   <span style={{ fontFamily: T.font, fontSize: 9, color: T.black, textTransform: 'uppercase', letterSpacing: '0.01em' }}>{app.phoneLabel ?? app.label}</span>
                 </button>
               ))}
