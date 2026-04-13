@@ -9,6 +9,7 @@ import { APP_REGISTRY, phoneApps, type AppDef } from '@/config/appRegistry'
 import { APP_META } from '@/config/appMeta'
 import { SnakeAppCore } from '../windows/SnakeWindow'
 import { PaintAppCore } from '../windows/PaintWindow'
+import { SnowboardAppCore } from '../windows/SnowboardWindow'
 
 
 // ── Phone wallpaper options ───────────────────────────────────────
@@ -567,6 +568,7 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
       case 'appmarket': return <PhoneAppMarketScreen T={T} />
       case 'paint':     return <PaintAppCore isMobile />
       case 'snake':     return <SnakeAppCore isMobile />
+      case 'snowboard': return <SnowboardAppCore isMobile />
       default:          return null
     }
   }
