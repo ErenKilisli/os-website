@@ -10,6 +10,8 @@ import { APP_META } from '@/config/appMeta'
 import { SnakeAppCore } from '../windows/SnakeWindow'
 import { PaintAppCore } from '../windows/PaintWindow'
 import { SnowboardAppCore } from '../windows/SnowboardWindow'
+import { NotePadAppCore } from '../windows/NotePadWindow'
+import { MusicAppCore } from '../windows/MusicWindow'
 
 
 // ── Phone wallpaper options ───────────────────────────────────────
@@ -569,6 +571,8 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
       case 'paint':     return <PaintAppCore isMobile />
       case 'snake':     return <SnakeAppCore isMobile />
       case 'snowboard': return <SnowboardAppCore isMobile />
+      case 'notepad':   return <NotePadAppCore isMobile />
+      case 'music':     return <MusicAppCore isMobile />
       default:          return null
     }
   }
