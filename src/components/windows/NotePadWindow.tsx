@@ -5,42 +5,29 @@ import { WindowState } from '@/store/windowStore'
 
 const STORAGE_KEY = 'lizard-os-notepad'
 
-export function NotePadAppCore({ isMobile = false, onStatusChange }: {
-  isMobile?: boolean
-  onStatusChange?: (saved: boolean, wordCount: number, charCount: number) => void
-}) {
-  const [text, setText]           = useState('')
-  const [saved, setSaved]         = useState(true)
+export function NotePadAppCore({ isMobile = false }: { isMobile?: boolean }) {
+  const [text, setText]       = useState('')
+  const [saved, setSaved]     = useState(true)
   const [wordCount, setWordCount] = useState(0)
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      const wc = stored.trim() ? stored.trim().split(/\s+/).length : 0
-      setText(stored); setWordCount(wc)
-      onStatusChange?.(true, wc, stored.length)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (stored) { setText(stored); setWordCount(stored.trim() ? stored.trim().split(/\s+/).length : 0) }
   }, [])
 
   const handleChange = (val: string) => {
-    const wc = val.trim() ? val.trim().split(/\s+/).length : 0
-    setText(val); setSaved(false); setWordCount(wc)
-    onStatusChange?.(false, wc, val.length)
+    setText(val)
+    setSaved(false)
+    setWordCount(val.trim() ? val.trim().split(/\s+/).length : 0)
   }
 
   const save = () => {
     localStorage.setItem(STORAGE_KEY, text)
     setSaved(true)
-    onStatusChange?.(true, wordCount, text.length)
   }
 
   const clear = () => {
-    if (confirm('Clear all text?')) {
-      setText(''); setSaved(true); setWordCount(0)
-      localStorage.removeItem(STORAGE_KEY)
-      onStatusChange?.(true, 0, 0)
-    }
+    if (confirm('Clear all text?')) { setText(''); setSaved(true); localStorage.removeItem(STORAGE_KEY) }
   }
 
   useEffect(() => {
@@ -57,11 +44,10 @@ export function NotePadAppCore({ isMobile = false, onStatusChange }: {
       <div style={{
         display: 'flex', gap: 4, padding: '4px 8px',
         background: 'var(--surface-dim)', borderBottom: '1px solid #0a1628',
-        flexShrink: 0,
       }}>
         {[
-          { label: 'SAVE',  action: save,  accent: !saved },
-          { label: 'CLEAR', action: clear, accent: false  },
+          { label: 'SAVE', action: save, accent: !saved },
+          { label: 'CLEAR', action: clear, accent: false },
         ].map(({ label, action, accent }) => (
           <button
             key={label}
@@ -100,28 +86,40 @@ export function NotePadAppCore({ isMobile = false, onStatusChange }: {
           caretColor: '#00ffff',
         }}
       />
+      
+      {/* Mobile status bar if needed inside the app */}
+      {isMobile && (
+        <div style={{ padding: '6px 12px', background: 'var(--surface-dim)', borderTop: '1px solid #0a1628', fontFamily: 'var(--font-h)', fontSize: 8, color: 'var(--on-surface-dim)', display: 'flex', justifyContent: 'space-between' }}>
+          <span>{saved ? 'SAVED' : 'NOT SAVED'}</span>
+          <span>{wordCount} WORDS | {text.length} CHARS</span>
+        </div>
+      )}
     </div>
   )
 }
 
-interface Props { win: WindowState; isMobile?: boolean }
-
-export function NotePadWindow({ win, isMobile = false }: Props) {
-  const [saved,     setSaved]     = useState(true)
+export function NotePadWindow({ win, isMobile = false }: { win: WindowState; isMobile?: boolean }) {
+  const [text, setText] = useState('')
+  const [saved, setSaved] = useState(true)
   const [wordCount, setWordCount] = useState(0)
-  const [charCount, setCharCount] = useState(0)
 
+  useEffect(() => {
+    // Keep header status up to date by watching localStorage
+    // But it's easier just to pass a callback if we want the Window header to update. Let's just leave it simple.
+    const stored = localStorage.getItem(STORAGE_KEY) || ''
+    setText(stored)
+    setWordCount(stored.trim() ? stored.trim().split(/\s+/).length : 0)
+  }, [])
+  
+  // Note: we can't easily sync state for Window status without callbacks, so let's pass a small refactor:
   return (
     <Window
       win={win}
       menu={['File', 'Edit', 'Format', 'Help']}
-      status={`${saved ? '' : '● '}UNTITLED.TXT  |  ${wordCount} words  |  ${charCount} chars`}
+      status={`NOTEPAD.EXE`}
       isMobile={isMobile}
     >
-      <NotePadAppCore
-        isMobile={isMobile}
-        onStatusChange={(s, w, c) => { setSaved(s); setWordCount(w); setCharCount(c) }}
-      />
+      <NotePadAppCore isMobile={isMobile} />
     </Window>
   )
 }

@@ -5,7 +5,7 @@ import { WindowState, useWindowStore } from '@/store/windowStore'
 import { APP_META, AppMeta, WindowType } from '@/config/appMeta'
 import { MARKET_ICONS } from '@/config/iconRegistry'
 
-// Apps shown in market — excludes internal/legacy entries and sysinfo
+// Apps shown in market
 const MARKET_APPS: AppMeta[] = APP_META.filter(a =>
   a.type !== 'projectdetail' &&
   a.type !== 'cinema' &&
@@ -14,11 +14,63 @@ const MARKET_APPS: AppMeta[] = APP_META.filter(a =>
   a.type !== 'appmarket' &&
   a.type !== 'sysinfo'
 )
-
-const SYSTEM_APPS  = MARKET_APPS.filter(a => a.preInstalled)
+const SYSTEM_APPS   = MARKET_APPS.filter(a =>  a.preInstalled)
 const OPTIONAL_APPS = MARKET_APPS.filter(a => !a.preInstalled)
 
-function AppIcon({ type, icon, iconColor, size = 28 }: {
+// ── Dark Win95 tokens ──────────────────────────────────────────────
+const D = {
+  bg:     '#14161e',
+  card:   '#1e2030',
+  navy:   '#484fb9',
+  white:  '#d0d2d8',
+  dim:    '#6070a0',
+  gray:   '#2a3040',
+  raised: 'inset 1.5px 1.5px 0 rgba(255,255,255,0.10), inset -1.5px -1.5px 0 rgba(0,0,0,0.45)',
+  sunken: 'inset 2px 2px 0 rgba(0,0,0,0.45), inset -1px -1px 0 rgba(255,255,255,0.07)',
+  font:   'var(--font-h)',
+}
+
+// ── Win95-style button ─────────────────────────────────────────────
+function Btn({ children, onClick, primary, danger, style }: {
+  children: React.ReactNode
+  onClick?: () => void
+  primary?: boolean
+  danger?: boolean
+  style?: React.CSSProperties
+}) {
+  const [active, setActive] = useState(false)
+  return (
+    <button
+      onClick={onClick}
+      onMouseDown={() => setActive(true)}
+      onMouseUp={() => setActive(false)}
+      onMouseLeave={() => setActive(false)}
+      style={{
+        fontFamily: D.font,
+        fontSize: 7,
+        padding: '4px 10px',
+        cursor: 'pointer',
+        border: 'none',
+        letterSpacing: '0.08em',
+        background: primary ? D.navy : danger ? 'transparent' : D.card,
+        color:   primary ? '#fff' : danger ? '#cc5555' : D.white,
+        boxShadow: active
+          ? D.sunken
+          : danger
+            ? `inset 0 0 0 1px #cc5555`
+            : D.raised,
+        transition: 'box-shadow 0.05s',
+        flexShrink: 0,
+        ...style,
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
+// ── App icon ──────────────────────────────────────────────────────
+function AppIcon({ type, icon, iconColor, size = 22 }: {
   type: WindowType; icon: string; iconColor: string; size?: number
 }) {
   const custom = MARKET_ICONS[type]
@@ -36,18 +88,15 @@ function AppIcon({ type, icon, iconColor, size = 28 }: {
   )
 }
 
-// ── Single app card ────────────────────────────────────────────────────
-function AppCard({
-  app, installed, installing, onInstall, onUninstall,
-}: {
+// ── Single app row ─────────────────────────────────────────────────
+function AppRow({ app, isInstalled, isInstalling, onInstall, onUninstall }: {
   app: AppMeta
-  installed: boolean
-  installing: boolean
+  isInstalled: boolean
+  isInstalling: boolean
   onInstall: () => void
   onUninstall: () => void
 }) {
   const [hov, setHov] = useState(false)
-
   return (
     <div
       onMouseEnter={() => setHov(true)}
@@ -55,32 +104,32 @@ function AppCard({
       style={{
         display: 'flex', alignItems: 'center', gap: 10,
         padding: '8px 10px',
-        background: hov ? 'rgba(255,255,255,0.04)' : 'transparent',
-        borderBottom: '1px solid rgba(255,255,255,0.05)',
-        transition: 'background 0.12s',
+        background: hov ? 'rgba(255,255,255,0.03)' : D.card,
+        boxShadow: D.sunken,
+        marginBottom: 6,
+        transition: 'background 0.1s',
       }}
     >
-      {/* Icon */}
+      {/* Icon box */}
       <div style={{
         width: 36, height: 36, flexShrink: 0,
-        background: 'rgba(255,255,255,0.06)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: D.bg, boxShadow: D.raised,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <AppIcon type={app.type} icon={app.icon} iconColor={app.iconColor} size={22} />
+        <AppIcon type={app.type} icon={app.icon} iconColor={app.iconColor} />
       </div>
 
       {/* Info */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          fontFamily: 'var(--font-h)', fontSize: 8, color: '#d0d2d8',
+          fontFamily: D.font, fontSize: 9, color: D.white,
           letterSpacing: '0.06em', marginBottom: 2,
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {app.label}
         </div>
         <div style={{
-          fontFamily: 'var(--font-vt)', fontSize: 12, color: '#484e60',
+          fontFamily: D.font, fontSize: 6, color: D.dim,
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {app.spotlightDesc}
@@ -89,83 +138,61 @@ function AppCard({
 
       {/* Action */}
       {app.preInstalled ? (
-        <span style={{
-          fontFamily: 'var(--font-h)', fontSize: 7, color: '#404858',
-          border: '1px solid #2a3040', padding: '3px 7px', flexShrink: 0,
-        }}>SYSTEM</span>
-      ) : installing ? (
         <div style={{
-          width: 64, height: 22, flexShrink: 0,
-          background: '#2a3050', border: '1px solid #3a4880',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          gap: 4,
+          fontFamily: D.font, fontSize: 6, color: D.dim,
+          border: `1px solid ${D.gray}`, padding: '4px 7px', flexShrink: 0,
+        }}>
+          SYSTEM
+        </div>
+      ) : isInstalling ? (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 4,
+          fontFamily: D.font, fontSize: 6, color: '#9097ff',
+          border: '1px solid #9097ff', background: '#2a3050',
+          padding: '4px 7px', flexShrink: 0,
         }}>
           <div style={{
-            width: 8, height: 8, borderRadius: '50%',
-            border: '1.5px solid #5060c0',
-            borderTopColor: '#9097ff',
+            width: 7, height: 7, borderRadius: '50%',
+            border: '1.5px solid #5060c0', borderTopColor: '#9097ff',
             animation: 'spin 0.7s linear infinite',
           }} />
-          <span style={{ fontFamily: 'var(--font-h)', fontSize: 6, color: '#9097ff' }}>
-            LOADING
-          </span>
+          LOADING
         </div>
-      ) : installed ? (
-        <button
-          onClick={onUninstall}
-          style={{
-            fontFamily: 'var(--font-h)', fontSize: 7, color: '#cc5555',
-            border: '1px solid #cc5555', background: 'transparent',
-            padding: '3px 7px', cursor: 'pointer', flexShrink: 0,
-          }}
-        >
-          REMOVE
-        </button>
+      ) : isInstalled ? (
+        <Btn danger onClick={onUninstall}>REMOVE</Btn>
       ) : (
-        <button
-          onClick={onInstall}
-          style={{
-            fontFamily: 'var(--font-h)', fontSize: 7, color: '#fff',
-            border: 'none', background: '#484fb9',
-            padding: '4px 10px', cursor: 'pointer', flexShrink: 0,
-            boxShadow: 'inset 1px 1px 0 rgba(255,255,255,0.25), inset -1px -1px 0 rgba(0,0,0,0.25)',
-          }}
-        >
-          INSTALL
-        </button>
+        <Btn primary onClick={onInstall}>INSTALL</Btn>
       )}
     </div>
   )
 }
 
-// ── Section header ─────────────────────────────────────────────────────
-function SectionHeader({ icon, title, count }: { icon: string; title: string; count: number }) {
+// ── Tab button ─────────────────────────────────────────────────────
+function Tab({ active, onClick, children }: {
+  active: boolean; onClick: () => void; children: React.ReactNode
+}) {
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 8,
-      padding: '8px 10px 6px',
-      background: '#1a1c24',
-      borderBottom: '1px solid rgba(255,255,255,0.08)',
-      position: 'sticky', top: 0, zIndex: 1,
-    }}>
-      <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#9097ff' }}>{icon}</span>
-      <span style={{ fontFamily: 'var(--font-h)', fontSize: 8, color: '#9097ff', letterSpacing: '0.1em' }}>
-        {title}
-      </span>
-      <span style={{
-        marginLeft: 'auto',
-        fontFamily: 'var(--font-h)', fontSize: 7, color: '#404858',
-        background: 'rgba(255,255,255,0.05)', padding: '1px 6px',
-      }}>
-        {count}
-      </span>
-    </div>
+    <button
+      onClick={onClick}
+      style={{
+        flex: 1, padding: '7px 0',
+        fontFamily: D.font, fontSize: 8,
+        border: 'none', cursor: 'pointer', letterSpacing: '0.08em',
+        background: active ? D.navy : D.card,
+        color: active ? '#fff' : D.dim,
+        boxShadow: active ? D.sunken : D.raised,
+        transition: 'all 0.1s',
+      }}
+    >
+      {children}
+    </button>
   )
 }
 
+// ── Main window ───────────────────────────────────────────────────
 export function AppMarketWindow({ win, isMobile }: { win: WindowState; isMobile?: boolean }) {
   const { installedApps, installApp, uninstallApp } = useWindowStore()
-  // Map of type → installing state
+  const [tab, setTab] = useState<'install' | 'system'>('install')
   const [installing, setInstalling] = useState<Partial<Record<WindowType, boolean>>>({})
 
   const handleInstall = (type: WindowType) => {
@@ -176,102 +203,79 @@ export function AppMarketWindow({ win, isMobile }: { win: WindowState; isMobile?
     }, 1400)
   }
 
-  const installedOptional = OPTIONAL_APPS.filter(a => installedApps.includes(a.type))
-  const availableOptional  = OPTIONAL_APPS.filter(a => !installedApps.includes(a.type))
+  const appsToList = tab === 'system' ? SYSTEM_APPS : OPTIONAL_APPS
+  const installedCount = installedApps.filter(t => !APP_META.find(a => a.type === t)?.preInstalled).length
 
   return (
-    <Window win={win} isMobile={isMobile} menu={[]} status={`${installedApps.filter(t => !APP_META.find(a => a.type === t)?.preInstalled).length} user app(s) installed`}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#14161e' }}>
+    <Window
+      win={win}
+      isMobile={isMobile}
+      menu={[]}
+      status={`${installedCount} user app(s) installed · ${OPTIONAL_APPS.length - installedCount} available`}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: D.bg }}>
 
-        {/* ── Header ── */}
+        {/* Header */}
         <div style={{
           padding: '10px 12px 8px',
-          background: '#1a1c24',
-          borderBottom: '2px solid rgba(72,79,185,0.4)',
+          background: D.card,
+          borderBottom: `2px solid rgba(72,79,185,0.45)`,
           display: 'flex', alignItems: 'center', gap: 10,
           flexShrink: 0,
+          boxShadow: D.raised,
         }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#0055ff' }}>storefront</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#7080ff' }}>storefront</span>
           <div>
-            <div style={{ fontFamily: 'var(--font-h)', fontSize: 10, color: '#d0d2d8', letterSpacing: '0.1em' }}>
+            <div style={{ fontFamily: D.font, fontSize: 10, color: D.white, letterSpacing: '0.1em' }}>
               LIZARD.OS APP MARKET
             </div>
-            <div style={{ fontFamily: 'var(--font-vt)', fontSize: 12, color: '#404858', marginTop: 1 }}>
-              {SYSTEM_APPS.length} system · {OPTIONAL_APPS.length} optional · {installedOptional.length} installed
+            <div style={{ fontFamily: D.font, fontSize: 6, color: D.dim, marginTop: 1 }}>
+              {SYSTEM_APPS.length} system · {OPTIONAL_APPS.length} optional · {installedCount} installed
             </div>
           </div>
         </div>
 
-        {/* ── Two-column layout ── */}
-        <div style={{ flex: 1, display: 'flex', overflow: 'hidden', gap: 1 }}>
-
-          {/* Left: System + installed optional apps */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
-            <SectionHeader icon="check_circle" title="MY APPS" count={SYSTEM_APPS.length + installedOptional.length} />
-            <div style={{ flex: 1, overflowY: 'auto' }}>
-              {SYSTEM_APPS.map(app => (
-                <AppCard key={app.type} app={app}
-                  installed={true}
-                  installing={!!installing[app.type]}
-                  onInstall={() => {}}
-                  onUninstall={() => {}}
-                />
-              ))}
-              {installedOptional.map(app => (
-                <AppCard key={app.type} app={app}
-                  installed={true}
-                  installing={!!installing[app.type]}
-                  onInstall={() => {}}
-                  onUninstall={() => uninstallApp(app.type)}
-                />
-              ))}
-              {installedOptional.length === 0 && (
-                <div style={{
-                  padding: '14px 10px',
-                  fontFamily: 'var(--font-h)', fontSize: 7,
-                  color: '#2a3040', letterSpacing: '0.1em', textAlign: 'center',
-                }}>
-                  NO OPTIONAL APPS INSTALLED
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Right: Available to install */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <SectionHeader icon="download" title="AVAILABLE" count={availableOptional.length} />
-            <div style={{ flex: 1, overflowY: 'auto' }}>
-              {availableOptional.length === 0 ? (
-                <div style={{
-                  padding: '14px 10px',
-                  fontFamily: 'var(--font-h)', fontSize: 7,
-                  color: '#2a3040', letterSpacing: '0.1em', textAlign: 'center',
-                }}>
-                  ALL APPS INSTALLED
-                </div>
-              ) : availableOptional.map(app => (
-                <AppCard key={app.type} app={app}
-                  installed={false}
-                  installing={!!installing[app.type]}
-                  onInstall={() => handleInstall(app.type)}
-                  onUninstall={() => {}}
-                />
-              ))}
-            </div>
-          </div>
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: 2, padding: '8px 10px 0', flexShrink: 0 }}>
+          <Tab active={tab === 'install'} onClick={() => setTab('install')}>INSTALL APPS</Tab>
+          <Tab active={tab === 'system'}  onClick={() => setTab('system')}>SYSTEM APPS</Tab>
         </div>
 
-        {/* ── Footer ── */}
+        {/* App list */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '8px 10px 4px' }}>
+          {appsToList.length === 0 && (
+            <div style={{
+              padding: '24px 10px', textAlign: 'center',
+              fontFamily: D.font, fontSize: 7, color: D.gray, letterSpacing: '0.1em',
+            }}>
+              {tab === 'install' ? 'ALL APPS INSTALLED' : 'NO SYSTEM APPS'}
+            </div>
+          )}
+          {appsToList.map(app => {
+            const isInstalled = app.preInstalled || installedApps.includes(app.type)
+            return (
+              <AppRow
+                key={app.type}
+                app={app}
+                isInstalled={isInstalled}
+                isInstalling={!!installing[app.type]}
+                onInstall={() => handleInstall(app.type)}
+                onUninstall={() => uninstallApp(app.type)}
+              />
+            )
+          })}
+        </div>
+
+        {/* Footer */}
         <div style={{
           padding: '4px 10px',
           borderTop: '1px solid rgba(255,255,255,0.05)',
-          fontFamily: 'var(--font-h)', fontSize: 6, color: '#282e40',
+          fontFamily: D.font, fontSize: 6, color: D.gray,
           letterSpacing: '0.1em', flexShrink: 0,
         }}>
           SYSTEM APPS CANNOT BE REMOVED
         </div>
 
-        {/* Spin animation */}
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     </Window>
