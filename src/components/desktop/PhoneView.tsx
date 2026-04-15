@@ -1,10 +1,11 @@
 'use client'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSystemStore } from '@/store/systemStore'
 import { useWindowStore } from '@/store/windowStore'
 import type { WindowType } from '@/config/appMeta'
 import { DEVFILES_PROJECTS, FILM_PROJECTS, GAME_PROJECTS, Project } from '@/data/projects'
+import { PROJECT_LOGOS } from '@/components/desktop/FolderIcons'
 import { APP_REGISTRY, phoneApps, type AppDef } from '@/config/appRegistry'
 import { APP_META } from '@/config/appMeta'
 import { SnakeAppCore } from '../windows/SnakeWindow'
@@ -185,12 +186,17 @@ function AboutScreen() {
       <div>
         <W95Header title="LINKS" />
         <div style={{ background: C.white, boxShadow: C.sunken }}>
-          {[{ label: 'GitHub', icon: 'code' }, { label: 'LinkedIn', icon: 'business_center' }, { label: 'IMDb', icon: 'movie' }].map((link, i) => (
-            <div key={link.label} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', borderBottom: i < 2 ? `1px solid ${C.bg}` : 'none' }}>
+          {[
+            { label: 'linkedin.com/in/ierenkilisli', icon: 'business_center', href: 'https://www.linkedin.com/in/ierenkilisli/' },
+            { label: 'github.com/ErenKilisli',       icon: 'code',            href: 'https://github.com/ErenKilisli' },
+            { label: 'ibr@himerenkilisli.com',       icon: 'mail',            href: 'mailto:ibr@himerenkilisli.com' },
+          ].map((link, i, arr) => (
+            <a key={link.label} href={link.href} target={link.href.startsWith('mailto') ? undefined : '_blank'} rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', borderBottom: i < arr.length - 1 ? `1px solid ${C.bg}` : 'none', textDecoration: 'none' }}>
               <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.navy }}>{link.icon}</span>
-              <span style={{ fontFamily: C.font, fontSize: 8, color: C.black, flex: 1, letterSpacing: '0.03em' }}>{link.label}</span>
+              <span style={{ fontFamily: C.font, fontSize: 7, color: C.black, flex: 1, letterSpacing: '0.03em', wordBreak: 'break-all' }}>{link.label}</span>
               <span className="material-symbols-outlined" style={{ fontSize: 12, color: C.gray }}>arrow_forward</span>
-            </div>
+            </a>
           ))}
         </div>
       </div>
@@ -239,18 +245,57 @@ function MailScreen() {
 }
 
 // ── Projects screen ───────────────────────────────────────────────
+
+// Returns the accent color per category
+function catAccent(category: 'devfiles' | 'film' | 'game') {
+  if (category === 'film') return '#b8a000'
+  if (category === 'game') return '#00a800'
+  return '#c06000'
+}
+
+// Returns the material icon name per category
+function catIcon(category: 'devfiles' | 'film' | 'game') {
+  if (category === 'film') return 'movie'
+  if (category === 'game') return 'sports_esports'
+  return 'folder_code'
+}
+
+// Icon shown in list rows and icon cards
+function ProjectIcon({ p, category, size = 22 }: { p: Project; category: 'devfiles' | 'film' | 'game'; size?: number }) {
+  if (PROJECT_LOGOS[p.id]) {
+    return <>{React.createElement(PROJECT_LOGOS[p.id], { size })}</>
+  }
+  return (
+    <span className="material-symbols-outlined"
+      style={{ fontSize: size, color: catAccent(category), fontVariationSettings: "'FILL' 1" }}>
+      {catIcon(category)}
+    </span>
+  )
+}
+
 function ProjectsScreen({ category }: { category: 'devfiles' | 'film' | 'game' }) {
   const projects: Project[] = category === 'devfiles' ? DEVFILES_PROJECTS : category === 'film' ? FILM_PROJECTS : GAME_PROJECTS
   const [selected, setSelected] = useState<Project | null>(null)
+  const [viewMode, setViewMode] = useState<'list' | 'icon'>('list')
 
+  // ── Detail view ──────────────────────────────────────────────────
   if (selected) return (
     <div style={{ overflow: 'auto', height: '100%', padding: 10, background: C.bg, display: 'flex', flexDirection: 'column', gap: 8 }}>
       <W95Btn onClick={() => setSelected(null)}>
         <span className="material-symbols-outlined" style={{ fontSize: 12 }}>arrow_back</span>BACK
       </W95Btn>
       <div style={{ background: C.white, boxShadow: C.sunken, padding: '10px 12px' }}>
-        <div style={{ fontFamily: C.font, fontSize: 10, color: C.black, fontWeight: 900, marginBottom: 2 }}>{selected.name}</div>
-        <div style={{ fontFamily: C.font, fontSize: 7, color: C.navy, marginBottom: 8 }}>{selected.year} · {selected.type}</div>
+        {/* Icon + title row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+          <div style={{ flexShrink: 0, width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ProjectIcon p={selected} category={category} size={40} />
+          </div>
+          <div>
+            <div style={{ fontFamily: C.font, fontSize: 10, color: C.black, fontWeight: 900, marginBottom: 2 }}>{selected.name}</div>
+            <div style={{ fontFamily: C.font, fontSize: 7, color: C.navy }}>{selected.type}</div>
+            <div style={{ fontFamily: C.font, fontSize: 7, color: C.gray }}>{selected.year}</div>
+          </div>
+        </div>
         <p style={{ fontFamily: C.fontB, fontSize: 12, color: C.black, lineHeight: 1.65, marginBottom: 8 }}>{selected.description}</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
           {selected.tags.map(t => <span key={t} style={{ fontFamily: C.font, fontSize: 6, color: C.black, background: C.bg, boxShadow: C.raised, padding: '2px 6px' }}>{t}</span>)}
@@ -264,20 +309,116 @@ function ProjectsScreen({ category }: { category: 'devfiles' | 'film' | 'game' }
     </div>
   )
 
+  // ── Toolbar: list / icon toggle ───────────────────────────────────
   return (
     <div style={{ height: '100%', background: C.bg, display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 44px 60px', background: C.bg, padding: '3px 6px', borderBottom: `1px solid ${C.gray}`, flexShrink: 0, gap: 2 }}>
-        {['NAME','YEAR','TYPE'].map(h => <span key={h} style={{ fontFamily: C.font, fontSize: 7, color: C.black, boxShadow: C.raised, padding: '2px 4px', background: C.bg }}>{h}</span>)}
+      {/* Toolbar */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 6px', borderBottom: `1px solid ${C.gray}`, flexShrink: 0, background: C.bg }}>
+        <span style={{ fontFamily: C.font, fontSize: 7, color: C.black, flex: 1, letterSpacing: '0.04em' }}>
+          {projects.length} ITEM{projects.length !== 1 ? 'S' : ''}
+        </span>
+        {/* List view button */}
+        <button
+          onClick={() => setViewMode('list')}
+          style={{
+            width: 28, height: 22, border: 'none', background: C.bg, cursor: 'pointer',
+            boxShadow: viewMode === 'list' ? C.sunken : C.raised,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.black }}>format_list_bulleted</span>
+        </button>
+        {/* Icon view button */}
+        <button
+          onClick={() => setViewMode('icon')}
+          style={{
+            width: 28, height: 22, border: 'none', background: C.bg, cursor: 'pointer',
+            boxShadow: viewMode === 'icon' ? C.sunken : C.raised,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.black }}>grid_view</span>
+        </button>
       </div>
-      <div style={{ flex: 1, margin: 4, boxShadow: C.sunken, background: C.white, overflow: 'auto' }}>
-        {projects.map((p, i) => (
-          <button key={p.id} onClick={() => setSelected(p)} style={{ width: '100%', background: i % 2 === 0 ? C.white : '#f0f0f0', border: 'none', borderBottom: `1px solid ${C.bg}`, padding: '6px 8px', display: 'grid', gridTemplateColumns: '1fr 44px 60px', alignItems: 'center', textAlign: 'left', gap: 2 }}>
-            <span style={{ fontFamily: C.font, fontSize: 8, color: C.black, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
-            <span style={{ fontFamily: C.font, fontSize: 7, color: C.gray }}>{p.year}</span>
-            <span style={{ fontFamily: C.font, fontSize: 6, color: C.gray, textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.type}</span>
-          </button>
-        ))}
-      </div>
+
+      {/* ── LIST VIEW ── */}
+      {viewMode === 'list' && (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {/* Column headers: icon | NAME | TYPE (middle) | YEAR (right) */}
+          <div style={{
+            display: 'grid', gridTemplateColumns: '28px 1fr auto auto',
+            background: C.bg, padding: '2px 6px',
+            borderBottom: `1px solid ${C.gray}`, flexShrink: 0, gap: 4,
+          }}>
+            {['', 'NAME', 'TYPE', 'YEAR'].map((h, i) => (
+              <span key={i} style={{
+                fontFamily: C.font, fontSize: 7, color: C.black,
+                boxShadow: C.raised, padding: '2px 4px', background: C.bg,
+                textAlign: i >= 2 ? 'center' : 'left',
+                minWidth: i === 2 ? 70 : i === 3 ? 38 : undefined,
+              }}>{h}</span>
+            ))}
+          </div>
+          <div style={{ flex: 1, boxShadow: C.sunken, background: C.white, overflow: 'auto', margin: 4 }}>
+            {projects.map((p, i) => (
+              <button
+                key={p.id}
+                onClick={() => setSelected(p)}
+                style={{
+                  width: '100%', background: i % 2 === 0 ? C.white : '#f0f0f0',
+                  border: 'none', borderBottom: `1px solid ${C.bg}`,
+                  padding: '7px 8px',
+                  display: 'grid', gridTemplateColumns: '28px 1fr auto auto',
+                  alignItems: 'center', textAlign: 'left', gap: 4,
+                }}>
+                {/* Icon */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ProjectIcon p={p} category={category} size={20} />
+                </div>
+                {/* Name */}
+                <span style={{ fontFamily: C.font, fontSize: 9, color: C.black, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+                {/* Type — middle */}
+                <span style={{ fontFamily: C.fontB, fontSize: 11, color: '#555', whiteSpace: 'nowrap', maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis', textAlign: 'center' }}>{p.type}</span>
+                {/* Year — right */}
+                <span style={{ fontFamily: C.font, fontSize: 8, color: C.gray, whiteSpace: 'nowrap', textAlign: 'right', minWidth: 34 }}>{p.year}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── ICON VIEW ── */}
+      {viewMode === 'icon' && (
+        <div style={{ flex: 1, overflow: 'auto', padding: '8px 4px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
+            {projects.map(p => (
+              <button
+                key={p.id}
+                onClick={() => setSelected(p)}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  gap: 5, padding: '10px 4px',
+                  boxShadow: 'none',
+                }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 52, height: 52 }}>
+                  <ProjectIcon p={p} category={category} size={52} />
+                </div>
+                <span style={{
+                  fontFamily: C.font, fontSize: 8, color: C.black,
+                  textAlign: 'center', lineHeight: 1.5, letterSpacing: '0.03em',
+                  maxWidth: 86, wordBreak: 'break-word',
+                }}>{p.name}</span>
+                <span style={{
+                  fontFamily: C.fontB, fontSize: 10, color: '#666',
+                  textAlign: 'center', lineHeight: 1.3,
+                  maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  width: '100%',
+                }}>{p.type}</span>
+                <span style={{ fontFamily: C.font, fontSize: 7, color: C.gray }}>{p.year}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

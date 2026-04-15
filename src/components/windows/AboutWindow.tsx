@@ -199,6 +199,18 @@ export function AboutWindow({ win, isMobile = false }: Props) {
                       </span>
                     ))}
                   </div>
+                  <hr className="about-divider" />
+                  <div className="about-links">
+                    <a href="https://www.linkedin.com/in/ierenkilisli/" target="_blank" rel="noopener noreferrer" className="about-link">
+                      💼 linkedin.com/in/ierenkilisli
+                    </a>
+                    <a href="https://github.com/ErenKilisli" target="_blank" rel="noopener noreferrer" className="about-link">
+                      💻 github.com/ErenKilisli
+                    </a>
+                    <a href="mailto:ibr@himerenkilisli.com" className="about-link">
+                      ✉ ibr@himerenkilisli.com
+                    </a>
+                  </div>
                 </div>
               </div>
 

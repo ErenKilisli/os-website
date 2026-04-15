@@ -534,6 +534,23 @@ html, body {
   border-top: 1px solid var(--surface-lo);
   margin: 8px 0;
 }
+.about-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+.about-link {
+  font-family: var(--font-h);
+  font-size: 7px;
+  color: var(--primary);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+.about-link:hover {
+  text-decoration: underline;
+  color: #00ffff;
+}
 
 /* ── Mail window ───────────────────────────────────────── */
 .mail-toolbar {
