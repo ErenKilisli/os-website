@@ -66,8 +66,10 @@ export function MouseDotGrid() {
     document.addEventListener('mouseleave', onLeave)
 
     let raf = 0
+    let t = 0
 
     const tick = () => {
+      t += 0.016
       const W = logW
       const H = logH
       smooth.current.x += (mouse.current.x - smooth.current.x) * LERP
@@ -108,6 +110,36 @@ export function MouseDotGrid() {
           ctx.fillStyle   = dotColor
           ctx.beginPath()
           ctx.arc(x, y, DOT_BASE_R + s * (DOT_GLOW_R - DOT_BASE_R), 0, Math.PI * 2)
+          ctx.fill()
+        }
+      }
+
+      // ── Pass 3: Ambient circular wave ─────────────────────────────────────
+      ctx.shadowColor = dotColor
+      const cx = W / 2
+      const cy = H / 2
+      const maxDist = Math.sqrt(cx * cx + cy * cy)
+      const wavePos = (t * 100) % (maxDist + 2800) - 100
+      const WAVE_WIDTH = 180
+      
+      for (let x = SPACING / 2; x < W; x += SPACING) {
+        for (let y = SPACING / 2; y < H; y += SPACING) {
+          const dx = mx - x, dy = my - y
+          const d2 = dx * dx + dy * dy
+          if (d2 <= R2) continue // Mouse glow already handling this dot
+
+          const cdx = cx - x, cdy = cy - y
+          const distToCenter = Math.sqrt(cdx * cdx + cdy * cdy)
+          const dist = Math.abs(distToCenter - wavePos)
+          
+          if (dist > WAVE_WIDTH) continue
+
+          const w = Math.pow(1 - dist / WAVE_WIDTH, 2)
+          ctx.globalAlpha = BASE_ALPHA + w * (0.6 - BASE_ALPHA)
+          ctx.shadowBlur = w * 8
+          ctx.fillStyle = dotColor
+          ctx.beginPath()
+          ctx.arc(x, y, DOT_BASE_R + w * 2.0, 0, Math.PI * 2)
           ctx.fill()
         }
       }

@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 export type Theme = 'cybercore' | 'vaporwave' | 'matrix' | 'amber'
-export type AnimatedWallpaper = 'synthwave' | 'grid' | 'stars' | 'scanlines'
+export type AnimatedWallpaper = 'synthwave' | 'grid' | 'scanlines'
 export type Wallpaper = AnimatedWallpaper | 'solid' | 'photo'
   | 'preset-aurora' | 'preset-sunset' | 'preset-ocean'
   | 'preset-rice' | 'preset-dawn' | 'preset-istanbul'
@@ -27,7 +27,6 @@ export const THEME_LABELS: Record<Theme, string> = {
 export const WALLPAPER_LABELS: Record<Wallpaper, string> = {
   synthwave: 'SYNTHWAVE',
   grid: 'GRID',
-  stars: 'STARS',
   scanlines: 'SCANLINES',
   solid: 'SOLID COLOR',
   photo: 'CUSTOM PHOTO',
@@ -42,7 +41,7 @@ export const WALLPAPER_LABELS: Record<Wallpaper, string> = {
   'preset-jaguar':    'JAGUAR',
 }
 
-export const ANIMATED_WALLPAPERS: AnimatedWallpaper[] = ['synthwave', 'grid', 'stars', 'scanlines']
+export const ANIMATED_WALLPAPERS: AnimatedWallpaper[] = ['synthwave', 'grid', 'scanlines']
 
 export const SOLID_COLORS: { name: string; hex: string }[] = [
   { name: 'ABYSS',    hex: '#020812' },

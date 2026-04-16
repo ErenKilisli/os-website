@@ -36,78 +36,7 @@ function runGrid(canvas: HTMLCanvasElement, _theme: Theme): () => void {
   return runSolid(canvas, '#000000')
 }
 
-function runStars(canvas: HTMLCanvasElement): () => void {
-  const ctx = canvas.getContext('2d')!
-  const W = canvas.width
-  const H = canvas.height
 
-  interface Star { x: number; y: number; r: number; spd: number; phase: number; col: string }
-  const COLORS = ['#ffffff', '#cce8ff', '#ffeedd', '#ddeeff', '#aaccff']
-  const stars: Star[] = Array.from({ length: 280 }, (_, i) => ({
-    x: Math.random() * W,
-    y: Math.random() * H,
-    r: Math.random() * 1.6 + 0.2,
-    spd: Math.random() * 0.6 + 0.08,
-    phase: Math.random() * Math.PI * 2,
-    col: COLORS[i % COLORS.length],
-  }))
-
-  interface Shoot { x: number; y: number; vx: number; vy: number; life: number; maxLife: number }
-  let shoots: Shoot[] = []
-  let nextShoot = Date.now() + 2000 + Math.random() * 4000
-  let frame = 0
-  let raf = 0
-
-  const tick = () => {
-    frame++
-    const W2 = canvas.width
-    const H2 = canvas.height
-
-    const grad = ctx.createLinearGradient(0, 0, 0, H2)
-    grad.addColorStop(0, '#000408')
-    grad.addColorStop(0.6, '#020610')
-    grad.addColorStop(1, '#040210')
-    ctx.fillStyle = grad
-    ctx.fillRect(0, 0, W2, H2)
-
-    stars.forEach(s => {
-      const twinkle = (Math.sin(frame * s.spd + s.phase) + 1) / 2
-      ctx.globalAlpha = 0.25 + twinkle * 0.75
-      ctx.fillStyle = s.col
-      const r = s.r * (0.6 + twinkle * 0.4)
-      ctx.beginPath()
-      ctx.arc(s.x, s.y, r, 0, Math.PI * 2)
-      ctx.fill()
-    })
-
-    const now = Date.now()
-    if (now > nextShoot) {
-      const angle = -(Math.PI / 6 + Math.random() * Math.PI / 6)
-      shoots.push({ x: Math.random() * W2, y: Math.random() * H2 * 0.5, vx: Math.cos(angle) * 14, vy: Math.sin(angle) * 14, life: 0, maxLife: 28 + Math.floor(Math.random() * 20) })
-      nextShoot = now + 2500 + Math.random() * 6000
-    }
-    shoots = shoots.filter(s => s.life < s.maxLife)
-    shoots.forEach(s => {
-      s.x += s.vx; s.y += s.vy; s.life++
-      const progress = s.life / s.maxLife
-      ctx.globalAlpha = (1 - progress) * 0.9
-      const g = ctx.createLinearGradient(s.x - s.vx * 6, s.y - s.vy * 6, s.x, s.y)
-      g.addColorStop(0, 'rgba(255,255,255,0)')
-      g.addColorStop(1, '#ffffff')
-      ctx.strokeStyle = g
-      ctx.lineWidth = 1.5
-      ctx.beginPath()
-      ctx.moveTo(s.x - s.vx * 6, s.y - s.vy * 6)
-      ctx.lineTo(s.x, s.y)
-      ctx.stroke()
-    })
-
-    ctx.globalAlpha = 1
-    raf = requestAnimationFrame(tick)
-  }
-  tick()
-  return () => cancelAnimationFrame(raf)
-}
 
 function runSynthwave(canvas: HTMLCanvasElement): () => void {
   const ctx = canvas.getContext('2d')!
@@ -512,7 +441,6 @@ export function DesktopWallpaper() {
     const RUNNERS: Record<Wallpaper, Runner> = {
       synthwave:      () => runSynthwave(canvas),
       grid:           () => runGrid(canvas, theme),
-      stars:          () => runStars(canvas),
       scanlines:      () => runScanlines(canvas, theme),
       solid:          () => runSolid(canvas, wallpaperColor),
       photo:          () => runPhoto(canvas, wallpaperPhoto || '#020812'),
