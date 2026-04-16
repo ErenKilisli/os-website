@@ -95,9 +95,11 @@ function W95Btn({ children, onClick, primary, style }: {
   )
 }
 
-function PhoneIconContent({ app, size = 22 }: { app: AppDef; size?: number }) {
+function PhoneIconContent({ app, size = 22, colorOverride }: { app: AppDef; size?: number; colorOverride?: string }) {
   if (app.phoneIconNode) return <>{app.phoneIconNode}</>
-  return <span className="material-symbols-outlined" style={{ fontSize: size, color: C.black }}>{app.icon}</span>
+  const isColored = ['devfiles', 'film', 'game'].includes(app.type)
+  const finalColor = isColored ? app.iconColor : (colorOverride || C.black)
+  return <span className="material-symbols-outlined" style={{ fontSize: size, color: finalColor }}>{app.icon}</span>
 }
 
 // ── Status bar ────────────────────────────────────────────────────
@@ -138,7 +140,7 @@ function HomeScreen({ apps, onOpen, wallpaper, T }: { apps: AppDef[]; onOpen: (a
         {apps.map(app => (
           <button key={app.type} onClick={() => onOpen(app)} style={{ background: 'none', border: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '3px' }}>
             <div style={{ width: 48, height: 48, background: T.bg, boxShadow: T.outer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <PhoneIconContent app={app} size={24} />
+              <PhoneIconContent app={app} size={24} colorOverride={T.black} />
             </div>
             <span style={{ fontFamily: T.font, fontSize: 7, color: '#ffffff', textShadow: `1px 1px 0 #000000`, textTransform: 'uppercase', textAlign: 'center', maxWidth: 58, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {app.phoneLabel ?? app.label}
@@ -201,6 +203,89 @@ function AboutScreen() {
           ))}
         </div>
       </div>
+    </div>
+  )
+}
+
+// ── Readme screen ─────────────────────────────────────────────────
+function PhoneReadmeScreen() {
+  const GITHUB_URL = 'https://github.com/ErenKilisli/os-website'
+  return (
+    <div style={{ overflow: 'auto', height: '100%', background: C.bg, padding: 10, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Title */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: C.white, boxShadow: C.sunken, padding: '8px 10px' }}>
+        <div style={{ width: 48, height: 48, flexShrink: 0, background: C.navy, boxShadow: C.outer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: 24 }}>📄</span>
+        </div>
+        <div>
+          <div style={{ fontFamily: C.font, fontSize: 9, color: C.black, fontWeight: 900, letterSpacing: '0.04em', marginBottom: 2 }}>README.TXT</div>
+          <div style={{ fontFamily: C.font, fontSize: 7, color: '#444', letterSpacing: '0.03em' }}>LIZARD.OS v1.0</div>
+        </div>
+      </div>
+
+      <div>
+        <W95Header title="WHY DOES THIS PORTFOLIO LOOK LIKE AN OS?" />
+        <div style={{ background: C.white, boxShadow: C.sunken, padding: '8px 10px' }}>
+          <p style={{ fontFamily: C.fontB, fontSize: 11, color: C.black, lineHeight: 1.6, margin: '0 0 12px' }}>
+            That&apos;s a fair question.
+          </p>
+          <p style={{ fontFamily: C.fontB, fontSize: 11, color: C.black, lineHeight: 1.6, margin: '0 0 12px' }}>
+            A few years ago, I threw together a quick portfolio — and if I&apos;m being
+            honest, it was boring. When I finally rolled up my sleeves to build something
+            new, every standard layout felt uninspired. Grid of cards? Boring.
+            Scroll-through timeline? Still boring.
+          </p>
+          <p style={{ fontFamily: C.fontB, fontSize: 11, color: C.black, lineHeight: 1.6, margin: 0 }}>
+            I also had a different problem: I live in three very separate worlds —{' '}
+            <span style={{ fontWeight: 'bold' }}>software engineering</span>,{' '}
+            <span style={{ fontWeight: 'bold' }}>filmmaking</span>, and{' '}
+            <span style={{ fontWeight: 'bold' }}>game development</span>.
+            A traditional portfolio couldn&apos;t hold all of that without feeling scattered.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <W95Header title="SO I BUILT LIZARD.OS." />
+        <div style={{ background: C.white, boxShadow: C.sunken, padding: '8px 10px' }}>
+          <p style={{ fontFamily: C.fontB, fontSize: 11, color: C.black, lineHeight: 1.6, margin: '0 0 12px' }}>
+            An open-source, OS-themed portfolio that runs entirely in the browser.
+            Each &quot;window&quot; is a world of its own — you can drag them, resize them,
+            minimize them, and maybe even find a few hidden games along the way.
+          </p>
+          <p style={{ fontFamily: C.fontB, fontSize: 11, color: C.black, lineHeight: 1.6, margin: 0 }}>
+            The OS metaphor gave me something a flat page never could: a place where
+            software, film, and game work can coexist without competing for space.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <W95Header title="IT'S OPEN SOURCE!" />
+        <div style={{ background: C.white, boxShadow: C.sunken, padding: '8px 10px' }}>
+          <p style={{ fontFamily: C.fontB, fontSize: 11, color: C.black, lineHeight: 1.6, margin: '0 0 12px' }}>
+            Fork it, customize it, make it yours. Add your own apps, swap in your
+            own projects, build new features. The whole system is designed to be extended.
+          </p>
+          <p style={{ fontFamily: C.fontB, fontSize: 11, color: C.black, lineHeight: 1.6, margin: 0 }}>
+            And if you ship something cool with it — don&apos;t forget to leave a ⭐ on GitHub.
+          </p>
+        </div>
+      </div>
+
+      {/* GitHub link */}
+      <div>
+        <W95Header title="SOURCE CODE" />
+        <div style={{ background: C.white, boxShadow: C.sunken }}>
+          <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer"
+            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', textDecoration: 'none' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.navy }}>code</span>
+            <span style={{ fontFamily: C.font, fontSize: 7, color: C.navy, flex: 1, letterSpacing: '0.03em', wordBreak: 'break-all', fontWeight: 'bold' }}>{GITHUB_URL}</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 12, color: C.gray }}>arrow_forward</span>
+          </a>
+        </div>
+      </div>
+
     </div>
   )
 }
@@ -703,6 +788,7 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
     if (!app.phoneInline) return <OpenOnDesktopScreen app={app} onOpen={() => handleOpenDesktop(app)} />
     switch (app.type) {
       case 'about':     return <AboutScreen />
+      case 'readme':    return <PhoneReadmeScreen />
       case 'mail':      return <MailScreen />
       case 'devfiles':  return <ProjectsScreen category="devfiles" />
       case 'film':      return <ProjectsScreen category="film" />

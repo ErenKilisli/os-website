@@ -227,7 +227,7 @@ export function AppMarketWindow({ win, isMobile }: { win: WindowState; isMobile?
           <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#7080ff' }}>storefront</span>
           <div>
             <div style={{ fontFamily: D.font, fontSize: 10, color: D.white, letterSpacing: '0.1em' }}>
-              LIZARD.OS APP MARKET
+              LIZARD.OS APPS
             </div>
             <div style={{ fontFamily: D.font, fontSize: 6, color: D.dim, marginTop: 1 }}>
               {SYSTEM_APPS.length} system · {OPTIONAL_APPS.length} optional · {installedCount} installed

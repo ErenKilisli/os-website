@@ -58,28 +58,34 @@ const WINDOW_CONFIGS = Object.fromEntries(
   APP_META.map((a: AppMeta) => [a.type, { title: a.title, icon: a.icon, width: a.width, height: a.height }])
 ) as Record<string, { title: string; icon: string; width: number; height: number }>
 
-function makeIconForApp(a: AppMeta): IconState {
+function makeIconForApp(a: AppMeta, computedRow?: number): IconState {
   const sw = typeof window !== 'undefined' ? window.innerWidth : 1280
   const COL = { L1: 16, L2: 110, R: sw - 100 }
+  const r = computedRow ?? a.desktopRow ?? 0
   return {
     id: `ico-${a.type}`,
     label: a.label,
     iconName: a.icon,
     iconColor: a.iconColor,
     x: COL[a.desktopCol!],
-    y: 16 + (a.desktopRow ?? 0) * 100,
+    y: 16 + r * 100,
     windowType: a.type,
   }
 }
 
 function makeIcons(installedApps: WindowType[]): IconState[] {
+  const colCounts = { L1: 0, L2: 0, R: 0 }
   return APP_META
     .filter((a: AppMeta) =>
       a.showOnDesktop &&
       a.desktopCol != null &&
       installedApps.includes(a.type)
     )
-    .map(makeIconForApp)
+    .map(a => {
+      const col = a.desktopCol as 'L1' | 'L2' | 'R'
+      const row = colCounts[col]++
+      return makeIconForApp(a, row)
+    })
 }
 
 const DEFAULT_INSTALLED: WindowType[] = APP_META
@@ -103,10 +109,9 @@ export const useWindowStore = create<Store>((set, get) => ({
     const a = APP_META.find((m: AppMeta) => m.type === type)
     if (!a) return
     const newInstalled = [...get().installedApps, type]
-    const newIcon = a.showOnDesktop && a.desktopCol != null ? makeIconForApp(a) : null
     set(s => ({
       installedApps: newInstalled,
-      icons: newIcon ? [...s.icons, newIcon] : s.icons,
+      icons: makeIcons(newInstalled),
     }))
   },
 
@@ -115,12 +120,15 @@ export const useWindowStore = create<Store>((set, get) => ({
     // Cannot uninstall pre-installed system apps
     if (!a || a.preInstalled) return
     const closingWin = get().windows.find(w => w.type === type)
-    set(s => ({
-      installedApps: s.installedApps.filter(t => t !== type),
-      icons: s.icons.filter(ico => ico.windowType !== type),
-      windows: s.windows.filter(w => w.type !== type),
-      focusedId: closingWin?.id === s.focusedId ? null : s.focusedId,
-    }))
+    set(s => {
+      const remaining = s.installedApps.filter(t => t !== type)
+      return {
+        installedApps: remaining,
+        icons: makeIcons(remaining),
+        windows: s.windows.filter(w => w.type !== type),
+        focusedId: closingWin?.id === s.focusedId ? null : s.focusedId,
+      }
+    })
   },
 
   openProjectDetail: (project) => {
