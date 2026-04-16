@@ -70,7 +70,7 @@ function W95Btn({
   )
 }
 
-export function BrowserWindow({ win, isMobile = false }: Props) {
+export function BrowserAppCore({ isMobile = false }: { isMobile?: boolean }) {
   const [url, setUrl]         = useState('')
   const [input, setInput]     = useState('')
   const [homeInput, setHomeInput] = useState('')
@@ -145,8 +145,8 @@ export function BrowserWindow({ win, isMobile = false }: Props) {
   const canForward = histIdx < history.length - 1
 
   return (
-    <Window win={win} menu={['File', 'View', 'Go', 'Favorites', 'Help']} status={url || 'BROWSER.EXE | New Tab'} isMobile={isMobile}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: isMobile ? '#c0c0c0' : 'transparent' }}>
+
 
         {/* ── Win95 Toolbar ── */}
         <div style={{
@@ -398,7 +398,6 @@ export function BrowserWindow({ win, isMobile = false }: Props) {
           }}>
             {url.startsWith('https') ? '🔒' : '🌐'} Internet
           </div>
-        </div>
       </div>
 
       <style>{`
@@ -408,6 +407,14 @@ export function BrowserWindow({ win, isMobile = false }: Props) {
           100% { width: 0%;   margin-left: 100%; }
         }
       `}</style>
+    </div>
+  )
+}
+
+export function BrowserWindow({ win, isMobile = false }: Props) {
+  return (
+    <Window win={win} menu={['File', 'View', 'Go', 'Favorites', 'Help']} status={'BROWSER.EXE | Web Browser'} isMobile={isMobile}>
+      <BrowserAppCore isMobile={isMobile} />
     </Window>
   )
 }

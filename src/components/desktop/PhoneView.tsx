@@ -13,6 +13,7 @@ import { PaintAppCore } from '../windows/PaintWindow'
 import { SnowboardAppCore } from '../windows/SnowboardWindow'
 import { NotePadAppCore } from '../windows/NotePadWindow'
 import { MusicAppCore } from '../windows/MusicWindow'
+import { BrowserAppCore } from '../windows/BrowserWindow'
 
 
 // ── Phone wallpaper options ───────────────────────────────────────
@@ -714,6 +715,7 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
       case 'snowboard': return <SnowboardAppCore isMobile />
       case 'notepad':   return <NotePadAppCore isMobile />
       case 'music':     return <MusicAppCore isMobile />
+      case 'browser':   return <BrowserAppCore isMobile />
       default:          return null
     }
   }

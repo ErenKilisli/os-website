@@ -159,7 +159,7 @@ export const APP_META: AppMeta[] = [
     spotlightDesc: 'Web browser',
     appDescription: 'Embedded web browser — navigate to any URL.',
     preInstalled: true,
-    showOnDesktop: true, showOnPhone: false, phoneInline: false,
+    showOnDesktop: true, showOnPhone: true, phoneInline: true,
     showInSpotlight: true, showInContextMenu: false,
     desktopCol: 'L2', desktopRow: 1,
   },
