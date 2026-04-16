@@ -36,7 +36,7 @@ export function MouseDotGrid() {
   useEffect(() => { themeRef.current = theme }, [theme])
 
   useEffect(() => {
-    if (!enabled) return
+    if (!enabled || wallpaper !== 'grid') return
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -157,7 +157,7 @@ export function MouseDotGrid() {
       document.removeEventListener('mousemove', onMove)
       document.removeEventListener('mouseleave', onLeave)
     }
-  }, [enabled])
+  }, [enabled, wallpaper])
 
   // Only render on desktop AND only when wallpaper is 'grid'
   if (!enabled || wallpaper !== 'grid') return null
