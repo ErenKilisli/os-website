@@ -6,12 +6,9 @@ import { WindowState } from '@/store/windowStore'
 interface Props { win: WindowState; isMobile?: boolean }
 
 const BOOKMARKS = [
-  { label: 'himerenkilisli.com', url: 'https://himerenkilisli.com' },
   { label: 'Lizard — Wikipedia', url: 'https://en.m.wikipedia.org/wiki/Lizard' },
-  { label: 'Hacker News',        url: 'https://news.ycombinator.com' },
   { label: 'Internet Archive',   url: 'https://archive.org' },
-  { label: 'OpenStreetMap',      url: 'https://www.openstreetmap.org' },
-  { label: 'MDN Docs',           url: 'https://developer.mozilla.org/en-US/' },
+  { label: 'himerenkilisli.com', url: 'https://himerenkilisli.com' },
 ]
 
 // Sites known to hard-block iframes
@@ -198,8 +195,8 @@ export function BrowserAppCore({ isMobile = false }: { isMobile?: boolean }) {
           borderBottom: '1px solid #808080',
           overflowX: 'auto',
         }}>
-          <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#808080', flexShrink: 0, marginRight: 4 }}>
-            Links:
+          <span style={{ fontFamily: 'monospace', fontSize: 14, color: '#808080', flexShrink: 0, marginRight: 4 }}>
+            ★
           </span>
           {BOOKMARKS.map(b => (
             <button key={b.url} onClick={() => navigate(b.url)}
