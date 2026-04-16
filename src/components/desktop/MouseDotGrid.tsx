@@ -10,9 +10,9 @@ const THEME_DOT: Record<string, string> = {
 }
 
 const SPACING    = 32    // px between dots
-const RADIUS     = 200   // mouse glow radius in px
+const RADIUS     = 100   // mouse glow radius in px
 const DOT_BASE_R = 1.5   // dot radius when far from mouse
-const DOT_GLOW_R = 4.0   // dot radius at mouse center
+const DOT_GLOW_R = 2.5   // dot radius at mouse center
 const BASE_ALPHA = 0.20  // opacity far from mouse
 const GLOW_ALPHA = 0.92  // opacity at mouse center
 const LERP       = 0.12  // smooth trailing factor (< 1 = animated lag)
