@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Space_Grotesk, Public_Sans } from 'next/font/google'
+import { Analytics } from "@vercel/analytics/next"
 import './globals.css'
 
 // ─── Fonts ───────────────────────────────────────────────────────────────────
@@ -230,6 +231,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
+        <Analytics />
         <noscript>
           <h1>Ibrahim Eren Kilisli</h1>
           <p>Game Developer (Unreal Engine, C++), Short Film Director, Full-Stack Engineer. Based in Istanbul, Turkey.</p>
