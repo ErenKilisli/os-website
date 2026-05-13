@@ -296,18 +296,39 @@ function MailScreen() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [msg, setMsg] = useState('')
-  const [sent, setSent] = useState(false)
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const canSend = name.trim() && email.trim() && msg.trim()
 
   const field: React.CSSProperties = { width: '100%', background: C.white, boxShadow: C.sunken, color: C.black, fontFamily: C.fontB, fontSize: 12, padding: '5px 7px', outline: 'none', border: 'none', boxSizing: 'border-box' }
   const lbl: React.CSSProperties = { fontFamily: C.font, fontSize: 7, color: C.black, letterSpacing: '0.05em', display: 'block', marginBottom: 3 }
 
-  if (sent) return (
+  const handleSend = async () => {
+    if (!canSend) return
+    setStatus('sending')
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: email,
+          subject: `Portfolio Contact from ${name}`,
+          message: msg,
+        }),
+      })
+      if (!res.ok) throw new Error('send failed')
+      setStatus('sent')
+    } catch {
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 3000)
+    }
+  }
+
+  if (status === 'sent') return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', background: C.bg, gap: 12 }}>
       <div style={{ boxShadow: C.outer, background: C.bg, padding: '20px 28px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
         <span className="material-symbols-outlined" style={{ fontSize: 32, color: C.navy }}>check_circle</span>
         <div style={{ fontFamily: C.font, fontSize: 9, color: C.black, letterSpacing: '0.08em' }}>MESSAGE SENT</div>
-        <W95Btn onClick={() => { setName(''); setEmail(''); setMsg(''); setSent(false) }}>NEW MESSAGE</W95Btn>
+        <W95Btn onClick={() => { setName(''); setEmail(''); setMsg(''); setStatus('idle') }}>NEW MESSAGE</W95Btn>
       </div>
     </div>
   )
@@ -321,10 +342,19 @@ function MailScreen() {
         <span style={lbl}>MESSAGE</span>
         <textarea value={msg} onChange={e => setMsg(e.target.value)} placeholder="Your message..." style={{ ...field, resize: 'none', flex: 1, minHeight: 70 }} />
       </div>
+      {status === 'error' && (
+        <div style={{ fontFamily: C.font, fontSize: 7, color: '#cc3333', letterSpacing: '0.06em' }}>✕ SEND FAILED — TRY AGAIN</div>
+      )}
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <W95Btn onClick={() => canSend && setSent(true)} primary={!!canSend} style={{ opacity: canSend ? 1 : 0.5 }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 12 }}>send</span>
-          SEND
+        <W95Btn
+          onClick={handleSend}
+          primary={!!canSend && status !== 'sending'}
+          style={{ opacity: canSend && status !== 'sending' ? 1 : 0.5 }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 12 }}>
+            {status === 'sending' ? 'hourglass_empty' : 'send'}
+          </span>
+          {status === 'sending' ? 'SENDING...' : 'SEND'}
         </W95Btn>
       </div>
     </div>
