@@ -1,8 +1,10 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useWindowStore } from '@/store/windowStore'
 import { useSystemStore } from '@/store/systemStore'
+import { readOpenParam, writeOpenParam, WINDOW_TO_URL } from '@/lib/urlSync'
+import type { WindowType } from '@/config/appMeta'
 import { DesktopIcon } from './DesktopIcon'
 import { Taskbar } from './Taskbar'
 import { BootScreen } from './BootScreen'
@@ -32,8 +34,40 @@ export function Desktop() {
   const [navCollapsed, setNavCollapsed] = useState(false)
   const [projectsOpen, setProjectsOpen] = useState(false)
   const projectsRef = useRef<HTMLDivElement>(null)
+  const pendingOpen = useRef<WindowType[]>([])
+  const prevUrlTypes = useRef('')
   const { windows, icons, openWindow, selectIcon } = useWindowStore()
   const { brightness, theme, viewMode, uiMode, setViewMode } = useSystemStore()
+
+  // Deep link: read ?open= param before first paint, skip boot/login
+  useLayoutEffect(() => {
+    const types = readOpenParam()
+    if (types.length > 0) {
+      pendingOpen.current = types
+      setPhase('desktop')
+    }
+  }, [])
+
+  // Open pending windows once desktop phase is active
+  useEffect(() => {
+    if (phase !== 'desktop' || pendingOpen.current.length === 0) return
+    pendingOpen.current.forEach(t => openWindow(t))
+    pendingOpen.current = []
+  }, [phase, openWindow])
+
+  // Sync open windows → URL (desktop mode only, only when set changes)
+  useEffect(() => {
+    if (phase !== 'desktop' || viewMode !== 'desktop') return
+    const types = windows
+      .map(w => w.type)
+      .filter((t): t is WindowType => t in WINDOW_TO_URL)
+      .sort()
+    const key = types.join(',')
+    if (key === prevUrlTypes.current) return
+    prevUrlTypes.current = key
+    writeOpenParam(types)
+  }, [windows, phase, viewMode])
+
   // Mark mounted — prevents Zustand persist mismatch on brightness overlay
   useEffect(() => { setMounted(true) }, [])
 

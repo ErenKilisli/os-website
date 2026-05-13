@@ -8,6 +8,7 @@ import { DEVFILES_PROJECTS, FILM_PROJECTS, GAME_PROJECTS, Project } from '@/data
 import { PROJECT_LOGOS } from '@/components/desktop/FolderIcons'
 import { APP_REGISTRY, phoneApps, type AppDef } from '@/config/appRegistry'
 import { APP_META } from '@/config/appMeta'
+import { readOpenParam, writeOpenParam } from '@/lib/urlSync'
 import { SnakeAppCore } from '../windows/SnakeWindow'
 import { PaintAppCore } from '../windows/PaintWindow'
 import { SnowboardAppCore } from '../windows/SnowboardWindow'
@@ -778,9 +779,21 @@ function PhoneAppMarketScreen({ T }: { T: typeof C_LIGHT }) {
 export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
   const { setViewMode, phoneUiMode, phoneWallpaper } = useSystemStore()
   const { openWindow, installedApps } = useWindowStore()
-  const [activeApp, setActiveApp] = useState<AppDef | null>(null)
-  const [booted, setBooted] = useState(false)
+  const [activeApp, setActiveApp] = useState<AppDef | null>(() => {
+    if (typeof window === 'undefined') return null
+    const types = readOpenParam()
+    if (types.length === 0) return null
+    return APP_REGISTRY.find(a => a.type === types[0]) ?? null
+  })
+  const [booted, setBooted] = useState(() =>
+    typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('open')
+  )
   const T = phoneUiMode === 'dark' ? C_DARK : C_LIGHT
+
+  // Sync active phone app → URL
+  useEffect(() => {
+    writeOpenParam(activeApp ? [activeApp.type] : [])
+  }, [activeApp])
 
   const handleOpenDesktop = (app: AppDef) => { openWindow(app.type); setViewMode('desktop') }
 
