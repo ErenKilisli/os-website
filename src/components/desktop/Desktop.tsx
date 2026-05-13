@@ -37,7 +37,7 @@ export function Desktop() {
   const pendingOpen = useRef<WindowType[]>([])
   const prevUrlTypes = useRef('')
   const { windows, icons, openWindow, selectIcon } = useWindowStore()
-  const { brightness, theme, viewMode, uiMode, setViewMode } = useSystemStore()
+  const { brightness, theme, viewMode, uiMode, setViewMode, loginPassword } = useSystemStore()
 
   // Deep link: read ?open= param before first paint, skip boot/login
   useLayoutEffect(() => {
@@ -121,7 +121,7 @@ export function Desktop() {
       <SoundManager />
 
       {phase === 'boot' && (
-        <BootScreen key={bootKey} onComplete={() => setPhase('login')} />
+        <BootScreen key={bootKey} onComplete={() => setPhase(loginPassword ? 'login' : 'desktop')} />
       )}
       {phase === 'login' && (
         <LoginScreen onLogin={() => setPhase('desktop')} />
