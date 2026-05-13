@@ -125,8 +125,8 @@ export function Desktop() {
                   top: '100%',
                   left: 0,
                   minWidth: 140,
-                  background: 'var(--surface)',
-                  border: '1px solid var(--outline)',
+                  background: 'var(--surface-dim)',
+                  border: '1px solid var(--surface-lo)',
                   boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
                   zIndex: 99999,
                 }}>
@@ -144,7 +144,7 @@ export function Desktop() {
                         fontSize: 10,
                         color: 'var(--on-surface)',
                         cursor: 'pointer',
-                        borderBottom: '1px solid var(--outline)',
+                        borderBottom: '1px solid var(--surface-lo)',
                         letterSpacing: '0.08em',
                       }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--primary-container)')}
