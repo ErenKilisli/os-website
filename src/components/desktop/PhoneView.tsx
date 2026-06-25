@@ -133,73 +133,68 @@ function PhoneStatusBar() {
   )
 }
 
-// ── Project accent colors / icons ────────────────────────────────
-const PROJECT_ACCENTS: Record<string, { color: string; bg: string }> = {
-  devfiles: { color: '#ff8800', bg: '#3a1a00' },
-  film:     { color: '#ffcc00', bg: '#2e2400' },
-  game:     { color: '#00cc44', bg: '#002210' },
-}
-
 // ── Home screen ───────────────────────────────────────────────────
 function HomeScreen({ apps, onOpen, wallpaper, T }: { apps: AppDef[]; onOpen: (app: AppDef) => void; wallpaper: string; T: typeof C_LIGHT }) {
+  const [pressed, setPressed] = useState<string | null>(null)
   const projectApps = apps.filter(a => ['devfiles', 'film', 'game'].includes(a.type))
   const otherApps = apps.filter(a => !['devfiles', 'film', 'game'].includes(a.type))
 
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: '10px 6px 4px', background: wallpaper }}>
-      {/* ── Featured project cards ── */}
-      <div style={{ marginBottom: 14 }}>
-        <div style={{ fontFamily: C.font, fontSize: 6, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.2em', marginBottom: 6, paddingLeft: 2 }}>
+      {/* ── Featured project buttons (Win95 style, larger) ── */}
+      <div style={{ background: T.bg, boxShadow: T.raised, padding: '6px 6px 8px', marginBottom: 10 }}>
+        {/* Section title bar */}
+        <div style={{
+          background: T.navy, color: T.white, fontFamily: T.font,
+          fontSize: 7, letterSpacing: '0.12em', padding: '3px 6px',
+          marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5,
+        }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 10 }}>folder_open</span>
           PROJECTS
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
-          {projectApps.map(app => {
-            const accent = PROJECT_ACCENTS[app.type] ?? { color: '#fff', bg: '#111' }
-            return (
-              <button
-                key={app.type}
-                onClick={() => onOpen(app)}
-                style={{
-                  background: accent.bg,
-                  border: `1px solid ${accent.color}44`,
-                  display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  gap: 5, padding: '10px 4px 8px',
-                  boxShadow: `0 0 12px ${accent.color}22`,
-                }}
-              >
-                <div style={{ width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <PhoneIconContent app={app} size={32} colorOverride={accent.color} />
-                </div>
-                <span style={{
-                  fontFamily: C.font, fontSize: 7, color: accent.color,
-                  textTransform: 'uppercase', textAlign: 'center',
-                  letterSpacing: '0.04em',
-                }}>
-                  {app.phoneLabel ?? app.label}
-                </span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* ── Regular apps grid ── */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 10 }}>
-        <div style={{ fontFamily: C.font, fontSize: 6, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.2em', marginBottom: 8, paddingLeft: 2 }}>
-          APPS
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px 2px' }}>
-          {otherApps.map(app => (
-            <button key={app.type} onClick={() => onOpen(app)} style={{ background: 'none', border: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '3px' }}>
-              <div style={{ width: 48, height: 48, background: T.bg, boxShadow: T.outer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <PhoneIconContent app={app} size={24} colorOverride={T.black} />
+          {projectApps.map(app => (
+            <button
+              key={app.type}
+              onMouseDown={() => setPressed(app.type)}
+              onMouseUp={() => setPressed(null)}
+              onMouseLeave={() => setPressed(null)}
+              onTouchStart={() => setPressed(app.type)}
+              onTouchEnd={() => setPressed(null)}
+              onClick={() => onOpen(app)}
+              style={{
+                background: T.bg, border: 'none',
+                boxShadow: pressed === app.type ? T.sunken : T.outer,
+                display: 'flex', flexDirection: 'column', alignItems: 'center',
+                gap: 5, padding: pressed === app.type ? '13px 4px 9px' : '12px 4px 10px',
+              }}
+            >
+              <div style={{ width: 52, height: 52, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <PhoneIconContent app={app} size={36} colorOverride={T.black} />
               </div>
-              <span style={{ fontFamily: T.font, fontSize: 7, color: '#ffffff', textShadow: `1px 1px 0 #000000`, textTransform: 'uppercase', textAlign: 'center', maxWidth: 58, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{
+                fontFamily: T.font, fontSize: 8, color: T.black,
+                textTransform: 'uppercase', textAlign: 'center', letterSpacing: '0.04em',
+              }}>
                 {app.phoneLabel ?? app.label}
               </span>
             </button>
           ))}
         </div>
+      </div>
+
+      {/* ── Regular apps grid ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px 2px' }}>
+        {otherApps.map(app => (
+          <button key={app.type} onClick={() => onOpen(app)} style={{ background: 'none', border: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '3px' }}>
+            <div style={{ width: 48, height: 48, background: T.bg, boxShadow: T.outer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <PhoneIconContent app={app} size={24} colorOverride={T.black} />
+            </div>
+            <span style={{ fontFamily: T.font, fontSize: 7, color: '#ffffff', textShadow: `1px 1px 0 #000000`, textTransform: 'uppercase', textAlign: 'center', maxWidth: 58, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {app.phoneLabel ?? app.label}
+            </span>
+          </button>
+        ))}
       </div>
     </div>
   )
