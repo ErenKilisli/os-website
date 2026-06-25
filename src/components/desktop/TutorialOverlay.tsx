@@ -48,8 +48,8 @@ export function TutorialOverlay({ onDone }: { onDone: () => void }) {
           textShadow: '0 0 12px rgba(0,255,255,0.6)',
           lineHeight: 1.7,
         }}>
-          NAVBAR<br />
-          <span style={{ color: 'rgba(0,255,255,0.55)', fontSize: 8 }}>VIEWS · SEARCH · SETTINGS</span>
+          MENÜ<br />
+          <span style={{ color: 'rgba(0,255,255,0.55)', fontSize: 8 }}>GÖRÜNÜM · ARAMA · AYARLAR</span>
         </div>
       </div>
 
@@ -85,7 +85,7 @@ export function TutorialOverlay({ onDone }: { onDone: () => void }) {
           color: 'rgba(255,255,255,0.25)',
           letterSpacing: '0.2em',
         }}>
-          [ CLICK ANYWHERE TO DISMISS ]
+          [ KAPATMAK İÇİN TIKLA ]
         </div>
       </div>
 
@@ -112,7 +112,7 @@ export function TutorialOverlay({ onDone }: { onDone: () => void }) {
           marginBottom: 4,
         }}>
           PROJELER<br />
-          <span style={{ color: 'rgba(0,255,255,0.55)', fontSize: 7 }}>İKONLARA TIKLA</span>
+          <span style={{ color: 'rgba(0,255,255,0.55)', fontSize: 7 }}>İKONA TIKLA</span>
         </div>
         <motion.div {...bounceRight} style={{ color: '#00ffff', fontSize: 26, lineHeight: 1 }}>▶</motion.div>
       </div>
