@@ -48,8 +48,8 @@ export function TutorialOverlay({ onDone }: { onDone: () => void }) {
           textShadow: '0 0 12px rgba(0,255,255,0.6)',
           lineHeight: 1.7,
         }}>
-          MENÜ<br />
-          <span style={{ color: 'rgba(0,255,255,0.55)', fontSize: 8 }}>GÖRÜNÜM · ARAMA · AYARLAR</span>
+          NAVBAR<br />
+          <span style={{ color: 'rgba(0,255,255,0.55)', fontSize: 8 }}>VIEWS · SEARCH · SETTINGS</span>
         </div>
       </div>
 
@@ -72,10 +72,10 @@ export function TutorialOverlay({ onDone }: { onDone: () => void }) {
           lineHeight: 1.9,
           textShadow: '0 0 20px rgba(0,255,255,0.3)',
         }}>
-          Bu portfolyo sitesi bir<br />
-          <span style={{ color: '#00ffff' }}>işletim sistemi</span> gibi tasarlanmıştır.<br />
+          This portfolio is designed<br />
+          as an <span style={{ color: '#00ffff' }}>operating system</span>.<br />
           <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 8, letterSpacing: '0.1em' }}>
-            İkonlara tıkla · Pencereleri sürükle
+            Click icons · Drag windows
           </span>
         </div>
         <div style={{
@@ -85,7 +85,7 @@ export function TutorialOverlay({ onDone }: { onDone: () => void }) {
           color: 'rgba(255,255,255,0.25)',
           letterSpacing: '0.2em',
         }}>
-          [ KAPATMAK İÇİN TIKLA ]
+          [ CLICK ANYWHERE TO DISMISS ]
         </div>
       </div>
 
@@ -111,8 +111,8 @@ export function TutorialOverlay({ onDone }: { onDone: () => void }) {
           lineHeight: 1.7,
           marginBottom: 4,
         }}>
-          PROJELER<br />
-          <span style={{ color: 'rgba(0,255,255,0.55)', fontSize: 7 }}>İKONA TIKLA</span>
+          PROJECTS<br />
+          <span style={{ color: 'rgba(0,255,255,0.55)', fontSize: 7 }}>CLICK AN ICON</span>
         </div>
         <motion.div {...bounceRight} style={{ color: '#00ffff', fontSize: 26, lineHeight: 1 }}>▶</motion.div>
       </div>
