@@ -480,10 +480,26 @@ function ProjectIcon({ p, category, size = 22 }: { p: Project; category: 'devfil
   )
 }
 
+type PhoneFilmFilter = 'all' | 'myfilms' | 'ad' | 'producer'
+const PHONE_FILM_FILTERS: { id: PhoneFilmFilter; label: string }[] = [
+  { id: 'all',      label: 'ALL' },
+  { id: 'myfilms',  label: 'MY FILMS' },
+  { id: 'ad',       label: 'AD' },
+  { id: 'producer', label: 'PRODUCER' },
+]
+
 function ProjectsScreen({ category }: { category: 'devfiles' | 'film' | 'game' }) {
-  const projects: Project[] = category === 'devfiles' ? DEVFILES_PROJECTS : category === 'film' ? FILM_PROJECTS : GAME_PROJECTS
+  const allProjects: Project[] = category === 'devfiles' ? DEVFILES_PROJECTS : category === 'film' ? FILM_PROJECTS : GAME_PROJECTS
   const [selected, setSelected] = useState<Project | null>(null)
   const [viewMode, setViewMode] = useState<'list' | 'icon'>('list')
+  const [filmFilter, setFilmFilter] = useState<PhoneFilmFilter>('all')
+
+  const projects = category === 'film' ? (() => {
+    if (filmFilter === 'myfilms') return allProjects.filter(p => p.tags.includes('Director'))
+    if (filmFilter === 'ad')      return allProjects.filter(p => p.tags.includes('Assistant Director'))
+    if (filmFilter === 'producer') return allProjects.filter(p => p.tags.includes('Line Producer') || p.tags.includes('Production Assistant'))
+    return allProjects
+  })() : allProjects
 
   // ── Detail view ──────────────────────────────────────────────────
   if (selected) return (
@@ -519,6 +535,25 @@ function ProjectsScreen({ category }: { category: 'devfiles' | 'film' | 'game' }
   // ── Toolbar: list / icon toggle ───────────────────────────────────
   return (
     <div style={{ height: '100%', background: C.bg, display: 'flex', flexDirection: 'column' }}>
+      {/* Film filter tabs */}
+      {category === 'film' && (
+        <div style={{ display: 'flex', borderBottom: `2px solid ${C.gray}`, flexShrink: 0 }}>
+          {PHONE_FILM_FILTERS.map(f => (
+            <button
+              key={f.id}
+              onClick={() => { setFilmFilter(f.id); setSelected(null) }}
+              style={{
+                flex: 1, background: filmFilter === f.id ? C.navy : C.bg,
+                color: filmFilter === f.id ? C.white : C.black,
+                fontFamily: C.font, fontSize: 6, letterSpacing: '0.06em',
+                border: 'none', padding: '5px 2px',
+                boxShadow: filmFilter === f.id ? C.sunken : C.raised,
+                cursor: 'pointer',
+              }}
+            >{f.label}</button>
+          ))}
+        </div>
+      )}
       {/* Toolbar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 6px', borderBottom: `1px solid ${C.gray}`, flexShrink: 0, background: C.bg }}>
         <span style={{ fontFamily: C.font, fontSize: 7, color: C.black, flex: 1, letterSpacing: '0.04em' }}>

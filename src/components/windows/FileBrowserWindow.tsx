@@ -29,6 +29,24 @@ const TAG_COLOR: Record<string, string> = {
 function tagColor(t: string) { return TAG_COLOR[t] ?? '#505870' }
 
 type ViewMode = 'list' | 'icon'
+type FilmFilter = 'all' | 'myfilms' | 'ad' | 'producer'
+
+const FILM_FILTERS: { id: FilmFilter; label: string }[] = [
+  { id: 'all',      label: 'ALL' },
+  { id: 'myfilms',  label: 'MY FILMS' },
+  { id: 'ad',       label: 'AD' },
+  { id: 'producer', label: 'PRODUCER' },
+]
+
+function applyFilmFilter(projects: Project[], filter: FilmFilter): Project[] {
+  if (filter === 'all') return projects
+  if (filter === 'myfilms') return projects.filter(p => p.tags.includes('Director'))
+  if (filter === 'ad')      return projects.filter(p => p.tags.includes('Assistant Director'))
+  if (filter === 'producer') return projects.filter(p =>
+    p.tags.includes('Line Producer') || p.tags.includes('Production Assistant')
+  )
+  return projects
+}
 
 // ── Toolbar button (Win95 style) ──────────────────────────────────────
 function TBtn({ children, active, onClick, title, disabled }: {
@@ -180,19 +198,22 @@ export function FileBrowserWindow({ win, category, isMobile = false }: Props) {
   const data = CATEGORY_DATA[category]
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [viewMode, setViewMode]     = useState<ViewMode>('list')
+  const [filmFilter, setFilmFilter] = useState<FilmFilter>('all')
   const nameRef = useRef<HTMLDivElement>(null)
   const { colsString, onMouseDown } = useColumnResize(250, 50)
 
   if (!data) return null
 
-  const sel = data.projects.find(p => p.id === selectedId) ?? null
+  const isFilm = category === 'film' || category === 'cinema'
+  const visibleProjects = isFilm ? applyFilmFilter(data.projects, filmFilter) : data.projects
+  const sel = visibleProjects.find(p => p.id === selectedId) ?? null
   const open = (p: Project) => { setSelectedId(p.id); openProjectDetail(p) }
 
   return (
     <Window
       win={win}
       menu={[]}
-      status={sel ? `1 object selected` : `${data.projects.length} object(s)`}
+      status={sel ? `1 object selected` : `${visibleProjects.length} object(s)`}
       isMobile={isMobile}
     >
       <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--surface-dim)' }}>
@@ -243,6 +264,35 @@ export function FileBrowserWindow({ win, category, isMobile = false }: Props) {
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>grid_view</span>
           </TBtn>
         </div>
+
+        {/* ── Film filter tabs ── */}
+        {isFilm && (
+          <div style={{
+            display: 'flex', alignItems: 'stretch',
+            borderBottom: '1px solid #808080',
+            background: 'var(--surface-dim)',
+            flexShrink: 0,
+          }}>
+            {FILM_FILTERS.map(f => (
+              <button
+                key={f.id}
+                onClick={() => { setFilmFilter(f.id); setSelectedId(null) }}
+                style={{
+                  fontFamily: 'var(--font-h)', fontSize: 8,
+                  letterSpacing: '0.08em', padding: '4px 12px',
+                  border: 'none', borderRight: '1px solid #808080',
+                  background: filmFilter === f.id ? '#fff' : 'var(--surface-dim)',
+                  color: filmFilter === f.id ? '#000' : '#666',
+                  cursor: 'pointer',
+                  boxShadow: filmFilter === f.id
+                    ? 'inset 2px 0 0 #000080'
+                    : 'none',
+                  fontWeight: filmFilter === f.id ? 700 : 400,
+                }}
+              >{f.label}</button>
+            ))}
+          </div>
+        )}
 
         {/* ── Body ── */}
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
@@ -300,7 +350,7 @@ export function FileBrowserWindow({ win, category, isMobile = false }: Props) {
                   ))}
                 </div>
 
-                {data.projects.map(p => (
+                {visibleProjects.map(p => (
                   <ListRow
                     key={p.id} p={p} accent={data.accent} icon={data.icon}
                     selected={selectedId === p.id}
@@ -316,7 +366,7 @@ export function FileBrowserWindow({ win, category, isMobile = false }: Props) {
                 alignContent: 'flex-start',
                 padding: '10px 8px', gap: 2,
               }}>
-                {data.projects.map(p => (
+                {visibleProjects.map(p => (
                   <IconCard
                     key={p.id} p={p} accent={data.accent} icon={data.icon}
                     selected={selectedId === p.id}
