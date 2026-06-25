@@ -390,9 +390,9 @@ export function Desktop() {
         {viewMode === 'web'      && phase === 'desktop' && <WebView      key="web" />}
       </AnimatePresence>
 
-      {/* ── Tutorial overlay ── */}
+      {/* ── Tutorial overlay (desktop/PC only) ── */}
       <AnimatePresence>
-        {showTutorial && phase === 'desktop' && (
+        {showTutorial && phase === 'desktop' && !isMobile && (
           <TutorialOverlay
             key="tutorial"
             onDone={() => {

@@ -133,23 +133,118 @@ function PhoneStatusBar() {
   )
 }
 
+// ── Project accent colors / icons ────────────────────────────────
+const PROJECT_ACCENTS: Record<string, { color: string; bg: string }> = {
+  devfiles: { color: '#ff8800', bg: '#3a1a00' },
+  film:     { color: '#ffcc00', bg: '#2e2400' },
+  game:     { color: '#00cc44', bg: '#002210' },
+}
+
 // ── Home screen ───────────────────────────────────────────────────
 function HomeScreen({ apps, onOpen, wallpaper, T }: { apps: AppDef[]; onOpen: (app: AppDef) => void; wallpaper: string; T: typeof C_LIGHT }) {
+  const projectApps = apps.filter(a => ['devfiles', 'film', 'game'].includes(a.type))
+  const otherApps = apps.filter(a => !['devfiles', 'film', 'game'].includes(a.type))
+
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: '10px 6px 4px', background: wallpaper }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px 2px' }}>
-        {apps.map(app => (
-          <button key={app.type} onClick={() => onOpen(app)} style={{ background: 'none', border: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '3px' }}>
-            <div style={{ width: 48, height: 48, background: T.bg, boxShadow: T.outer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <PhoneIconContent app={app} size={24} colorOverride={T.black} />
-            </div>
-            <span style={{ fontFamily: T.font, fontSize: 7, color: '#ffffff', textShadow: `1px 1px 0 #000000`, textTransform: 'uppercase', textAlign: 'center', maxWidth: 58, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {app.phoneLabel ?? app.label}
-            </span>
-          </button>
-        ))}
+      {/* ── Featured project cards ── */}
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ fontFamily: C.font, fontSize: 6, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.2em', marginBottom: 6, paddingLeft: 2 }}>
+          PROJECTS
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
+          {projectApps.map(app => {
+            const accent = PROJECT_ACCENTS[app.type] ?? { color: '#fff', bg: '#111' }
+            return (
+              <button
+                key={app.type}
+                onClick={() => onOpen(app)}
+                style={{
+                  background: accent.bg,
+                  border: `1px solid ${accent.color}44`,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  gap: 5, padding: '10px 4px 8px',
+                  boxShadow: `0 0 12px ${accent.color}22`,
+                }}
+              >
+                <div style={{ width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <PhoneIconContent app={app} size={32} colorOverride={accent.color} />
+                </div>
+                <span style={{
+                  fontFamily: C.font, fontSize: 7, color: accent.color,
+                  textTransform: 'uppercase', textAlign: 'center',
+                  letterSpacing: '0.04em',
+                }}>
+                  {app.phoneLabel ?? app.label}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ── Regular apps grid ── */}
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 10 }}>
+        <div style={{ fontFamily: C.font, fontSize: 6, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.2em', marginBottom: 8, paddingLeft: 2 }}>
+          APPS
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px 2px' }}>
+          {otherApps.map(app => (
+            <button key={app.type} onClick={() => onOpen(app)} style={{ background: 'none', border: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '3px' }}>
+              <div style={{ width: 48, height: 48, background: T.bg, boxShadow: T.outer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <PhoneIconContent app={app} size={24} colorOverride={T.black} />
+              </div>
+              <span style={{ fontFamily: T.font, fontSize: 7, color: '#ffffff', textShadow: `1px 1px 0 #000000`, textTransform: 'uppercase', textAlign: 'center', maxWidth: 58, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {app.phoneLabel ?? app.label}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
+  )
+}
+
+// ── Mobile tutorial hint (shown once after boot) ──────────────────
+function MobileTutorialHint({ onDone }: { onDone: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onDone}
+      style={{
+        position: 'absolute', inset: 0, zIndex: 9000,
+        background: 'rgba(0,0,10,0.65)',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'flex-start',
+        paddingTop: 20,
+        cursor: 'pointer',
+      }}
+    >
+      {/* Arrow pointing down to projects */}
+      <motion.div
+        animate={{ y: [0, 8, 0] }}
+        transition={{ repeat: Infinity, duration: 1.3 }}
+        style={{ color: '#ffcc00', fontSize: 22, lineHeight: 1 }}
+      >▼</motion.div>
+
+      <div style={{
+        fontFamily: C.font, fontSize: 8, color: '#ffcc00',
+        letterSpacing: '0.12em', textAlign: 'center', marginTop: 8,
+        textShadow: '0 0 12px rgba(255,200,0,0.6)',
+        lineHeight: 1.8,
+      }}>
+        TAP A PROJECT<br />
+        <span style={{ color: 'rgba(255,200,0,0.55)', fontSize: 7 }}>DEV · FILM · GAME</span>
+      </div>
+
+      <div style={{
+        position: 'absolute', bottom: 80,
+        fontFamily: C.font, fontSize: 7,
+        color: 'rgba(255,255,255,0.22)', letterSpacing: '0.18em',
+      }}>[ TAP TO DISMISS ]</div>
+    </motion.div>
   )
 }
 
@@ -818,6 +913,7 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
   const [booted, setBooted] = useState(() =>
     typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('open')
   )
+  const [showMobileTutorial, setShowMobileTutorial] = useState(false)
   const T = phoneUiMode === 'dark' ? C_DARK : C_LIGHT
 
   // Sync active phone app → URL
@@ -853,7 +949,11 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: phoneWallpaper }}>
       <AnimatePresence mode="wait">
         {!booted ? (
-          <PhoneBootScreen key="boot" onComplete={() => setBooted(true)} />
+          <PhoneBootScreen key="boot" onComplete={() => {
+            setBooted(true)
+            const seen = typeof window !== 'undefined' && localStorage.getItem('eren-os-mobile-tutorial-seen')
+            if (!seen) setShowMobileTutorial(true)
+          }} />
         ) : (
           <motion.div key="ui" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <PhoneStatusBar />
@@ -862,6 +962,14 @@ export function PhoneView({ fullscreen = false }: { fullscreen?: boolean }) {
                 {!activeApp ? (
                   <motion.div key="home" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.18 }} style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
                     <HomeScreen apps={phoneApps(installedApps)} onOpen={app => setActiveApp(app)} wallpaper={phoneWallpaper} T={T} />
+                    <AnimatePresence>
+                      {showMobileTutorial && (
+                        <MobileTutorialHint key="mobile-tutorial" onDone={() => {
+                          setShowMobileTutorial(false)
+                          localStorage.setItem('eren-os-mobile-tutorial-seen', '1')
+                        }} />
+                      )}
+                    </AnimatePresence>
                   </motion.div>
                 ) : (
                   <motion.div key={activeApp.type} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ duration: 0.18 }} style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
