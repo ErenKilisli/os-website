@@ -75,10 +75,10 @@ html, body {
   top: 0;
   left: 0;
   right: 0;
-  height: 28px;
+  height: 38px;
   z-index: 9999;
   background: #0a0b1a;
-  border-bottom: 2px solid #1a1b2e;
+  border-bottom: 1px solid #1a2a3a;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -86,6 +86,7 @@ html, body {
   padding: 0 40px 0 0;
   user-select: none;
   transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 8px;
 }
 /* Nav fully slides off-screen */
 #top-nav.nav-collapsed {
@@ -147,12 +148,66 @@ html, body {
   opacity: 1;
 }
 
-/* ── Floating nav toggle button ────────────────────────── */
+/* ── View mode switcher ─────────────────────────────────── */
+.nav-view-switcher {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 1px;
+  margin-left: auto;
+  padding: 0 8px;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.nav-view-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  font-family: var(--font-h);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  padding: 0 10px;
+  height: 100%;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.nav-view-btn:hover {
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.05);
+}
+.nav-view-btn.active {
+  color: #00ffff;
+  background: rgba(0,255,255,0.07);
+  box-shadow: inset 0 -2px 0 #00ffff;
+}
+
+/* ── Nav help button ────────────────────────────────────── */
+.nav-help-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2px;
+  transition: color 0.15s;
+}
+.nav-help-btn:hover {
+  color: rgba(255,255,255,0.9);
+}
+
+/* ── Floating nav toggle button ─────────────────────────── */
 /* Always fixed at top-right, never scrolls or hides.
    Rotates 180° when nav is collapsed so arrow points down. */
 #nav-float-toggle {
   position: fixed;
-  top: 3px;
+  top: 8px;
   right: 8px;
   z-index: 10001;
   display: flex;
@@ -185,7 +240,7 @@ html, body {
 /* ── Desktop ───────────────────────────────────────────── */
 #desktop {
   position: fixed;
-  top: 28px;
+  top: 38px;
   right: 0;
   bottom: 52px;
   left: 0;

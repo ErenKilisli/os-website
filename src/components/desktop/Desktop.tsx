@@ -19,6 +19,8 @@ import { CustomCursor } from './CustomCursor'
 import { PhoneView } from './PhoneView'
 import { TerminalMode } from './TerminalMode'
 import { MouseDotGrid } from './MouseDotGrid'
+import { TutorialOverlay } from './TutorialOverlay'
+import { WebView } from './WebView'
 
 type Phase = 'boot' | 'login' | 'desktop' | 'shutdown' | 'restart'
 
@@ -33,6 +35,7 @@ export function Desktop() {
   const [trashOpen, setTrashOpen] = useState(false)
   const [navCollapsed, setNavCollapsed] = useState(false)
   const [projectsOpen, setProjectsOpen] = useState(false)
+  const [showTutorial, setShowTutorial] = useState(false)
   const projectsRef = useRef<HTMLDivElement>(null)
   const pendingOpen = useRef<WindowType[]>([])
   const prevUrlTypes = useRef('')
@@ -70,6 +73,13 @@ export function Desktop() {
 
   // Mark mounted — prevents Zustand persist mismatch on brightness overlay
   useEffect(() => { setMounted(true) }, [])
+
+  // Show tutorial on first visit
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const seen = localStorage.getItem('eren-os-tutorial-seen')
+    if (!seen) setShowTutorial(true)
+  }, [])
 
   // Apply theme & uiMode data attributes to <html>
   useEffect(() => {
@@ -139,9 +149,9 @@ export function Desktop() {
       {/* Top nav bar — fully slides out when collapsed */}
       <nav id="top-nav" className={navCollapsed ? 'nav-collapsed' : ''}>
         <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-          <div className="nav-brand">LIZARD.OS</div>
+          <div className="nav-brand">EREN.OS</div>
           <div className="nav-links">
-            <span className="nav-link" onClick={() => openWindow('about')}>ABOUT ME</span>
+            <span className="nav-link" onClick={() => { setViewMode('desktop'); openWindow('about') }}>ABOUT</span>
 
             {/* Projects dropdown */}
             <div ref={projectsRef} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
@@ -171,7 +181,7 @@ export function Desktop() {
                   ] as const).map(item => (
                     <div
                       key={item.type}
-                      onClick={() => { openWindow(item.type); setProjectsOpen(false) }}
+                      onClick={() => { setViewMode('desktop'); openWindow(item.type); setProjectsOpen(false) }}
                       style={{
                         padding: '8px 14px',
                         fontFamily: 'var(--font-h)',
@@ -191,10 +201,46 @@ export function Desktop() {
               )}
             </div>
 
-            <span className="nav-link" onClick={() => openWindow('mail')}>CONTACT</span>
+            <span className="nav-link" onClick={() => { setViewMode('desktop'); openWindow('mail') }}>CONTACT</span>
           </div>
         </div>
+
+        {/* View mode switcher */}
+        <div className="nav-view-switcher">
+          <button
+            className={`nav-view-btn${viewMode === 'desktop' ? ' active' : ''}`}
+            onClick={() => setViewMode('desktop')}
+            title="OS Desktop view"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 13 }}>desktop_windows</span>
+            <span>OS</span>
+          </button>
+          <button
+            className={`nav-view-btn${viewMode === 'phone' ? ' active' : ''}`}
+            onClick={() => setViewMode('phone')}
+            title="Mobile view"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 13 }}>smartphone</span>
+            <span>MOBILE</span>
+          </button>
+          <button
+            className={`nav-view-btn${viewMode === 'web' ? ' active' : ''}`}
+            onClick={() => setViewMode('web')}
+            title="Normal web view"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 13 }}>language</span>
+            <span>WEB</span>
+          </button>
+        </div>
+
         <div className="nav-actions">
+          <button
+            className="nav-help-btn"
+            onClick={() => setShowTutorial(true)}
+            title="Show tutorial"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 15 }}>help_outline</span>
+          </button>
           <span
             className="material-symbols-outlined nav-spotlight-btn"
             onClick={() => setSpotlight(true)}
@@ -337,10 +383,24 @@ export function Desktop() {
         )}
       </AnimatePresence>
 
-      {/* ── Phone / Terminal overlays ── */}
+      {/* ── Phone / Terminal / Web overlays ── */}
       <AnimatePresence>
         {viewMode === 'phone'    && phase === 'desktop' && <PhoneView    key="phone" fullscreen={isMobile} />}
         {viewMode === 'terminal' && phase === 'desktop' && <TerminalMode key="terminal" />}
+        {viewMode === 'web'      && phase === 'desktop' && <WebView      key="web" />}
+      </AnimatePresence>
+
+      {/* ── Tutorial overlay ── */}
+      <AnimatePresence>
+        {showTutorial && phase === 'desktop' && (
+          <TutorialOverlay
+            key="tutorial"
+            onDone={() => {
+              setShowTutorial(false)
+              localStorage.setItem('eren-os-tutorial-seen', '1')
+            }}
+          />
+        )}
       </AnimatePresence>
     </>
   )

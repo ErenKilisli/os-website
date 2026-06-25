@@ -8,7 +8,7 @@ export type Wallpaper = AnimatedWallpaper | 'solid' | 'photo'
   | 'preset-rice' | 'preset-dawn' | 'preset-istanbul'
   | 'preset-lizard' | 'preset-highland' | 'preset-jaguar'
 export type CursorStyle = 'cyberwave' | 'pixel' | 'box'
-export type ViewMode = 'desktop' | 'phone' | 'terminal'
+export type ViewMode = 'desktop' | 'phone' | 'terminal' | 'web'
 export type UiMode = 'dark' | 'light'
 
 export const CURSOR_LABELS: Record<CursorStyle, string> = {
