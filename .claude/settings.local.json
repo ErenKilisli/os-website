@@ -24,7 +24,15 @@
       "Bash(sed -i '' 's|linkedin.com/in/erenkilisli|linkedin.com/in/ierenkilisli|g' /Users/erenkilisli/Documents/AI_Development/personal-website/preview.html)",
       "Bash(sed -i '' 's|https://github.com/erenkilisli|https://github.com/ErenKilisli|g' /Users/erenkilisli/Documents/AI_Development/personal-website/preview.html)",
       "Bash(sed -i '' 's|github.com/erenkilisli|github.com/ErenKilisli|g' /Users/erenkilisli/Documents/AI_Development/personal-website/preview.html)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(git -C /Users/erenkilisli/Documents/AI_Development/os-website status)",
+      "Bash(git -C /Users/erenkilisli/Documents/AI_Development/os-website log --oneline -3)",
+      "Bash(git -C /Users/erenkilisli/Documents/AI_Development/os-website add src/components/desktop/Desktop.tsx)",
+      "Bash(git -C /Users/erenkilisli/Documents/AI_Development/os-website commit -m ' *)",
+      "Bash(git -C /Users/erenkilisli/Documents/AI_Development/os-website push origin main)",
+      "Bash(git -C /Users/erenkilisli/Documents/AI_Development/os-website add src/lib/urlSync.ts src/components/desktop/Desktop.tsx src/components/desktop/PhoneView.tsx)",
+      "Bash(git -C /Users/erenkilisli/Documents/AI_Development/os-website add src/components/desktop/PhoneView.tsx)",
+      "Bash(npm install *)"
     ]
   }
 }
