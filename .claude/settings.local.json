@@ -32,7 +32,16 @@
       "Bash(git -C /Users/erenkilisli/Documents/AI_Development/os-website push origin main)",
       "Bash(git -C /Users/erenkilisli/Documents/AI_Development/os-website add src/lib/urlSync.ts src/components/desktop/Desktop.tsx src/components/desktop/PhoneView.tsx)",
       "Bash(git -C /Users/erenkilisli/Documents/AI_Development/os-website add src/components/desktop/PhoneView.tsx)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(node -e ' *)",
+      "Bash(mkdir -p /Users/erenkilisli/Documents/AI_Development/os-website/src/app/spaceoddity/components)",
+      "Bash(mkdir -p \"/Users/erenkilisli/Documents/AI_Development/os-website/src/app/spaceoddity/[...catchAll]\")",
+      "Bash(mkdir -p /Users/erenkilisli/Documents/AI_Development/os-website/public/spaceoddity)",
+      "Bash(npm run *)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(grep -A 15 \"BootIntro.tsx$\")",
+      "Bash(grep -A 15 \"SignalImage.tsx$\")",
+      "Bash(pkill -f \"next dev\")"
     ]
   }
 }

@@ -43,3 +43,18 @@ A personal portfolio presented as a fictional operating system (EREN.OS) with dr
 - MAIL.EXE → MailWindow (contacts sidebar + compose form)
 
 **Desktop Icons (draggable):** 🎮 GAME.PRJ | 🎬 FILM.PRJ | 💾 SWR.PRJ | 👤 ABOUT.EXE | 📧 MAIL.EXE
+
+## /spaceoddity (unlisted project page)
+A self-contained, unlisted page at `/spaceoddity` — not part of the OS desktop UI. Reachable only by
+typing the URL; not in any nav, project index, or sitemap.
+
+- **Edit copy** → `src/app/spaceoddity/content.ts` (title, logline, readout, credits, images, contact,
+  and the `flags` object: `noindex`, `bootIntro`, `newsletterEndpoint`)
+- **Swap images** → drop files in `public/spaceoddity/` and update the `src` paths in `content.ts`
+- **Remove entirely** → delete `src/app/spaceoddity/` and `public/spaceoddity/`; nothing else references
+  them, so the rest of the site builds unchanged
+- All styling lives in one CSS Module, `src/app/spaceoddity/spaceoddity.module.css` — no Tailwind, no
+  shared globals, zero leakage in or out
+- `src/app/spaceoddity/[...catchAll]/page.tsx` catches any `/spaceoddity/*` sub-path and shows a
+  `HSTR-155` signal-lost screen
+- `robots: { index, follow }` is driven by `flags.noindex` in `content.ts` (default `true`)

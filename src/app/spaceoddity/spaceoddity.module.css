@@ -1,0 +1,421 @@
+/*
+  Every rule this feature uses lives in this one file. Nothing here is
+  global — CSS Modules hash every class name, so none of it can leak
+  into the rest of the site, and none of the site's Tailwind/global
+  styles can leak in here.
+*/
+
+.root {
+  --sob-bg: #0a0b0a;
+  --sob-fg: #c8c6c0;
+  --sob-accent: #ffb000;
+  --sob-rule: rgba(255, 255, 255, 0.12);
+  --sob-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  min-height: 100dvh;
+  background: var(--sob-bg);
+  color: var(--sob-fg);
+  font-family: var(--sob-mono);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------------------------------------------- Hero */
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.75rem;
+  padding: 4rem 1.25rem 3.5rem;
+  text-align: center;
+}
+
+.heroBezel {
+  width: min(90vw, 520px);
+  aspect-ratio: 4 / 3;
+  padding: 14px;
+  background: linear-gradient(155deg, #232421, #0d0e0c 60%);
+  border-radius: 20px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 24px 48px -24px rgba(0, 0, 0, 0.85);
+}
+
+.heroScreen {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background-color: #000;
+  background-image:
+    radial-gradient(1px 1px at 99.6% 69.1%, rgba(255,255,255,0.54), transparent 100%),
+    radial-gradient(1px 1px at 84.1% 29.2%, rgba(255,255,255,0.65), transparent 100%),
+    radial-gradient(1px 1px at 23.9% 19.4%, rgba(255,255,255,0.68), transparent 100%),
+    radial-gradient(1px 1px at 38.3% 67.5%, rgba(255,255,255,0.45), transparent 100%),
+    radial-gradient(1px 1px at 58.3% 5.6%, rgba(255,255,255,0.42), transparent 100%),
+    radial-gradient(2px 2px at 76.8% 51.3%, rgba(255,255,255,0.67), transparent 100%),
+    radial-gradient(1px 1px at 80.9% 93.2%, rgba(255,255,255,0.36), transparent 100%),
+    radial-gradient(1px 1px at 92.5% 49.5%, rgba(255,255,255,0.83), transparent 100%),
+    radial-gradient(1px 1px at 54.8% 71.7%, rgba(255,255,255,0.38), transparent 100%),
+    radial-gradient(1px 1px at 68.9% 66.3%, rgba(255,255,255,0.87), transparent 100%),
+    radial-gradient(1px 1px at 34.1% 62.4%, rgba(255,255,255,0.62), transparent 100%),
+    radial-gradient(1px 1px at 97.3% 28.3%, rgba(255,255,255,0.43), transparent 100%),
+    radial-gradient(2px 2px at 24.0% 33.8%, rgba(255,255,255,0.53), transparent 100%),
+    radial-gradient(1px 1px at 57.4% 17.8%, rgba(255,255,255,0.80), transparent 100%),
+    radial-gradient(1px 1px at 67.1% 14.1%, rgba(255,255,255,0.69), transparent 100%),
+    radial-gradient(2px 2px at 1.1% 37.4%, rgba(255,255,255,0.56), transparent 100%),
+    radial-gradient(1px 1px at 5.3% 53.5%, rgba(255,255,255,0.52), transparent 100%),
+    radial-gradient(1px 1px at 71.5% 87.0%, rgba(255,255,255,0.63), transparent 100%),
+    radial-gradient(1px 1px at 79.8% 59.5%, rgba(255,255,255,0.83), transparent 100%),
+    radial-gradient(1px 1px at 13.5% 64.9%, rgba(255,255,255,0.86), transparent 100%),
+    radial-gradient(2px 2px at 54.5% 0.2%, rgba(255,255,255,0.58), transparent 100%),
+    radial-gradient(2px 2px at 65.7% 37.6%, rgba(255,255,255,0.60), transparent 100%),
+    radial-gradient(1px 1px at 72.6% 2.5%, rgba(255,255,255,0.36), transparent 100%),
+    radial-gradient(1px 1px at 65.7% 76.6%, rgba(255,255,255,0.77), transparent 100%),
+    radial-gradient(1px 1px at 70.2% 21.3%, rgba(255,255,255,0.60), transparent 100%),
+    radial-gradient(1px 1px at 71.0% 37.4%, rgba(255,255,255,0.36), transparent 100%),
+    radial-gradient(1px 1px at 45.0% 44.2%, rgba(255,255,255,0.62), transparent 100%),
+    radial-gradient(1px 1px at 81.0% 98.3%, rgba(255,255,255,0.43), transparent 100%),
+    radial-gradient(1px 1px at 64.3% 2.6%, rgba(255,255,255,0.41), transparent 100%),
+    radial-gradient(2px 2px at 93.1% 11.6%, rgba(255,255,255,0.37), transparent 100%),
+    radial-gradient(1px 1px at 41.4% 46.4%, rgba(255,255,255,0.62), transparent 100%),
+    radial-gradient(1px 1px at 67.5% 13.2%, rgba(255,255,255,0.42), transparent 100%),
+    radial-gradient(1px 1px at 57.2% 49.2%, rgba(255,255,255,0.39), transparent 100%),
+    radial-gradient(1px 1px at 5.2% 37.5%, rgba(255,255,255,0.39), transparent 100%),
+    radial-gradient(2px 2px at 64.2% 2.1%, rgba(255,255,255,0.41), transparent 100%),
+    radial-gradient(2px 2px at 55.4% 39.3%, rgba(255,255,255,0.36), transparent 100%),
+    radial-gradient(2px 2px at 84.4% 61.9%, rgba(255,255,255,0.51), transparent 100%),
+    radial-gradient(1px 1px at 65.5% 3.6%, rgba(255,255,255,0.80), transparent 100%),
+    radial-gradient(1px 1px at 28.9% 73.2%, rgba(255,255,255,0.59), transparent 100%),
+    radial-gradient(1px 1px at 39.8% 86.7%, rgba(255,255,255,0.85), transparent 100%),
+    radial-gradient(2px 2px at 1.6% 69.4%, rgba(255,255,255,0.47), transparent 100%),
+    radial-gradient(1px 1px at 0.6% 0.4%, rgba(255,255,255,0.38), transparent 100%),
+    radial-gradient(2px 2px at 16.7% 7.7%, rgba(255,255,255,0.78), transparent 100%),
+    radial-gradient(1px 1px at 68.1% 83.6%, rgba(255,255,255,0.42), transparent 100%),
+    radial-gradient(1px 1px at 82.7% 46.9%, rgba(255,255,255,0.78), transparent 100%),
+    radial-gradient(2px 2px at 35.5% 66.3%, rgba(255,255,255,0.85), transparent 100%),
+    radial-gradient(1px 1px at 22.9% 69.6%, rgba(255,255,255,0.44), transparent 100%),
+    radial-gradient(1px 1px at 86.4% 79.3%, rgba(255,255,255,0.86), transparent 100%),
+    radial-gradient(1px 1px at 44.0% 68.2%, rgba(255,255,255,0.51), transparent 100%),
+    radial-gradient(1px 1px at 7.9% 76.6%, rgba(255,255,255,0.48), transparent 100%),
+    radial-gradient(1px 1px at 44.0% 97.1%, rgba(255,255,255,0.67), transparent 100%),
+    radial-gradient(1px 1px at 96.7% 60.5%, rgba(255,255,255,0.89), transparent 100%),
+    radial-gradient(1px 1px at 90.7% 39.3%, rgba(255,255,255,0.81), transparent 100%),
+    radial-gradient(1px 1px at 85.1% 50.3%, rgba(255,255,255,0.85), transparent 100%),
+    radial-gradient(1px 1px at 76.2% 78.5%, rgba(255,255,255,0.64), transparent 100%);
+  box-shadow:
+    inset 0 0 48px 12px rgba(0, 0, 0, 0.92),
+    inset 0 0 2px rgba(255, 255, 255, 0.06);
+}
+
+.heroTitle {
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  color: var(--sob-fg);
+  margin: 0;
+  font-weight: 400;
+}
+
+.heroStatusLine {
+  font-size: 0.78rem;
+  color: var(--sob-accent);
+  margin: 0;
+  letter-spacing: 0.06em;
+}
+
+/* ----------------------------------------------------- Generic section */
+
+.section {
+  max-width: 65ch;
+  margin: 0 auto;
+  padding: 3rem 1.25rem;
+  border-top: 1px solid var(--sob-rule);
+}
+
+.sectionLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--sob-accent);
+  margin: 0 0 1.5rem;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+/* -------------------------------------------------------------- Logline */
+
+.logline {
+  font-size: 1rem;
+  line-height: 1.9;
+  color: var(--sob-fg);
+  max-width: 65ch;
+  margin: 0;
+}
+
+/* ------------------------------------------------- The Look / SignalImage */
+
+.lookStack {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.signalFigure {
+  margin: 0;
+}
+
+.signalContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #050505;
+  border-radius: 2px;
+}
+
+.signalImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.signalFlash {
+  position: absolute;
+  inset: 0;
+  background: #e6e4de;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.signalFlash[data-on='true'] {
+  opacity: 1;
+}
+
+.signalFlash[data-fade='true'] {
+  opacity: 0;
+  transition: opacity 250ms ease-out;
+}
+
+.signalBand {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, #0a0b0a, #111210);
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 300ms ease-out;
+}
+
+.signalBand[data-fade='true'] {
+  opacity: 0;
+}
+
+.signalCaption {
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--sob-fg);
+  opacity: 0.7;
+  letter-spacing: 0.02em;
+}
+
+/* -------------------------------------------------------------- Readout */
+
+.readout {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.readoutRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--sob-rule);
+  font-size: 0.82rem;
+}
+
+.readoutRow:first-child {
+  border-top: none;
+}
+
+.readoutLabel {
+  color: var(--sob-accent);
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.readoutValue {
+  color: var(--sob-fg);
+  margin: 0;
+  text-align: right;
+}
+
+/* -------------------------------------------------------------- Credits */
+
+.credits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.creditRow {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.creditRole {
+  color: var(--sob-accent);
+  min-width: 12rem;
+}
+
+.creditName {
+  color: var(--sob-fg);
+}
+
+/* -------------------------------------------------------------- Contact */
+
+.contactEmail {
+  color: var(--sob-fg);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 0.95rem;
+}
+
+.contactEmail:hover,
+.contactEmail:focus-visible {
+  color: var(--sob-accent);
+}
+
+.newsletterForm {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.newsletterInput {
+  flex: 1 1 14rem;
+  background: transparent;
+  border: 1px solid var(--sob-rule);
+  color: var(--sob-fg);
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.65rem;
+}
+
+.newsletterInput:focus-visible {
+  outline: 1px solid var(--sob-accent);
+}
+
+.newsletterButton {
+  background: transparent;
+  border: 1px solid var(--sob-accent);
+  color: var(--sob-accent);
+  font-family: inherit;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+}
+
+.newsletterButton:hover {
+  background: rgba(255, 176, 0, 0.1);
+}
+
+.newsletterButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.newsletterStatus {
+  font-size: 0.75rem;
+  color: var(--sob-fg);
+  opacity: 0.75;
+  margin-top: 0.5rem;
+}
+
+/* ------------------------------------------------------------ Boot intro */
+
+.bootIntro {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #0a0b0a;
+  color: var(--sob-fg);
+  font-family: var(--sob-mono);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 400ms ease-out;
+}
+
+.bootIntroOut {
+  opacity: 0;
+}
+
+.bootReadout {
+  font-size: 0.8rem;
+  line-height: 1.8;
+  color: var(--sob-accent);
+  white-space: pre-wrap;
+  padding: 1.5rem;
+  max-width: 80vw;
+  margin: 0;
+}
+
+/* --------------------------------------------------- Signal lost (catch-all) */
+
+.lostScreen {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.lostCode {
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  color: var(--sob-accent);
+  margin: 0;
+}
+
+.lostLabel {
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: var(--sob-fg);
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* -------------------------------------------------------------- Motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .signalFlash,
+  .signalBand,
+  .bootIntro {
+    transition: none !important;
+  }
+}
+
+/* ------------------------------------------------------------ Small screens */
+
+@media (max-width: 400px) {
+  .creditRole {
+    min-width: 0;
+  }
+}
