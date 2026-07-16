@@ -12,7 +12,17 @@
   --sob-rule: rgba(255, 255, 255, 0.12);
   --sob-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  min-height: 100dvh;
+  /*
+    The rest of the site is a fixed-viewport desktop OS UI, so globals.css
+    sets html/body to height:100%; overflow:hidden. This page is a normal
+    scrolling document, so it has to own its own scroll container instead
+    of relying on body scroll (which is disabled site-wide).
+  */
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
   background: var(--sob-bg);
   color: var(--sob-fg);
   font-family: var(--sob-mono);
