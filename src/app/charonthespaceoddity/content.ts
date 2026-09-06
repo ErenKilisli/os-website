@@ -1,4 +1,4 @@
-// All copy and toggles for /spaceoddity live here.
+// All copy and toggles for /charonthespaceoddity live here.
 // Edit this file to change what the page says or shows. See README.md
 // in this folder for the full "how do I..." guide.
 
@@ -18,7 +18,7 @@ export const flags = {
 }
 
 export const copy = {
-  title: 'Space Oddity or Blues (WT)',
+  title: 'CHARON: THE SPACE ODDITY',
   status: 'Short film · Berlin · In pre-production, 2026',
 
   // TODO: write the real logline. Do not invent one.

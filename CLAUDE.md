@@ -44,17 +44,20 @@ A personal portfolio presented as a fictional operating system (EREN.OS) with dr
 
 **Desktop Icons (draggable):** 🎮 GAME.PRJ | 🎬 FILM.PRJ | 💾 SWR.PRJ | 👤 ABOUT.EXE | 📧 MAIL.EXE
 
-## /spaceoddity (unlisted project page)
-A self-contained, unlisted page at `/spaceoddity` — not part of the OS desktop UI. Reachable only by
-typing the URL; not in any nav, project index, or sitemap.
+## /charonthespaceoddity (CHARON: THE SPACE ODDITY project page)
+A self-contained page at `/charonthespaceoddity` for the short film CHARON: THE SPACE ODDITY. Not part
+of the OS desktop UI's window chrome, but linked from the FILM.PRJ file browser (`src/data/projects.ts`,
+`charon` entry): double-clicking that entry opens the normal ProjectDetailWindow (tags/description), and
+its "Film Website" link (in `links`) opens this page.
 
-- **Edit copy** → `src/app/spaceoddity/content.ts` (title, logline, readout, credits, images, contact,
-  and the `flags` object: `noindex`, `bootIntro`, `newsletterEndpoint`)
+- **Edit copy** → `src/app/charonthespaceoddity/content.ts` (title, logline, readout, credits, images,
+  contact, and the `flags` object: `noindex`, `bootIntro`, `newsletterEndpoint`)
 - **Swap images** → drop files in `public/spaceoddity/` and update the `src` paths in `content.ts`
-- **Remove entirely** → delete `src/app/spaceoddity/` and `public/spaceoddity/`; nothing else references
-  them, so the rest of the site builds unchanged
-- All styling lives in one CSS Module, `src/app/spaceoddity/spaceoddity.module.css` — no Tailwind, no
-  shared globals, zero leakage in or out
-- `src/app/spaceoddity/[...catchAll]/page.tsx` catches any `/spaceoddity/*` sub-path and shows a
-  `HSTR-155` signal-lost screen
-- `robots: { index, follow }` is driven by `flags.noindex` in `content.ts` (default `true`)
+- **Remove entirely** → delete `src/app/charonthespaceoddity/` and `public/spaceoddity/`, and remove the
+  `charon` entry from `FILM_PROJECTS` in `src/data/projects.ts`
+- All styling lives in one CSS Module, `src/app/charonthespaceoddity/spaceoddity.module.css` — no
+  Tailwind, no shared globals, zero leakage in or out
+- `src/app/charonthespaceoddity/[...catchAll]/page.tsx` catches any `/charonthespaceoddity/*` sub-path
+  and shows a `HSTR-155` signal-lost screen
+- `robots: { index, follow }` is driven by `flags.noindex` in `content.ts` (default `true` — flip to
+  `false` once the film is ready to be publicly indexed, since it's now linked from FILM.PRJ)

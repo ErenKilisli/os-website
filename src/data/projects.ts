@@ -56,6 +56,18 @@ export const GAME_PROJECTS: Project[] = [
 
 export const FILM_PROJECTS: Project[] = [
   {
+    id: 'charon',
+    name: 'CHARON: THE SPACE ODDITY',
+    year: '2026',
+    type: 'Short Film · Director / Writer',
+    icon: '📁',
+    description: 'Director and Writer. A sci-fi short film shot in Berlin, built on our own custom set. Currently in pre-production.',
+    tags: ['Short Film', 'Director', 'Writer', 'Berlin', 'Upcoming'],
+    links: [
+      { label: 'Film Website', url: '/charonthespaceoddity' },
+    ],
+  },
+  {
     id: 'gov',
     name: 'GOV — FEATURE FILM',
     year: '2026',
