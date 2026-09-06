@@ -181,13 +181,13 @@
   globals.css hides the native cursor everywhere (`*,*::before,*::after {
   cursor: none !important }`) so the OS desktop's custom cursor sprite
   (CustomCursor.tsx) can stand in for it. This page renders no such sprite,
-  so it has to explicitly claw the native cursor back for itself. `revert`
-  would be the tidy way to do that, but Chrome resolves `revert !important`
-  against the rest of the *same-origin* cascade rather than jumping to the
-  UA stylesheet, so it still lands on the site-wide `none` — hence the
-  explicit values here instead, with `a`/`input` covered so they still get
-  their normal browser default. Only a selector this specific can out-rank
-  that site-wide !important rule.
+  so the cursor must always stay visible here — `revert` would be the tidy
+  way to claw it back, but Chrome resolves `revert !important` against the
+  rest of the *same-origin* cascade rather than jumping to the UA
+  stylesheet, so it still lands on the site-wide `none`. Explicit values
+  here instead, with `a`/`input` covered so they keep their normal browser
+  default. Only a selector this specific can out-rank that site-wide
+  !important rule.
 */
 .root *,
 .root *::before,
@@ -202,16 +202,6 @@
 .root input,
 .root textarea {
   cursor: text !important;
-}
-
-/* Hides the (now-restored) cursor until the visitor's first mouse move (see
-   CursorReveal.tsx). Declared after the rules above so it wins the tie for
-   anything inside .cursorHidden's subtree. */
-.cursorHidden,
-.cursorHidden *,
-.cursorHidden *::before,
-.cursorHidden *::after {
-  cursor: none !important;
 }
 
 /* Screen-reader-only: keeps an accessible <h1> without duplicating the
