@@ -177,11 +177,41 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Hides the system cursor until the visitor's first mouse move (see
-   CursorReveal.tsx). cursor:none inherits down to every descendant that
-   doesn't set its own cursor, so this one class is enough for the whole page. */
-.cursorHidden {
-  cursor: none;
+/*
+  globals.css hides the native cursor everywhere (`*,*::before,*::after {
+  cursor: none !important }`) so the OS desktop's custom cursor sprite
+  (CustomCursor.tsx) can stand in for it. This page renders no such sprite,
+  so it has to explicitly claw the native cursor back for itself. `revert`
+  would be the tidy way to do that, but Chrome resolves `revert !important`
+  against the rest of the *same-origin* cascade rather than jumping to the
+  UA stylesheet, so it still lands on the site-wide `none` — hence the
+  explicit values here instead, with `a`/`input` covered so they still get
+  their normal browser default. Only a selector this specific can out-rank
+  that site-wide !important rule.
+*/
+.root *,
+.root *::before,
+.root *::after {
+  cursor: auto !important;
+}
+
+.root a {
+  cursor: pointer !important;
+}
+
+.root input,
+.root textarea {
+  cursor: text !important;
+}
+
+/* Hides the (now-restored) cursor until the visitor's first mouse move (see
+   CursorReveal.tsx). Declared after the rules above so it wins the tie for
+   anything inside .cursorHidden's subtree. */
+.cursorHidden,
+.cursorHidden *,
+.cursorHidden *::before,
+.cursorHidden *::after {
+  cursor: none !important;
 }
 
 /* Screen-reader-only: keeps an accessible <h1> without duplicating the
@@ -459,7 +489,7 @@
   font-size: 0.8rem;
   letter-spacing: 0.06em;
   padding: 0.5rem 0.9rem;
-  cursor: pointer;
+  cursor: pointer !important;
 }
 
 .newsletterButton:hover {
@@ -468,7 +498,7 @@
 
 .newsletterButton:disabled {
   opacity: 0.5;
-  cursor: default;
+  cursor: default !important;
 }
 
 .newsletterStatus {
