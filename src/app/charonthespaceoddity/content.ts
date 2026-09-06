@@ -19,6 +19,7 @@ export const flags = {
 
 export const copy = {
   title: 'CHARON: THE SPACE ODDITY',
+  logo: '/spaceoddity/charonlogo.png',
   status: 'Short film · Berlin · In pre-production, 2026',
 
   // TODO: write the real logline. Do not invent one.
@@ -55,5 +56,6 @@ export const copy = {
     { role: 'Production', name: 'Page One Production' },
   ],
 
+  contactName: 'I. Eren Kilisli',
   contactEmail: 'ibr@himerenkilisli.com',
 }
