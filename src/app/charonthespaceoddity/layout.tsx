@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import styles from './spaceoddity.module.css'
 import { copy, flags } from './content'
+import FaviconSwitch from './components/FaviconSwitch'
 
 export const metadata: Metadata = {
   title: { absolute: copy.title },
@@ -16,5 +17,10 @@ export default function SpaceOddityLayout({
 }: {
   children: React.ReactNode
 }) {
-  return <div className={styles.root}>{children}</div>
+  return (
+    <div className={styles.root}>
+      <FaviconSwitch />
+      {children}
+    </div>
+  )
 }
