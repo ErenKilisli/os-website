@@ -23,9 +23,7 @@ export function MailWindow({ win, isMobile = false }: Props) {
   const handleSend = () => {
     if (!subject.trim() && !body.trim()) return
     const mailBody = `${body}${from ? `\n\n---\nReply-To: ${from}` : ''}`
-    window.open(
-      `mailto:ibr@himerenkilisli.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailBody)}`
-    )
+    window.open(`mailto:ibr@himerenkilisli.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailBody)}`, '_blank')
     setFrom('')
     setSubject('')
     setBody('')
